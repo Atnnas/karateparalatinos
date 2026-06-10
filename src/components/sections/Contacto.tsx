@@ -37,7 +37,7 @@ export default function Contacto() {
   return (
     <section
       id="contacto"
-      className="relative min-h-screen flex justify-center items-center overflow-hidden bg-[var(--background)] pt-36 pb-20"
+      className="relative min-h-[calc(100vh-80px)] lg:min-h-0 lg:flex-1 flex justify-center items-center overflow-hidden bg-[var(--background)] pt-24 pb-0"
     >
       {/* ===== Background Watermark Kanji (Traditional Vibe) ===== */}
       <div className="absolute right-10 md:right-20 lg:right-32 top-[18%] md:top-[12%] text-[24vw] md:text-[14vw] font-black text-neutral-900/[0.02] select-none pointer-events-none leading-none z-0 font-serif">
@@ -67,10 +67,10 @@ export default function Contacto() {
         className="absolute top-28 left-10 lg:left-16 w-[2px] bg-gradient-to-b from-[#E52B34] to-transparent z-[2] hidden md:block"
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full h-full flex flex-col justify-center">
         
         {/* Encabezado */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-6 lg:mb-8">
           <motion.span
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -209,7 +209,7 @@ export default function Contacto() {
                     <textarea
                       name="mensaje"
                       required
-                      rows={4}
+                      rows={2}
                       value={formState.mensaje}
                       onChange={handleChange}
                       className="w-full bg-white border border-neutral-200 rounded-lg py-3 px-4 text-sm font-body text-neutral-900 focus:border-[#E52B34] focus:outline-none transition-colors resize-none shadow-sm"

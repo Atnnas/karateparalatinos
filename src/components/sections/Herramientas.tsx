@@ -132,7 +132,7 @@ export default function Herramientas() {
   return (
     <section
       id="herramientas"
-      className="relative min-h-screen flex justify-center items-center overflow-hidden bg-[var(--background)] pt-36 pb-20"
+      className="relative min-h-[calc(100vh-80px)] lg:min-h-0 lg:flex-1 flex justify-center items-center overflow-hidden bg-[var(--background)] pt-24 pb-0"
     >
       {/* ===== Background Watermark Kanji (Traditional Vibe) ===== */}
       <div className="absolute right-10 md:right-20 lg:right-32 top-[18%] md:top-[12%] text-[24vw] md:text-[14vw] font-black text-neutral-900/[0.02] select-none pointer-events-none leading-none z-0 font-serif">
@@ -162,10 +162,10 @@ export default function Herramientas() {
         className="absolute top-28 left-10 lg:left-16 w-[2px] bg-gradient-to-b from-[#E52B34] to-transparent z-[2] hidden md:block"
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full h-full flex flex-col justify-center">
         
         {/* Encabezado */}
-        <div className="text-center max-w-3xl mx-auto mb-20">
+        <div className="text-center max-w-3xl mx-auto mb-6 lg:mb-8">
           <motion.span
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -180,7 +180,7 @@ export default function Herramientas() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="font-impact-condensed text-3xl sm:text-5xl font-bold tracking-wider text-neutral-900"
+            className="font-impact-condensed text-2xl sm:text-4xl font-bold tracking-wider text-neutral-900"
           >
             HERRAMIENTAS PARA <span className="text-[#E52B34]">ENTRENAR</span> EN CASA
           </motion.h2>
@@ -199,21 +199,21 @@ export default function Herramientas() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           
           {/* Herramienta 1: Mokuso Breathing Timer */}
-          <div className="glass-card p-8 sm:p-10 flex flex-col justify-between items-center relative overflow-hidden shadow-sm">
-            <div className="w-full text-center sm:text-left mb-6">
+          <div className="glass-card p-6 sm:p-7 flex flex-col justify-between items-center relative overflow-hidden shadow-sm">
+            <div className="w-full text-center sm:text-left mb-4">
               <span className="font-title-serif text-[10px] text-[#556358] tracking-[0.2em] uppercase">
                 Meditación Activa
               </span>
-              <h3 className="font-impact-condensed text-2xl text-neutral-900 mt-1">
+              <h3 className="font-impact-condensed text-xl text-neutral-900 mt-1">
                 Temporizador de Mokuso (黙想)
               </h3>
-              <p className="font-body text-neutral-600 text-xs font-light mt-2 leading-relaxed max-w-md">
+              <p className="font-body text-neutral-600 text-xs font-light mt-1.5 leading-relaxed max-w-md">
                 Usa este temporizador basado en el patrón box breathing (4s inhalar, 4s retener, 4s exhalar) para calmar tu mente antes de entrenar o competir.
               </p>
             </div>
 
             {/* Círculo Interactivo de Respiración */}
-            <div className="relative w-72 h-72 flex items-center justify-center my-8">
+            <div className="relative w-48 h-48 flex items-center justify-center my-4">
               {/* Círculo pulsante exterior */}
               <motion.div
                 animate={{
@@ -221,12 +221,12 @@ export default function Herramientas() {
                   backgroundColor: getCircleColor(),
                 }}
                 transition={{ duration: 1, ease: "linear" }}
-                className="absolute w-44 h-44 rounded-full flex items-center justify-center"
+                className="absolute w-32 h-32 rounded-full flex items-center justify-center"
               />
 
               {/* Anillo límite */}
-              <div className="absolute w-60 h-60 rounded-full border border-neutral-200 pointer-events-none" />
-              <div className="absolute w-44 h-44 rounded-full border border-[#556358]/20 pointer-events-none" />
+              <div className="absolute w-40 h-40 rounded-full border border-neutral-200 pointer-events-none" />
+              <div className="absolute w-32 h-32 rounded-full border border-[#556358]/20 pointer-events-none" />
 
               {/* Contenido Central */}
               <div className="relative z-10 flex flex-col items-center justify-center">
@@ -237,7 +237,7 @@ export default function Herramientas() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.8 }}
                     transition={{ duration: 0.2 }}
-                    className="font-impact-condensed text-3xl text-neutral-900 tracking-widest"
+                    className="font-impact-condensed text-xl sm:text-2xl text-neutral-900 tracking-widest"
                   >
                     {breathingPhase}
                   </motion.span>
@@ -276,29 +276,29 @@ export default function Herramientas() {
           </div>
 
           {/* Herramienta 2: Calculadora de Requisitos de Grado */}
-          <div className="glass-card p-8 sm:p-10 flex flex-col justify-between relative overflow-hidden shadow-sm">
-            <div className="w-full text-center sm:text-left mb-6">
+          <div className="glass-card p-6 sm:p-7 flex flex-col justify-between relative overflow-hidden shadow-sm">
+            <div className="w-full text-center sm:text-left mb-4">
               <span className="font-title-serif text-[10px] text-[#556358] tracking-[0.2em] uppercase">
                 Requisitos Técnicos
               </span>
-              <h3 className="font-impact-condensed text-2xl text-neutral-900 mt-1">
+              <h3 className="font-impact-condensed text-xl text-neutral-900 mt-1">
                 Consultar Siguiente Grado
               </h3>
-              <p className="font-body text-neutral-600 text-xs font-light mt-2 leading-relaxed">
-                Selecciona tu rango actual en karate para revisar qué Katas, Kihon (conceptos básicos) y tiempos mínimos requiere tu próximo paso de cinturón.
+              <p className="font-body text-neutral-600 text-xs font-light mt-1.5 leading-relaxed">
+                Selecciona tu rango actual en karate para revisar qué Katas, Kihon y tiempos mínimos requiere tu próximo paso de cinturón.
               </p>
             </div>
 
             {/* Selector de Cinturón */}
-            <div className="space-y-4 my-4">
+            <div className="space-y-3 my-2">
               <div>
-                <label className="block text-xs font-title-serif text-[#556358] uppercase tracking-wider mb-2">
+                <label className="block text-[10px] font-title-serif text-[#556358] uppercase tracking-wider mb-1">
                   Cinturón Actual
                 </label>
                 <select
                   value={selectedBeltIndex}
                   onChange={(e) => setSelectedBeltIndex(Number(e.target.value))}
-                  className="w-full bg-white border border-neutral-200 rounded-lg py-3 px-4 text-sm font-body text-neutral-900 focus:border-[#E52B34] focus:outline-none transition-colors shadow-sm"
+                  className="w-full bg-white border border-neutral-200 rounded-lg py-2.5 px-3 text-xs font-body text-neutral-900 focus:border-[#E52B34] focus:outline-none transition-colors shadow-sm"
                 >
                   {beltRequirements.map((item, idx) => (
                     <option key={idx} value={idx}>
@@ -316,27 +316,27 @@ export default function Herramientas() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -15 }}
                   transition={{ duration: 0.3 }}
-                  className="border border-neutral-200 rounded-xl p-5 bg-white space-y-4 text-left shadow-sm"
+                  className="border border-neutral-200 rounded-xl p-4 bg-white space-y-2.5 text-left shadow-sm animate-fade-in"
                 >
-                  <div className="flex items-center justify-between gap-2 border-b border-neutral-200/60 pb-3">
-                    <span className="text-xs text-neutral-500 font-body">Siguiente objetivo:</span>
-                    <span className="font-impact-condensed text-base text-[#E52B34] tracking-wider flex items-center gap-1.5">
-                      <Award className="w-4 h-4" /> {beltRequirements[selectedBeltIndex].next}
+                  <div className="flex items-center justify-between gap-2 border-b border-neutral-200/60 pb-2">
+                    <span className="text-[10px] text-neutral-500 font-body">Siguiente objetivo:</span>
+                    <span className="font-impact-condensed text-sm text-[#E52B34] tracking-wider flex items-center gap-1.5">
+                      <Award className="w-3.5 h-3.5" /> {beltRequirements[selectedBeltIndex].next}
                     </span>
                   </div>
 
                   <div>
-                    <span className="text-[10px] font-title-serif text-[#556358] block mb-1">TIEMPO MÍNIMO REQUERIDO</span>
+                    <span className="text-[9px] font-title-serif text-[#556358] block mb-0.5">TIEMPO MÍNIMO REQUERIDO</span>
                     <p className="text-xs text-neutral-900 font-body font-medium">
                       {beltRequirements[selectedBeltIndex].time}
                     </p>
                   </div>
 
                   <div>
-                    <span className="text-[10px] font-title-serif text-[#556358] block mb-1">KATAS CLAVE A MASTERIZAR</span>
-                    <div className="flex flex-wrap gap-2 mt-1">
+                    <span className="text-[9px] font-title-serif text-[#556358] block mb-0.5">KATAS CLAVE A MASTERIZAR</span>
+                    <div className="flex flex-wrap gap-1.5 mt-0.5">
                       {beltRequirements[selectedBeltIndex].katas.map((kata, kIdx) => (
-                        <span key={kIdx} className="text-[10px] bg-[var(--background-alt)] border border-neutral-200/60 text-neutral-800 py-1 px-2.5 rounded-full font-mono font-medium">
+                        <span key={kIdx} className="text-[9px] bg-[var(--background-alt)] border border-neutral-200/60 text-neutral-800 py-0.5 px-2 rounded-full font-mono font-medium">
                           {kata}
                         </span>
                       ))}
@@ -344,15 +344,15 @@ export default function Herramientas() {
                   </div>
 
                   <div>
-                    <span className="text-[10px] font-title-serif text-[#556358] block mb-1">ENFOQUE KIHON (TÉCNICO)</span>
-                    <p className="text-xs text-neutral-600 font-body leading-relaxed">
+                    <span className="text-[9px] font-title-serif text-[#556358] block mb-0.5">ENFOQUE KIHON (TÉCNICO)</span>
+                    <p className="text-[11px] text-neutral-600 font-body leading-normal">
                       {beltRequirements[selectedBeltIndex].kihon}
                     </p>
                   </div>
 
-                  <div className="bg-[#556358]/8 border-l-2 border-[#556358] p-3 rounded-r-md">
-                    <span className="text-[9px] font-title-serif text-[#556358] block mb-0.5">CONSEJO DOJO</span>
-                    <p className="text-[11px] italic text-neutral-800 font-body leading-relaxed">
+                  <div className="bg-[#556358]/8 border-l-2 border-[#556358] p-2.5 rounded-r-md">
+                    <span className="text-[8px] font-title-serif text-[#556358] block mb-0.5">CONSEJO DOJO</span>
+                    <p className="text-[10px] italic text-neutral-800 font-body leading-normal">
                       {beltRequirements[selectedBeltIndex].tips}
                     </p>
                   </div>

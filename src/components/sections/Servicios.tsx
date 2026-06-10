@@ -6,7 +6,7 @@ export default function Servicios() {
   return (
     <section
       id="servicios"
-      className="relative min-h-screen flex justify-center items-center overflow-hidden bg-[var(--background)] pt-36 pb-20"
+      className="relative min-h-[calc(100vh-80px)] lg:min-h-0 lg:flex-1 flex justify-center items-center overflow-hidden bg-[var(--background)] pt-24 pb-0"
     >
       {/* ===== Background Watermark Kanji (Traditional Vibe) ===== */}
       <div className="absolute right-10 md:right-20 lg:right-32 top-[18%] md:top-[12%] text-[24vw] md:text-[14vw] font-black text-neutral-900/[0.02] select-none pointer-events-none leading-none z-0 font-serif">
@@ -36,8 +36,8 @@ export default function Servicios() {
         className="absolute top-28 left-10 lg:left-16 w-[2px] bg-gradient-to-b from-[#E52B34] to-transparent z-[2] hidden md:block"
       />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 w-full h-full flex items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
           
           {/* Column 1: Copywriting (Left) */}
           <div className="lg:col-span-7 space-y-6 z-10">
