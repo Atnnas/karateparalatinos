@@ -3,6 +3,7 @@ import { Cinzel, Oswald, Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/navigation/Footer";
+import FloatingWhatsApp from "@/components/navigation/FloatingWhatsApp";
 
 const cinzel = Cinzel({
   variable: "--font-cinzel",
@@ -43,6 +44,7 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
+        <FloatingWhatsApp />
       </body>
     </html>
   );
