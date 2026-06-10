@@ -8,7 +8,7 @@ export default function Nosotros() {
   return (
     <section
       id="nosotros"
-      className="relative min-h-[calc(100vh-80px)] lg:h-[calc(100vh-80px)] flex justify-center items-center overflow-hidden bg-[var(--background)] pt-24 pb-0"
+      className="relative min-h-[calc(100vh-80px)] lg:h-[calc(100vh-332px)] flex justify-center items-center overflow-hidden bg-[var(--background)] pt-24 pb-0"
     >
       {/* ===== Background Watermark Kanji (Traditional Vibe) ===== */}
       <div className="absolute left-10 md:left-20 lg:left-32 top-[18%] md:top-[12%] text-[24vw] md:text-[14vw] font-black text-neutral-900/[0.02] select-none pointer-events-none leading-none z-0 font-serif">
@@ -30,14 +30,14 @@ export default function Nosotros() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch w-full">
           
           {/* Column 1: Biography Copy (Left) */}
-          <div className="lg:col-span-7 space-y-7 pb-10 lg:pb-14 pt-4 flex flex-col justify-center">
+          <div className="lg:col-span-7 space-y-6 pb-6 lg:pb-8 pt-2 flex flex-col justify-center">
             
             {/* Header / Badges */}
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="space-y-3.5"
+              className="space-y-3"
             >
               <span className="font-title-serif text-xs text-[#556358] tracking-[0.25em] uppercase block">
                 CONOCE AL CREADOR DEL CONTENIDO
@@ -64,7 +64,7 @@ export default function Nosotros() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="grid grid-cols-3 gap-4 border-y border-neutral-200/60 py-5 my-2"
+              className="grid grid-cols-3 gap-4 border-y border-neutral-200/60 py-4my-1"
             >
               <div className="text-left">
                 <span className="block font-impact-condensed text-3xl sm:text-4xl text-[#E52B34] leading-none">45+</span>
@@ -85,18 +85,18 @@ export default function Nosotros() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.15 }}
-              className="space-y-4.5 text-neutral-700 text-sm sm:text-base font-light leading-relaxed"
+              className="space-y-4 text-neutral-700 text-sm sm:text-base font-light leading-relaxed"
             >
               <p className="font-medium text-neutral-950 text-base sm:text-lg italic border-l-4 border-[#E52B34] pl-4 py-1">
-                "Hola, soy Carlos Ávila. He dedicado los últimos 45 años de mi vida al estudio y práctica del Karate Shito Ryu y hoy pongo toda esa experiencia a tu servicio."
+                "Hola, soy Carlos Ávila. Dediqué los últimos 45 años al Karate Shito Ryu y hoy pongo toda esa experiencia a tu servicio."
               </p>
 
               <p>
-                Actualmente cuento con el grado de <span className="font-semibold text-neutral-900">5th Dan C.N. y Jun-Shihan</span> avalado por la <span className="font-semibold text-neutral-950">WORLD SHITORYU KARATEDO FEDERATION (WSKF)</span>.
+                Cuento con el grado de <span className="font-semibold text-neutral-900">5th Dan C.N. y Jun-Shihan</span> avalado por la <span className="font-semibold text-neutral-950">WORLD SHITORYU KARATEDO FEDERATION (WSKF)</span>.
               </p>
 
               <p>
-                Mi misión va más allá de enseñar técnicas; busca preservar la esencia de este arte para que te beneficies de sus valores. Entendiendo que la defensa real requiere versatilidad, he enriquecido mi camino estudiando <span className="font-semibold text-neutral-950">Judo, Ryukyu Kobudo, Shōrin-ryū y Sistema de Combate Ruso</span>.
+                Mi misión es preservar la esencia de este arte para tu beneficio, integrando la versatilidad de disciplinas como <span className="font-semibold text-neutral-950">Judo, Ryukyu Kobudo, Shōrin-ryū y Sistema de Combate Ruso</span> para una defensa real efectiva.
               </p>
             </motion.div>
 
@@ -105,31 +105,14 @@ export default function Nosotros() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="bg-white/80 backdrop-blur-md border border-neutral-200/80 rounded-2xl p-6 sm:p-7 shadow-sm space-y-4"
+              className="bg-white/80 backdrop-blur-md border border-neutral-200/80 rounded-2xl p-4 sm:p-5 shadow-sm"
             >
-              <h3 className="font-impact-condensed text-xl tracking-wider text-neutral-900 flex items-center gap-2.5 border-b border-neutral-100 pb-3.5">
-                <span className="h-2 w-2 rounded-full bg-[#E52B34]" />
-                EL SISTEMA DOJUTSU
-              </h3>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <span className="inline-block text-xs font-bold tracking-widest text-[#E52B34] uppercase bg-[#E52B34]/5 px-2.5 py-0.5 rounded">
-                    DO (El Camino)
-                  </span>
-                  <p className="text-xs sm:text-sm text-neutral-600 font-light leading-relaxed">
-                    Conservación del camino tradicional que forja el carácter a través de la ética, los valores y principios.
-                  </p>
-                </div>
-                <div className="space-y-2 border-t sm:border-t-0 sm:border-l border-neutral-200/60 pt-4 sm:pt-0 sm:pl-6">
-                  <span className="inline-block text-xs font-bold tracking-widest text-[#8B6914] uppercase bg-[#8B6914]/5 px-2.5 py-0.5 rounded">
-                    JUTSU (El Arte Técnico)
-                  </span>
-                  <p className="text-xs sm:text-sm text-neutral-600 font-light leading-relaxed">
-                    Técnicas de combate para la calle (prevención, disuasión, confrontación), adaptadas a tu morfología con uso de objetos cotidianos.
-                  </p>
-                </div>
-              </div>
+              <p className="text-xs sm:text-sm text-neutral-600 font-light leading-relaxed">
+                <span className="font-impact-condensed text-base tracking-wider text-neutral-900 mr-2 inline-block">
+                  EL SISTEMA DOJUTSU:
+                </span>
+                Conserva el <span className="font-semibold text-neutral-900">DO</span> tradicional (valores y carácter) y lo une al <span className="font-semibold text-neutral-900">JUTSU</span> (técnicas de combate reales, prevención y disuasión callejera) adaptado a tu morfología.
+              </p>
             </motion.div>
 
           </div>
@@ -141,7 +124,7 @@ export default function Nosotros() {
       </div>
 
       {/* Column 2 (Actual Image Container): absolute bottom-0 on desktop, relative flow at the end on mobile */}
-      <div className="relative lg:absolute lg:right-0 lg:bottom-0 w-full lg:w-[42%] xl:w-[38%] h-[450px] sm:h-[550px] lg:h-[88%] z-10 select-none pointer-events-none flex items-end justify-center overflow-visible mt-6 lg:mt-0">
+      <div className="relative lg:absolute lg:right-0 lg:bottom-0 w-full lg:w-[42%] xl:w-[38%] h-[450px] sm:h-[550px] lg:h-[92%] z-10 select-none pointer-events-none flex items-end justify-center overflow-visible mt-6 lg:mt-0">
         
         {/* ===== Stylized Rising Sun (Hinomaru) behind the sensei ===== */}
         <div className="absolute inset-0 flex items-center justify-center -z-10 overflow-visible pointer-events-none">
