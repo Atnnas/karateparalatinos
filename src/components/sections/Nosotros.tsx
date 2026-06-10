@@ -63,7 +63,7 @@ export default function Nosotros() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="grid grid-cols-3 gap-4 border-y border-neutral-200/60 py-4my-1"
+              className="grid grid-cols-3 gap-4 border-y border-neutral-200/60 py-4 my-1"
             >
               <div className="text-left">
                 <span className="block font-impact-condensed text-3xl sm:text-4xl text-[#E52B34] leading-none">45+</span>
@@ -123,7 +123,7 @@ export default function Nosotros() {
       </div>
 
       {/* Column 2 (Actual Image Container): absolute bottom-0 on desktop, relative flow at the end on mobile */}
-      <div className="relative lg:absolute lg:right-0 lg:bottom-0 w-full lg:w-[42%] xl:w-[38%] h-[450px] sm:h-[550px] lg:h-[92%] z-10 select-none pointer-events-none flex items-end justify-center overflow-visible mt-6 lg:mt-0">
+      <div className="relative lg:absolute lg:right-0 lg:top-24 lg:bottom-0 w-full lg:w-[42%] xl:w-[38%] h-[450px] sm:h-[550px] lg:h-auto z-10 select-none pointer-events-none flex items-end justify-center overflow-visible mt-6 lg:mt-0">
         
         {/* ===== Stylized Rising Sun (Hinomaru) behind the sensei ===== */}
         <div className="absolute inset-0 flex items-center justify-center -z-10 overflow-visible pointer-events-none">
