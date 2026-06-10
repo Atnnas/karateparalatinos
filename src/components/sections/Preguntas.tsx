@@ -41,7 +41,7 @@ export default function Preguntas() {
       <div className="relative z-20 max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 w-full h-full flex flex-col justify-center items-center pt-24 pb-20 lg:pt-26 lg:pb-32">
         
         {/* Centered Title with tighter margin bottom */}
-        <div className="text-center max-w-3xl mx-auto mb-6 lg:mb-8">
+        <div className="text-center max-w-5xl mx-auto mb-6 lg:mb-8 w-full">
           <motion.span
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -57,7 +57,7 @@ export default function Preguntas() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="font-impact-condensed text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-wide text-neutral-900 leading-[1.08]"
+            className="font-impact-condensed text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-wide text-neutral-900 leading-none whitespace-nowrap"
           >
             PREGUNTAS <span className="text-[#E52B34] drop-shadow-[0_2px_8px_rgba(229,43,52,0.15)]">FRECUENTES</span>
           </motion.h2>
