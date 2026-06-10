@@ -9,26 +9,6 @@ const faqs = [
     q: "¿Para quién está diseñado este producto?",
     a: "Cualquier persona que practique Karate o cualquier arte marcial, que quiera enriquecer sus conocimientos o aprender más sobre KARATE SHITORYU.",
     icon: HelpCircle
-  },
-  {
-    q: "¿El material incluye soporte en video?",
-    a: "Sí. Todas las Katas, Kihon y Bunkai vienen con explicaciones detalladas y soporte técnico visual en video liderado por el Sensei Carlos Ávila.",
-    icon: Sparkles
-  },
-  {
-    q: "¿Es necesario tener experiencia previa?",
-    a: "No. El sistema de estudio está estructurado progresivamente, lo que es ideal tanto para principiantes absolutos como para practicantes avanzados.",
-    icon: Award
-  },
-  {
-    q: "¿Qué es el Sistema Dojutsu?",
-    a: "Es nuestro método adaptativo que une la filosofía tradicional (Do) con técnicas reales de combate y defensa callejera disuasiva (Jutsu) adaptadas a tu morfología.",
-    icon: HelpCircle
-  },
-  {
-    q: "¿Cómo funciona la asesoría personalizada?",
-    a: "Obtienes acceso a webinars mensuales y sesiones de retroalimentación en video donde evaluamos tu progreso técnico de forma individualizada.",
-    icon: ChevronRight
   }
 ];
 
