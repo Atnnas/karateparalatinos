@@ -2,30 +2,18 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { Award, Shield, Target } from "lucide-react";
+import { Shield, Target } from "lucide-react";
 
 export default function Nosotros() {
   return (
     <section
       id="nosotros"
-      className="relative min-h-screen flex justify-center items-center overflow-hidden bg-[var(--background)] pt-36 pb-20 animate-fade-in"
+      className="relative min-h-screen flex justify-center items-center overflow-hidden bg-[var(--background)] pt-36 pb-0"
     >
       {/* ===== Background Watermark Kanji (Traditional Vibe) ===== */}
-      <div className="absolute right-10 md:right-20 lg:right-32 top-[18%] md:top-[12%] text-[24vw] md:text-[14vw] font-black text-neutral-900/[0.02] select-none pointer-events-none leading-none z-0 font-serif">
+      <div className="absolute left-10 md:left-20 lg:left-32 top-[18%] md:top-[12%] text-[24vw] md:text-[14vw] font-black text-neutral-900/[0.02] select-none pointer-events-none leading-none z-0 font-serif">
         空手
       </div>
-
-      {/* ===== Stylized Rising Sun (Hinomaru) ===== */}
-      <div className="absolute right-[-100px] md:right-[4%] lg:right-[8%] bottom-[8%] w-[280px] h-[280px] sm:w-[380px] sm:h-[380px] md:w-[460px] md:h-[460px] lg:w-[520px] lg:h-[520px] z-0 pointer-events-none flex items-center justify-center">
-        {/* Glowing red circle with premium gradient */}
-        <div className="w-full h-full bg-gradient-to-tr from-[#E52B34] via-[#FF4D55] to-[#B81B22] opacity-[0.12] md:opacity-[0.16] rounded-full blur-[3px] shadow-[0_0_100px_rgba(229,43,52,0.3)] animate-pulse duration-[8000ms]" />
-        
-        {/* Subtle rotate ring */}
-        <div className="absolute w-[80%] h-[80%] border border-dashed border-[#E52B34]/15 rounded-full animate-[spin_120s_linear_infinite] z-0" />
-      </div>
-
-      {/* Subtle golden ring representing focus and balance */}
-      <div className="absolute right-[50px] md:right-[15%] bottom-[25%] w-[180px] h-[180px] border border-amber-500/10 rounded-full z-0 pointer-events-none animate-[spin_60s_linear_infinite]" />
 
       {/* Subtle ambient light from bottom left */}
       <div className="absolute bottom-0 left-0 w-[500px] h-[400px] bg-[#E52B34]/3 rounded-full blur-[120px] pointer-events-none z-0" />
@@ -39,10 +27,10 @@ export default function Nosotros() {
       />
 
       <div className="relative z-20 max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-stretch">
           
           {/* Column 1: Biography Copy (Left) */}
-          <div className="lg:col-span-7 space-y-8 z-10">
+          <div className="lg:col-span-7 space-y-8 pb-20 pt-4 flex flex-col justify-center">
             
             {/* Header / Badges */}
             <motion.div
@@ -55,7 +43,7 @@ export default function Nosotros() {
                 CONOCE AL CREADOR DEL CONTENIDO
               </span>
               
-              <h1 className="font-impact-condensed text-4xl sm:text-5xl lg:text-6xl font-bold tracking-wider text-neutral-900 leading-none">
+              <h1 className="font-impact-condensed text-5xl sm:text-7xl lg:text-8xl font-bold tracking-wider text-neutral-900 leading-[0.9]">
                 Carlos Ávila
               </h1>
 
@@ -68,10 +56,27 @@ export default function Nosotros() {
                   <Shield className="w-3.5 h-3.5" />
                   Sistema DOJUTSU
                 </span>
-                <span className="inline-flex items-center gap-1.5 bg-neutral-900 border border-neutral-800 py-1 px-3 rounded-md text-neutral-100 text-xs font-semibold uppercase tracking-wider shadow-sm">
-                  <Award className="w-3.5 h-3.5 text-amber-500" />
-                  5th Dan C.N. & Jun-Shihan
-                </span>
+              </div>
+            </motion.div>
+
+            {/* Achievements/Milestones Row */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="grid grid-cols-3 gap-4 border-y border-neutral-200/60 py-6"
+            >
+              <div className="text-left">
+                <span className="block font-impact-condensed text-3xl sm:text-4xl text-[#E52B34] leading-none">45+</span>
+                <span className="block text-[10px] sm:text-xs text-neutral-500 uppercase tracking-widest font-semibold mt-1.5">Años de Estudio</span>
+              </div>
+              <div className="text-left border-x border-neutral-200/60 px-4">
+                <span className="block font-impact-condensed text-3xl sm:text-4xl text-neutral-900 leading-none">5° Dan</span>
+                <span className="block text-[10px] sm:text-xs text-neutral-500 uppercase tracking-widest font-semibold mt-1.5">Cinta Negra</span>
+              </div>
+              <div className="text-left">
+                <span className="block font-impact-condensed text-3xl sm:text-4xl text-[#8B6914] leading-none">WSKF</span>
+                <span className="block text-[10px] sm:text-xs text-neutral-500 uppercase tracking-widest font-semibold mt-1.5">Grado Jun-Shihan</span>
               </div>
             </motion.div>
 
@@ -79,19 +84,19 @@ export default function Nosotros() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.15 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
               className="space-y-5 text-neutral-700 text-sm sm:text-base font-light leading-relaxed"
             >
-              <p className="font-medium text-neutral-950 text-base sm:text-lg italic border-l-2 border-[#556358] pl-4 py-1">
+              <p className="font-medium text-neutral-950 text-base sm:text-lg italic border-l-2 border-[#E52B34] pl-4 py-1">
                 "Hola, soy Carlos Ávila. He dedicado los últimos 45 años de mi vida al estudio y práctica del Karate Shito Ryu y hoy pongo toda esa experiencia a tu servicio."
               </p>
 
               <p>
-                Actualmente cuento con el grado de <span className="font-semibold text-neutral-900">5th Dan C.N. y Jun-Shihan</span> avalado por la prestigiosa <span className="font-semibold text-[#E52B34]">WORLD SHITORYU KARATEDO FEDERATION (WSKF)</span>.
+                Actualmente cuento con el grado de <span className="font-semibold text-neutral-900">5th Dan C.N. y Jun-Shihan</span> avalado por la <span className="font-semibold text-neutral-950">WORLD SHITORYU KARATEDO FEDERATION (WSKF)</span>.
               </p>
 
               <p>
-                Mi misión va más allá de enseñar técnicas; busca preservar la esencia de este arte para que tú también puedas beneficiarte de sus valores. Sin embargo, hay que entender que la defensa real requiere versatilidad. Por eso, he enriquecido mi camino estudiando disciplinas como <span className="font-semibold text-neutral-900">Judo, Ryukyu Kobudo, Shōrin-ryū y Sistema de Combate Ruso</span>, para ofrecerte una visión completa y efectiva.
+                Mi misión va más allá de enseñar técnicas; busca preservar la esencia de este arte para que tú también puedas beneficiarte de sus valores. Sin embargo, hay que entender que la defensa real requiere versatilidad. Por eso, he enriquecido mi camino estudiando disciplinas como <span className="font-semibold text-neutral-950">Judo, Ryukyu Kobudo, Shōrin-ryū y Sistema de Combate Ruso</span>, para ofrecerte una visión completa y efectiva.
               </p>
             </motion.div>
 
@@ -100,49 +105,69 @@ export default function Nosotros() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="border-l-4 border-[#E52B34] bg-white/70 backdrop-blur-sm p-6 sm:p-7 rounded-r-2xl border border-neutral-200/80 shadow-sm space-y-4"
+              className="bg-white/80 backdrop-blur-md border border-neutral-200/80 rounded-2xl p-6 shadow-sm space-y-4"
             >
-              <h3 className="font-impact-condensed text-xl tracking-wider text-neutral-900 flex items-center gap-2.5">
+              <h3 className="font-impact-condensed text-xl tracking-wider text-neutral-900 flex items-center gap-2.5 border-b border-neutral-100 pb-3">
                 <span className="h-2 w-2 rounded-full bg-[#E52B34]" />
                 EL SISTEMA DOJUTSU
               </h3>
               
-              <div className="space-y-3 text-neutral-600 text-xs sm:text-sm font-light leading-relaxed">
-                <p>
-                  El <span className="font-medium text-neutral-950">Sistema DOJUTSU</span>, como su mismo nombre lo indica, es la conservación del <span className="font-medium text-neutral-950">DO</span> tradicional que forja el carácter con ética, valores y principios; y <span className="font-medium text-neutral-950">JUTSU</span> es la adaptación de las técnicas de combate a situaciones reales callejeras, donde entrenamos desde la prevención, la disuasión y la confrontación.
-                </p>
-                <p>
-                  Es un sistema sumamente versátil que se adapta a la morfología del estudiante, donde incluso aprendemos a improvisar objetos cotidianos como armas de defensa personal.
-                </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <span className="inline-block text-[11px] font-bold tracking-widest text-[#E52B34] uppercase bg-[#E52B34]/5 px-2 py-0.5 rounded">
+                    DO (El Camino)
+                  </span>
+                  <p className="text-xs text-neutral-600 font-light leading-relaxed">
+                    Conservación del camino tradicional que forja el carácter a través de la ética, los valores fundamentales y los principios.
+                  </p>
+                </div>
+                <div className="space-y-2 border-t sm:border-t-0 sm:border-l border-neutral-200/60 pt-4 sm:pt-0 sm:pl-6">
+                  <span className="inline-block text-[11px] font-bold tracking-widest text-[#8B6914] uppercase bg-[#8B6914]/5 px-2 py-0.5 rounded">
+                    JUTSU (El Arte Técnico)
+                  </span>
+                  <p className="text-xs text-neutral-600 font-light leading-relaxed">
+                    Adaptación de las técnicas de combate a situaciones reales callejeras (prevención, disuasión y confrontación), ajustado a tu morfología y permitiendo la improvisación de objetos cotidianos como armas de defensa.
+                  </p>
+                </div>
               </div>
             </motion.div>
 
           </div>
 
           {/* Column 2: Sensei Photo Display (Right) */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-5 relative flex justify-center items-end h-[400px] sm:h-[500px] lg:h-[600px] w-full"
-          >
-            {/* Background elements unique to the photo wrapper */}
-            <div className="absolute inset-0 flex items-center justify-center -z-10">
-              <div className="w-[80%] h-[80%] bg-gradient-to-br from-neutral-100/50 to-neutral-200/20 rounded-full border border-neutral-300/30 shadow-inner blur-[1px]" />
-              <div className="absolute w-[90%] h-[90%] border border-dashed border-[#E52B34]/10 rounded-full animate-[spin_180s_linear_infinite]" />
+          <div className="lg:col-span-5 relative flex justify-center items-end w-full h-[500px] sm:h-[650px] lg:h-[750px] xl:h-[850px] self-end overflow-visible mt-8 lg:mt-0">
+            
+            {/* ===== Stylized Rising Sun (Hinomaru) behind the sensei ===== */}
+            <div className="absolute inset-0 flex items-center justify-center -z-10 overflow-visible pointer-events-none">
+              {/* Glowing red circle with premium gradient */}
+              <div className="w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] lg:w-[480px] lg:h-[480px] bg-gradient-to-tr from-[#E52B34] via-[#FF4D55] to-[#B81B22] opacity-[0.14] md:opacity-[0.18] rounded-full blur-[4px] shadow-[0_0_120px_rgba(229,43,52,0.35)] animate-pulse duration-[8000ms]" />
+              
+              {/* Subtle rotate ring */}
+              <div className="absolute w-[80%] h-[80%] border border-dashed border-[#E52B34]/15 rounded-full animate-[spin_120s_linear_infinite]" />
+              
+              {/* Golden ring representing focus and balance */}
+              <div className="absolute w-[60%] h-[60%] border border-amber-500/10 rounded-full animate-[spin_60s_linear_infinite]" />
             </div>
 
-            <div className="relative w-full h-full">
+            <motion.div
+              animate={{ y: [0, -18, 0] }}
+              transition={{
+                duration: 6,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              className="relative w-full h-full flex items-end justify-center overflow-visible"
+            >
               <Image
                 src="/senseiPortadaSinFondo.png"
                 alt="Sensei Carlos Ávila"
                 fill
-                className="object-contain object-bottom drop-shadow-[-20px_15px_35px_rgba(0,0,0,0.16)]"
+                className="object-contain object-bottom drop-shadow-[-25px_15px_40px_rgba(0,0,0,0.2)]"
                 priority
                 quality={100}
               />
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
 
         </div>
       </div>
