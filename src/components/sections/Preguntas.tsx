@@ -34,11 +34,11 @@ export default function Preguntas() {
         initial={{ height: 0 }}
         animate={{ height: "60px" }}
         transition={{ duration: 1, delay: 0.8 }}
-        className="absolute top-24 left-10 lg:left-16 w-[2px] bg-gradient-to-b from-[#E52B34] to-transparent z-[2] hidden md:block"
+        className="absolute top-28 left-10 lg:left-16 w-[2px] bg-gradient-to-b from-[#E52B34] to-transparent z-[2] hidden md:block"
       />
 
-      {/* Main Container with optimized top padding to tighten space and larger bottom padding to shift content up */}
-      <div className="relative z-20 max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 w-full h-full flex flex-col justify-center items-center pt-24 pb-20 lg:pt-26 lg:pb-32">
+      {/* Main Container aligned to start (top) with precise top padding to reduce gap by 50% */}
+      <div className="relative z-20 max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 w-full h-full flex flex-col justify-start items-center pt-[100px] pb-10 lg:pt-[125px]">
         
         {/* Centered Title with tighter margin bottom */}
         <div className="text-center max-w-5xl mx-auto mb-6 lg:mb-8 w-full">
