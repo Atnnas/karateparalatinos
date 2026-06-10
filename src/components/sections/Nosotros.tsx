@@ -7,7 +7,7 @@ export default function Nosotros() {
   return (
     <section
       id="nosotros"
-      className="relative min-h-[calc(100vh-80px)] lg:min-h-0 lg:h-[calc(100vh-250px)] flex justify-center items-center overflow-hidden bg-[var(--background)] pt-24 pb-0"
+      className="relative min-h-[calc(100vh-80px)] lg:min-h-0 lg:flex-1 flex justify-center items-center overflow-hidden bg-[var(--background)] pt-24 pb-0"
     >
       {/* ===== Background Watermark Kanji (Traditional Vibe) ===== */}
       <div className="absolute left-10 md:left-20 lg:left-32 top-[18%] md:top-[12%] text-[24vw] md:text-[14vw] font-black text-neutral-900/[0.02] select-none pointer-events-none leading-none z-0 font-serif">
