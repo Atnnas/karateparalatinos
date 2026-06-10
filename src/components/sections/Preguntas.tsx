@@ -19,7 +19,7 @@ export default function Preguntas() {
   return (
     <section
       id="preguntas"
-      className="relative min-h-[calc(100vh-80px)] lg:min-h-0 lg:flex-1 flex justify-center items-center overflow-hidden bg-[var(--background)] pt-24 pb-0"
+      className="relative min-h-[calc(100vh-80px)] lg:min-h-0 lg:flex-1 flex justify-center items-center overflow-hidden bg-[var(--background)]"
     >
       {/* ===== Background Watermark Kanji (Traditional Vibe) ===== */}
       <div className="absolute left-10 md:left-20 lg:left-32 top-[18%] md:top-[12%] text-[24vw] md:text-[14vw] font-black text-neutral-900/[0.02] select-none pointer-events-none leading-none z-0 font-serif">
@@ -34,28 +34,43 @@ export default function Preguntas() {
         initial={{ height: 0 }}
         animate={{ height: "60px" }}
         transition={{ duration: 1, delay: 0.8 }}
-        className="absolute top-24 left-10 lg:left-16 w-[2px] bg-gradient-to-b from-[#E52B34] to-transparent z-[2] hidden md:block"
+        className="absolute top-28 left-10 lg:left-16 w-[2px] bg-gradient-to-b from-[#E52B34] to-transparent z-[2] hidden md:block"
       />
 
-      <div className="relative z-20 max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 w-full h-full flex items-center">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch w-full">
+      {/* Main Container with top padding for navbar safety */}
+      <div className="relative z-20 max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 w-full h-full flex flex-col justify-between pt-28 pb-6 lg:pt-32 lg:pb-8">
+        
+        {/* Centered Title */}
+        <div className="text-center max-w-3xl mx-auto mb-6 lg:mb-8">
+          <motion.span
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="font-title-serif text-xs text-[#556358] tracking-[0.25em] uppercase block mb-2"
+          >
+            RESOLVEMOS TUS DUDAS
+          </motion.span>
+          
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="font-impact-condensed text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-wide text-neutral-900 leading-[1.08]"
+          >
+            PREGUNTAS <span className="text-[#E52B34] drop-shadow-[0_2px_8px_rgba(229,43,52,0.15)]">FRECUENTES</span>
+          </motion.h2>
+        </div>
+
+        {/* Content Grid under the title */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center w-full flex-1">
           
           {/* Column 1: FAQ Reveal Box (Left) */}
-          <div className="lg:col-span-7 space-y-6 pb-6 lg:pb-8 pt-2 flex flex-col justify-center">
+          <div className="lg:col-span-7 space-y-5 pb-6 lg:pb-0 flex flex-col justify-center">
             
-            {/* Encabezado */}
-            <div className="space-y-3">
-              <span className="font-title-serif text-xs text-[#556358] tracking-[0.25em] uppercase block">
-                RESOLVEMOS TUS DUDAS
-              </span>
-              
-              <h2 className="font-impact-condensed text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-wide text-neutral-900 leading-[1.08]">
-                PREGUNTAS <span className="text-[#E52B34] drop-shadow-[0_2px_8px_rgba(229,43,52,0.15)]">FRECUENTES</span>
-              </h2>
-            </div>
-
             {/* Interactive Question Pill */}
-            <div className="flex flex-wrap gap-2 z-10 pt-2">
+            <div className="flex flex-wrap gap-2 justify-center lg:justify-start z-10">
               {faqs.map((faq, index) => {
                 const Icon = faq.icon;
                 const isOpen = activeIndex === index;
