@@ -1,0 +1,399 @@
+@import "tailwindcss";
+
+:root {
+  --background: #F7F5F0;       /* Exactly matches kplLonoFondo.jpeg background color */
+  --background-alt: #EFECE5;   /* Warm section alternate paper background */
+  --foreground: #1E1C1A;       /* Deep charcoal for body text */
+  
+  --color-black: #1E1C1A;
+  --color-black-pure: #000000;
+  --color-red: #E52B34;         /* Striking Hinomaru red */
+  --color-red-hover: #c82028;
+  --color-white: #ffffff;
+  --color-sage: #556358;        /* Traditional calligraphic sage green */
+  --color-sage-light: #6E7D72;
+  --color-sage-dark: #3F4A42;
+  
+  --font-serif: var(--font-cinzel), serif;
+  --font-sans-condensed: var(--font-oswald), sans-serif;
+  --font-body: var(--font-inter), sans-serif;
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-kpl-red: var(--color-red);
+  --color-kpl-red-hover: var(--color-red-hover);
+  --color-kpl-sage: var(--color-sage);
+  --color-kpl-sage-light: var(--color-sage-light);
+  --color-kpl-sage-dark: var(--color-sage-dark);
+  
+  --font-serif: var(--font-serif);
+  --font-sans-condensed: var(--font-sans-condensed);
+  --font-body: var(--font-body);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--background);
+  /* Textura de papel washi mediante ruido fractal sutil */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.04' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  color: var(--foreground);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+}
+
+/* Custom premium Typography styles */
+.font-title-serif {
+  font-family: var(--font-serif);
+  letter-spacing: 0.1em;
+}
+
+.font-impact-condensed {
+  font-family: var(--font-sans-condensed);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Custom Components & Utilities in Vanilla CSS (Light Mode) */
+.glass-nav {
+  background: rgba(250, 247, 242, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(85, 99, 88, 0.1);
+  transition: all 0.3s ease;
+}
+
+.glass-nav-scrolled {
+  background: rgba(244, 239, 230, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(229, 43, 52, 0.25);
+  box-shadow: 0 4px 20px rgba(30, 28, 26, 0.06);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(85, 99, 88, 0.15);
+  border-radius: 16px;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card:hover {
+  border-color: rgba(229, 43, 52, 0.4);
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 10px 30px -10px rgba(229, 43, 52, 0.1);
+  transform: translateY(-5px);
+}
+
+/* Solar Rising Sun Glow (Isotipo) */
+.solar-glow {
+  position: relative;
+}
+
+.solar-glow::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120%;
+  height: 120%;
+  background: radial-gradient(circle, rgba(229, 43, 52, 0.18) 0%, rgba(229, 43, 52, 0) 70%);
+  z-index: -1;
+  pointer-events: none;
+  filter: blur(20px);
+}
+
+/* Premium Buttons */
+.btn-kpl-primary {
+  position: relative;
+  background-color: var(--color-red);
+  color: var(--color-white);
+  font-family: var(--font-sans-condensed);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 0.75rem 2rem;
+  border-radius: 6px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid var(--color-red);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-kpl-primary:hover {
+  background-color: transparent;
+  color: var(--color-red);
+  border-color: var(--color-red);
+  box-shadow: 0 0 15px rgba(229, 43, 52, 0.2);
+  transform: translateY(-2px);
+}
+
+.btn-kpl-primary::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 45%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 55%
+  );
+  transform: rotate(-45deg);
+  transition: none;
+  opacity: 0;
+}
+
+.btn-kpl-primary:hover::after {
+  animation: shine 1.5s infinite;
+  opacity: 1;
+}
+
+.btn-kpl-secondary {
+  background-color: transparent;
+  color: var(--color-black);
+  font-family: var(--font-sans-condensed);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 0.75rem 2rem;
+  border-radius: 6px;
+  border: 1px solid var(--color-sage);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-kpl-secondary:hover {
+  border-color: var(--color-red);
+  color: var(--color-red);
+  background-color: rgba(229, 43, 52, 0.05);
+  transform: translateY(-2px);
+}
+
+/* Animations */
+@keyframes shine {
+  0% {
+    left: -100%;
+    top: -100%;
+  }
+  100% {
+    left: 100%;
+    top: 100%;
+  }
+}
+
+/* Custom Gradients for Light Theme */
+.gradient-text-red {
+  background: linear-gradient(135deg, var(--color-black) 30%, var(--color-red) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-text-sage {
+  background: linear-gradient(135deg, var(--color-sage) 0%, var(--color-sage-dark) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Scrollbar customization */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-sage-light);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-red);
+}
+
+/* --- 3D Shiny Red Theme Utilities --- */
+
+.bg-red-gradient-3d {
+  background: linear-gradient(135deg, #FF3E47 0%, #E52B34 50%, #B81B22 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 3D Elevated Bevel & Shadow */
+.shadow-pop-3d {
+  box-shadow: 
+    0 15px 35px -10px rgba(184, 27, 34, 0.6), /* Strong crimson aura */
+    0 6px 15px -4px rgba(0, 0, 0, 0.25),        /* True drop shadow */
+    inset 0 1px 1px rgba(255, 255, 255, 0.45),   /* 3D Beveled edge */
+    inset 0 -2px 3px rgba(0, 0, 0, 0.15);       /* Bottom inner shadow */
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3); /* Premium white/silver physical accent bar */
+}
+
+/* Shine Sweep Highlight Animation */
+.shine-sweep::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0) 30%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 70%,
+    transparent 100%
+  );
+  transform: skewX(-25deg);
+  pointer-events: none;
+  z-index: 5;
+  animation: shineSweepAnimation 5s infinite cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes shineSweepAnimation {
+  0% {
+    left: -150%;
+  }
+  25% {
+    left: 150%;
+  }
+  100% {
+    left: 150%;
+  }
+}
+
+/* Glossy/Glass Lacquer finish */
+.glass-reflection {
+  position: relative;
+}
+
+.glass-reflection::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.2) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  pointer-events: none;
+  z-index: 10;
+}
+
+.text-silver {
+  color: #E5E7EB;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.text-silver-hover:hover {
+  color: #FFFFFF;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+/* --- Dojo Wood Floor Texture --- */
+
+.bg-dojo-wood {
+  /* Overlay gradient + wood texture combined via CSS multiple backgrounds */
+  background-image:
+    linear-gradient(
+      135deg,
+      rgba(180, 130, 70, 0.25) 0%,
+      rgba(160, 110, 55, 0.35) 50%,
+      rgba(140, 95, 45, 0.45) 100%
+    ),
+    url('/dojo-wood-texture.png');
+  background-size: cover, cover;
+  background-position: center, center;
+  background-repeat: no-repeat, no-repeat;
+}
+
+/* 3D elevated shadow for wood-textured bars */
+.shadow-wood-3d {
+  box-shadow:
+    0 12px 30px -8px rgba(120, 80, 30, 0.45),
+    0 4px 12px -3px rgba(0, 0, 0, 0.2),
+    inset 0 1px 1px rgba(255, 255, 255, 0.3),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.1);
+  border-bottom: 2px solid rgba(255, 240, 210, 0.4);
+}
+
+/* Shine sweep adapted for wood (warmer, subtler) */
+.shine-sweep-wood::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 245, 220, 0) 30%,
+    rgba(255, 245, 220, 0.25) 50%,
+    rgba(255, 245, 220, 0) 70%,
+    transparent 100%
+  );
+  transform: skewX(-25deg);
+  pointer-events: none;
+  z-index: 5;
+  animation: shineSweepAnimation 6s infinite cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Glass reflection adapted for wood (warm tone) */
+.glass-reflection-wood::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 35%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 248, 230, 0.15) 0%,
+    rgba(255, 248, 230, 0.04) 50%,
+    rgba(255, 248, 230, 0) 100%
+  );
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Dark text styling for wood background */
+.text-wood-dark {
+  color: #3B2210;
+  text-shadow: 0 1px 1px rgba(255, 240, 210, 0.5);
+}
+
+.text-wood-dark-subtle {
+  color: #5A3A1F;
+  text-shadow: 0 1px 1px rgba(255, 240, 210, 0.3);
+}
+
+
