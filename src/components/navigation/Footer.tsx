@@ -43,18 +43,18 @@ export default function Footer() {
               <span>México</span>
             </div>
             <a 
-              href="tel:+525512345678" 
+              href="tel:+529211205618" 
               className="flex items-center gap-2 border border-[#3B2210]/20 bg-white/30 py-1.5 px-4 rounded-full text-xs backdrop-blur-sm hover:bg-white/50 hover:border-[#3B2210]/40 transition-all shadow-inner"
             >
               <Phone className="w-3.5 h-3.5 text-[#3B2210]/80" />
-              <span>+52 55 1234-5678</span>
+              <span>+52 921 120 5618</span>
             </a>
             <a 
-              href="mailto:contacto@ejemplo.com" 
+              href="mailto:ikigaidojutsu@gmail.com" 
               className="flex items-center gap-2 border border-[#3B2210]/20 bg-white/30 py-1.5 px-4 rounded-full text-xs backdrop-blur-sm hover:bg-white/50 hover:border-[#3B2210]/40 transition-all shadow-inner"
             >
               <Mail className="w-3.5 h-3.5 text-[#3B2210]/80" />
-              <span>contacto@ejemplo.com</span>
+              <span>ikigaidojutsu@gmail.com</span>
             </a>
           </div>
         </div>
