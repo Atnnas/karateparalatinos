@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { HelpCircle } from "lucide-react";
 
 export default function Preguntas() {
   return (
@@ -49,6 +50,31 @@ export default function Preguntas() {
           >
             PREGUNTAS <span className="text-[#E52B34] drop-shadow-[0_2px_8px_rgba(229,43,52,0.15)]">FRECUENTES</span>
           </motion.h2>
+        </div>
+
+        {/* Tarjeta de Pregunta */}
+        <div className="max-w-2xl w-full mx-auto">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="glass-card p-6 sm:p-8 bg-white/60 shadow-sm border border-neutral-200/80 rounded-2xl"
+          >
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-full bg-[#E52B34]/10 border border-[#E52B34]/25 flex items-center justify-center text-[#E52B34] shrink-0 mt-1">
+                <HelpCircle className="w-5 h-5" />
+              </div>
+              <div className="space-y-3">
+                <h3 className="font-impact-condensed text-lg sm:text-xl text-neutral-900 tracking-wide">
+                  ¿Para quién está diseñado este producto?
+                </h3>
+                <p className="font-body text-neutral-700 text-sm sm:text-base font-light leading-relaxed">
+                  Cualquier persona que practique Karate o cualquier arte marcial, que quiera enriquecer sus conocimientos o aprender más sobre <span className="font-semibold text-neutral-950">KARATE SHITORYU</span>.
+                </p>
+              </div>
+            </div>
+          </motion.div>
         </div>
 
       </div>
