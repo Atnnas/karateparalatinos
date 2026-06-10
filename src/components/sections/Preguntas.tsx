@@ -1,47 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { HelpCircle, Award, Compass, Heart, Shield, CheckCircle2 } from "lucide-react";
+import { HelpCircle } from "lucide-react";
 
 const faqs = [
   {
     q: "¿Para quién está diseñado este producto?",
     a: "Cualquier persona que practique Karate o cualquier arte marcial, que quiera enriquecer sus conocimientos o aprender más sobre KARATE SHITORYU.",
     icon: HelpCircle
-  }
-];
-
-const dojoKun = [
-  {
-    kanji: "一",
-    romaji: "Jinkaku Kansei ni Tumururu Koto",
-    translation: "Perfeccionar el carácter.",
-    icon: Heart
-  },
-  {
-    kanji: "一",
-    romaji: "Makoto no Michi o Mamoru Koto",
-    translation: "Ser sincero, leal y fiel.",
-    icon: Shield
-  },
-  {
-    kanji: "一",
-    romaji: "Doryoku no Seishin o Yasinau Koto",
-    translation: "Fomentar el esfuerzo y la constancia.",
-    icon: Award
-  },
-  {
-    kanji: "一",
-    romaji: "Reigi o Otonzuru Koto",
-    translation: "Respetar la etiqueta y la cortesía.",
-    icon: Compass
-  },
-  {
-    kanji: "一",
-    romaji: "Kyohei no Yu o Imashimuru Koto",
-    translation: "Guardar el autocontrol y evitar la violencia.",
-    icon: CheckCircle2
   }
 ];
 
@@ -58,64 +26,36 @@ export default function Preguntas() {
         空手
       </div>
 
-      {/* ===== Stylized Rising Sun (Hinomaru) behind the content ===== */}
-      <div className="absolute right-[-100px] md:right-[4%] lg:right-[8%] bottom-[8%] w-[280px] h-[280px] sm:w-[380px] sm:h-[380px] md:w-[460px] md:h-[460px] lg:w-[520px] lg:h-[520px] z-0 pointer-events-none flex items-center justify-center">
-        {/* Glowing red circle with premium gradient */}
-        <div className="w-full h-full bg-gradient-to-tr from-[#E52B34] via-[#FF4D55] to-[#B81B22] opacity-[0.12] md:opacity-[0.16] rounded-full blur-[3px] shadow-[0_0_100px_rgba(229,43,52,0.3)] animate-pulse duration-[8000ms]" />
-        
-        {/* Subtle rotate ring */}
-        <div className="absolute w-[80%] h-[80%] border border-dashed border-[#E52B34]/15 rounded-full animate-[spin_120s_linear_infinite] z-0" />
-      </div>
-
-      {/* Subtle golden ring representing focus and balance */}
-      <div className="absolute right-[50px] md:right-[15%] bottom-[25%] w-[180px] h-[180px] border border-amber-500/10 rounded-full z-0 pointer-events-none animate-[spin_60s_linear_infinite]" />
-
       {/* Subtle ambient light from bottom left */}
       <div className="absolute bottom-0 left-0 w-[500px] h-[400px] bg-[#E52B34]/3 rounded-full blur-[120px] pointer-events-none z-0" />
 
       {/* Decorative vertical line accent */}
       <motion.div
         initial={{ height: 0 }}
-        animate={{ height: "80px" }}
+        animate={{ height: "60px" }}
         transition={{ duration: 1, delay: 0.8 }}
-        className="absolute top-28 left-10 lg:left-16 w-[2px] bg-gradient-to-b from-[#E52B34] to-transparent z-[2] hidden md:block"
+        className="absolute top-24 left-10 lg:left-16 w-[2px] bg-gradient-to-b from-[#E52B34] to-transparent z-[2] hidden md:block"
       />
 
-      <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 relative z-10 w-full h-full flex flex-col justify-center py-4">
-        
-        {/* Centered Heading */}
-        <div className="text-center max-w-3xl mx-auto mb-4 lg:mb-6">
-          <motion.span
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="font-title-serif text-xs text-[#556358] tracking-[0.25em] uppercase block mb-2"
-          >
-            RESOLVEMOS TUS DUDAS
-          </motion.span>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="font-impact-condensed text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-wide text-neutral-900 leading-[1.08]"
-          >
-            PREGUNTAS <span className="text-[#E52B34] drop-shadow-[0_2px_8px_rgba(229,43,52,0.15)]">FRECUENTES</span>
-          </motion.h2>
-        </div>
-
-        {/* 2-Column Creative Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch w-full max-w-6xl mx-auto mt-2">
+      <div className="relative z-20 max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 w-full h-full flex items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch w-full">
           
-          {/* Column 1: FAQ Interactive Reveal (Left) */}
-          <div className="lg:col-span-6 flex flex-col justify-center space-y-4">
-            <span className="font-title-serif text-[10px] text-[#556358] tracking-[0.2em] uppercase font-bold text-center lg:text-left">
-              INTERFAZ DE CONSULTA
-            </span>
+          {/* Column 1: FAQ Reveal Box (Left) */}
+          <div className="lg:col-span-7 space-y-6 pb-6 lg:pb-8 pt-2 flex flex-col justify-center">
+            
+            {/* Encabezado */}
+            <div className="space-y-3">
+              <span className="font-title-serif text-xs text-[#556358] tracking-[0.25em] uppercase block">
+                RESOLVEMOS TUS DUDAS
+              </span>
+              
+              <h2 className="font-impact-condensed text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-wide text-neutral-900 leading-[1.08]">
+                PREGUNTAS <span className="text-[#E52B34] drop-shadow-[0_2px_8px_rgba(229,43,52,0.15)]">FRECUENTES</span>
+              </h2>
+            </div>
 
-            {/* Wrap of Pills */}
-            <div className="flex flex-wrap gap-2 justify-center lg:justify-start z-10">
+            {/* Interactive Question Pill */}
+            <div className="flex flex-wrap gap-2 z-10 pt-2">
               {faqs.map((faq, index) => {
                 const Icon = faq.icon;
                 const isOpen = activeIndex === index;
@@ -138,8 +78,8 @@ export default function Preguntas() {
               })}
             </div>
 
-            {/* Answer Display Card */}
-            <div className="min-h-[150px] flex items-center justify-center relative">
+            {/* Answer Display */}
+            <div className="min-h-[140px] flex items-center justify-center relative z-10">
               <AnimatePresence mode="wait">
                 {activeIndex !== null ? (
                   <motion.div
@@ -153,7 +93,7 @@ export default function Preguntas() {
                     {/* Red vertical border accent */}
                     <div className="absolute top-0 bottom-0 left-0 w-1.5 bg-[#E52B34]" />
 
-                    {/* Small traditional seal detail (hanko style watermark) */}
+                    {/* Hanko-style seal watermark */}
                     <div className="absolute right-4 bottom-4 text-3xl font-serif text-[#E52B34]/[0.06] select-none pointer-events-none font-bold">
                       印
                     </div>
@@ -178,59 +118,47 @@ export default function Preguntas() {
                 )}
               </AnimatePresence>
             </div>
+
           </div>
 
-          {/* Column 2: Dojo Kun Rules Plaque (Right) */}
-          <div className="lg:col-span-6 flex flex-col justify-center space-y-3 mt-6 lg:mt-0">
-            <span className="font-title-serif text-[10px] text-[#556358] tracking-[0.2em] uppercase font-bold text-center lg:text-left">
-              FILOSOFÍA DEL DOJO (DOJO KUN)
-            </span>
-
-            <motion.div
-              initial={{ opacity: 0, x: 25 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="glass-card p-4 sm:p-5 bg-white/50 border border-neutral-200/90 rounded-2xl shadow-sm relative overflow-hidden"
-            >
-              {/* Golden vertical border accent */}
-              <div className="absolute top-0 bottom-0 left-0 w-1 bg-[#8B6914]/65" />
-              
-              <div className="space-y-2.5">
-                {dojoKun.map((rule, idx) => {
-                  const RuleIcon = rule.icon;
-                  return (
-                    <div 
-                      key={idx}
-                      className="flex items-start gap-3 p-1.5 rounded-lg hover:bg-white/40 transition-colors duration-200 group"
-                    >
-                      {/* Kanji index */}
-                      <span className="font-serif text-[#E52B34] font-bold text-base w-5 text-center leading-none mt-0.5 shrink-0 group-hover:scale-110 transition-transform">
-                        {rule.kanji}
-                      </span>
-                      
-                      <div className="space-y-0.5">
-                        {/* Romaji */}
-                        <span className="block font-impact-condensed text-[11px] sm:text-xs text-neutral-800 tracking-wider font-semibold">
-                          {rule.romaji}
-                        </span>
-                        {/* Spanish Translation */}
-                        <span className="block font-body text-[11px] sm:text-xs text-neutral-600 font-light leading-snug">
-                          {rule.translation}
-                        </span>
-                      </div>
-                      
-                      <RuleIcon className="w-3.5 h-3.5 text-[#8B6914]/40 group-hover:text-[#8B6914]/80 ml-auto shrink-0 mt-1 transition-colors" />
-                    </div>
-                  );
-                })}
-              </div>
-            </motion.div>
-          </div>
+          {/* Column 2: Spacer for Absolute Image on Desktop */}
+          <div className="lg:col-span-5 hidden lg:block pointer-events-none" />
 
         </div>
-
       </div>
+
+      {/* ===== Stylized Rising Sun (Hinomaru) behind the sensei ===== */}
+      <div className="absolute inset-0 flex items-center justify-center -z-10 overflow-visible pointer-events-none">
+        {/* Glowing red circle with premium gradient */}
+        <div className="w-[250px] h-[250px] sm:w-[350px] sm:h-[350px] lg:w-[420px] lg:h-[420px] bg-gradient-to-tr from-[#E52B34] via-[#FF4D55] to-[#B81B22] opacity-[0.12] md:opacity-[0.16] rounded-full blur-[4px] shadow-[0_0_100px_rgba(229,43,52,0.3)] animate-pulse duration-[8000ms]" />
+        
+        {/* Subtle rotate ring */}
+        <div className="absolute w-[80%] h-[80%] border border-dashed border-[#E52B34]/15 rounded-full animate-[spin_120s_linear_infinite]" />
+        
+        {/* Golden ring representing focus and balance */}
+        <div className="absolute w-[60%] h-[60%] border border-amber-500/10 rounded-full animate-[spin_60s_linear_infinite]" />
+      </div>
+
+      {/* Column 2 (Actual Image Container): absolute bottom-0 on desktop, relative flow at the end on mobile */}
+      <div className="relative lg:absolute lg:right-0 lg:top-24 lg:bottom-0 w-full lg:w-[42%] xl:w-[38%] h-[450px] sm:h-[550px] lg:h-auto z-10 select-none pointer-events-none flex items-end justify-center overflow-visible mt-6 lg:mt-0">
+        <motion.div
+          initial={{ opacity: 0, y: 80 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          className="relative w-full h-full flex items-end justify-center overflow-visible"
+        >
+          <Image
+            src="/senseiPortadaSinFondo.png"
+            alt="Sensei Carlos Ávila"
+            fill
+            className="object-contain object-bottom drop-shadow-[-20px_10px_30px_rgba(0,0,0,0.18)]"
+            priority
+            quality={100}
+          />
+        </motion.div>
+      </div>
+
     </section>
   );
 }
