@@ -135,12 +135,12 @@ export default function Nosotros() {
           </div>
 
           {/* Column 2: Sensei Photo Display (Right) */}
-          <div className="lg:col-span-5 relative flex justify-center items-end w-full h-[500px] sm:h-[650px] lg:h-[750px] xl:h-[850px] self-end overflow-visible mt-8 lg:mt-0">
+          <div className="lg:col-span-5 relative flex justify-center items-end w-full h-[600px] sm:h-[750px] lg:h-[850px] xl:h-[950px] self-end overflow-visible mt-8 lg:mt-0">
             
             {/* ===== Stylized Rising Sun (Hinomaru) behind the sensei ===== */}
             <div className="absolute inset-0 flex items-center justify-center -z-10 overflow-visible pointer-events-none">
               {/* Glowing red circle with premium gradient */}
-              <div className="w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] lg:w-[480px] lg:h-[480px] bg-gradient-to-tr from-[#E52B34] via-[#FF4D55] to-[#B81B22] opacity-[0.14] md:opacity-[0.18] rounded-full blur-[4px] shadow-[0_0_120px_rgba(229,43,52,0.35)] animate-pulse duration-[8000ms]" />
+              <div className="w-[350px] h-[350px] sm:w-[450px] sm:h-[450px] lg:w-[550px] lg:h-[550px] bg-gradient-to-tr from-[#E52B34] via-[#FF4D55] to-[#B81B22] opacity-[0.14] md:opacity-[0.18] rounded-full blur-[4px] shadow-[0_0_120px_rgba(229,43,52,0.35)] animate-pulse duration-[8000ms]" />
               
               {/* Subtle rotate ring */}
               <div className="absolute w-[80%] h-[80%] border border-dashed border-[#E52B34]/15 rounded-full animate-[spin_120s_linear_infinite]" />
@@ -150,12 +150,10 @@ export default function Nosotros() {
             </div>
 
             <motion.div
-              animate={{ y: [0, -18, 0] }}
-              transition={{
-                duration: 6,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
+              initial={{ opacity: 0, y: 120 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
               className="relative w-full h-full flex items-end justify-center overflow-visible"
             >
               <Image
