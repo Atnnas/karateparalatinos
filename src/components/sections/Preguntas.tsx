@@ -37,8 +37,8 @@ export default function Preguntas() {
         className="absolute top-28 left-10 lg:left-16 w-[2px] bg-gradient-to-b from-[#E52B34] to-transparent z-[2] hidden md:block"
       />
 
-      {/* Main Container with top padding for navbar safety */}
-      <div className="relative z-20 max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 w-full h-full flex flex-col justify-center pt-28 pb-10 lg:pt-32">
+      {/* Main Container with top padding and full centering */}
+      <div className="relative z-20 max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 w-full h-full flex flex-col justify-center items-center pt-28 pb-10 lg:pt-32">
         
         {/* Centered Title */}
         <div className="text-center max-w-3xl mx-auto mb-8 lg:mb-12">
@@ -64,13 +64,13 @@ export default function Preguntas() {
         </div>
 
         {/* Centered, Wide, Premium FAQ Card */}
-        <div className="max-w-4xl w-full mx-auto z-10">
+        <div className="max-w-3xl w-full mx-auto z-10 flex justify-center">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="glass-card p-8 sm:p-10 md:p-12 bg-white/70 shadow-md border border-neutral-200/90 rounded-2xl relative overflow-hidden text-center"
+            className="glass-card p-8 sm:p-10 md:p-12 bg-white/70 shadow-md border border-neutral-200/90 rounded-2xl relative overflow-hidden text-center w-full"
           >
             {/* Red accent bar on the left side of the card */}
             <div className="absolute top-0 bottom-0 left-0 w-2 bg-[#E52B34]" />
@@ -80,7 +80,7 @@ export default function Preguntas() {
               印
             </div>
 
-            <div className="space-y-6 max-w-3xl mx-auto">
+            <div className="space-y-6 max-w-2xl mx-auto">
               <div className="flex flex-col items-center gap-3">
                 <div className="w-12 h-12 rounded-full bg-[#E52B34]/10 border border-[#E52B34]/25 flex items-center justify-center text-[#E52B34]">
                   <HelpCircle className="w-6 h-6" />
