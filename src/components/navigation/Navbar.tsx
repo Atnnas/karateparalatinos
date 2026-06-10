@@ -36,7 +36,7 @@ export default function Navbar() {
     <>
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled ? "py-3" : "py-5"
+          isScrolled ? "py-4" : "py-6"
         }`}
       >
         {/* Background Overlay - Textura madera de dojo */}
@@ -46,7 +46,7 @@ export default function Navbar() {
           {/* Logo Brand */}
           <Link href="/" className="flex items-center gap-4 group relative z-20">
             <div className={`relative flex items-center justify-center rounded-full border-2 border-[#8B6914]/50 bg-white shadow-[0_6px_15px_rgba(80,50,10,0.35)] transition-all duration-300 ${
-              isScrolled ? "w-12 h-12 translate-y-1.5" : "w-16 h-16 translate-y-3"
+              isScrolled ? "w-12 h-12" : "w-16 h-16"
             } group-hover:scale-105 group-hover:shadow-[0_10px_25px_rgba(80,50,10,0.5)]`}>
               <Image
                 src={KPLLogo}
