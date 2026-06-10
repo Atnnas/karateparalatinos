@@ -30,7 +30,7 @@ export default function Nosotros() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch w-full">
           
           {/* Column 1: Biography Copy (Left) */}
-          <div className="lg:col-span-7 space-y-5 pb-8 pt-2 flex flex-col justify-center">
+          <div className="lg:col-span-7 space-y-5 pb-8 lg:pb-12 pt-2 flex flex-col justify-center">
             
             {/* Header / Badges */}
             <motion.div
@@ -134,40 +134,43 @@ export default function Nosotros() {
 
           </div>
 
-          {/* Column 2: Sensei Photo Display (Right) */}
-          <div className="lg:col-span-5 relative flex justify-center items-end w-full h-[400px] sm:h-[500px] lg:h-[550px] xl:h-[650px] self-end overflow-visible mt-6 lg:mt-0">
-            
-            {/* ===== Stylized Rising Sun (Hinomaru) behind the sensei ===== */}
-            <div className="absolute inset-0 flex items-center justify-center -z-10 overflow-visible pointer-events-none">
-              {/* Glowing red circle with premium gradient */}
-              <div className="w-[250px] h-[250px] sm:w-[350px] sm:h-[350px] lg:w-[420px] lg:h-[420px] bg-gradient-to-tr from-[#E52B34] via-[#FF4D55] to-[#B81B22] opacity-[0.12] md:opacity-[0.16] rounded-full blur-[4px] shadow-[0_0_100px_rgba(229,43,52,0.3)] animate-pulse duration-[8000ms]" />
-              
-              {/* Subtle rotate ring */}
-              <div className="absolute w-[80%] h-[80%] border border-dashed border-[#E52B34]/15 rounded-full animate-[spin_120s_linear_infinite]" />
-              
-              {/* Golden ring representing focus and balance */}
-              <div className="absolute w-[60%] h-[60%] border border-amber-500/10 rounded-full animate-[spin_60s_linear_infinite]" />
-            </div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 80 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-              className="relative w-full h-full flex items-end justify-center overflow-visible"
-            >
-              <Image
-                src="/senseiPortadaSinFondo.png"
-                alt="Sensei Carlos Ávila"
-                fill
-                className="object-contain object-bottom drop-shadow-[-20px_10px_30px_rgba(0,0,0,0.18)]"
-                priority
-                quality={100}
-              />
-            </motion.div>
-          </div>
+          {/* Column 2: Spacer for Absolute Image on Desktop */}
+          <div className="lg:col-span-5 hidden lg:block pointer-events-none" />
 
         </div>
+      </div>
+
+      {/* Column 2 (Actual Image Container): absolute bottom-0 on desktop, relative flow at the end on mobile */}
+      <div className="relative lg:absolute lg:right-0 lg:bottom-0 w-full lg:w-[42%] xl:w-[38%] h-[450px] sm:h-[550px] lg:h-[88%] z-10 select-none pointer-events-none flex items-end justify-center overflow-visible mt-6 lg:mt-0">
+        
+        {/* ===== Stylized Rising Sun (Hinomaru) behind the sensei ===== */}
+        <div className="absolute inset-0 flex items-center justify-center -z-10 overflow-visible pointer-events-none">
+          {/* Glowing red circle with premium gradient */}
+          <div className="w-[250px] h-[250px] sm:w-[350px] sm:h-[350px] lg:w-[420px] lg:h-[420px] bg-gradient-to-tr from-[#E52B34] via-[#FF4D55] to-[#B81B22] opacity-[0.12] md:opacity-[0.16] rounded-full blur-[4px] shadow-[0_0_100px_rgba(229,43,52,0.3)] animate-pulse duration-[8000ms]" />
+          
+          {/* Subtle rotate ring */}
+          <div className="absolute w-[80%] h-[80%] border border-dashed border-[#E52B34]/15 rounded-full animate-[spin_120s_linear_infinite]" />
+          
+          {/* Golden ring representing focus and balance */}
+          <div className="absolute w-[60%] h-[60%] border border-amber-500/10 rounded-full animate-[spin_60s_linear_infinite]" />
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 80 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          className="relative w-full h-full flex items-end justify-center overflow-visible"
+        >
+          <Image
+            src="/senseiPortadaSinFondo.png"
+            alt="Sensei Carlos Ávila"
+            fill
+            className="object-contain object-bottom drop-shadow-[-20px_10px_30px_rgba(0,0,0,0.18)]"
+            priority
+            quality={100}
+          />
+        </motion.div>
       </div>
     </section>
   );
