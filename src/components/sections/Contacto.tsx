@@ -85,9 +85,9 @@ export default function Contacto() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="font-impact-condensed text-3xl sm:text-5xl font-bold tracking-wider text-neutral-900"
+            className="font-impact-condensed text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-wide text-neutral-900 leading-[1.08]"
           >
-            PÓNTE EN <span className="text-[#E52B34]">GUARDIA</span> CON NOSOTROS
+            PONTE EN <span className="text-[#E52B34] drop-shadow-[0_2px_8px_rgba(229,43,52,0.15)]">GUARDIA</span> CON NOSOTROS
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}

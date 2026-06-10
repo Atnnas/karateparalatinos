@@ -42,8 +42,8 @@ export default function Nosotros() {
                 CONOCE AL CREADOR DEL CONTENIDO
               </span>
               
-              <h1 className="font-impact-condensed text-5xl sm:text-6xl lg:text-7xl font-bold tracking-wider text-neutral-900 leading-none">
-                Carlos Ávila
+              <h1 className="font-impact-condensed text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-wide text-neutral-900 leading-[1.08]">
+                Carlos <span className="text-[#E52B34] drop-shadow-[0_2px_8px_rgba(229,43,52,0.15)]">Ávila</span>
               </h1>
 
               <div className="flex flex-wrap gap-2.5 pt-1.5">

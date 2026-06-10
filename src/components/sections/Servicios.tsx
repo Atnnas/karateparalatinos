@@ -42,11 +42,11 @@ export default function Servicios() {
           {/* Column 1: Copywriting (Left) */}
           <div className="lg:col-span-7 space-y-6 z-10">
             <div className="space-y-4">
-              <h1 className="font-sans text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-neutral-900 leading-tight">
-                ¿Que obtienes?
+              <h1 className="font-impact-condensed text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-wide text-neutral-900 leading-[1.08]">
+                ¿Qué <span className="text-[#E52B34] drop-shadow-[0_2px_8px_rgba(229,43,52,0.15)]">obtienes?</span>
               </h1>
-              {/* Green Divider Line */}
-              <div className="h-[3px] w-full bg-[#76b82a] max-w-md lg:max-w-xl" />
+              {/* Red Divider Line */}
+              <div className="h-[3px] w-full bg-[#E52B34] max-w-md lg:max-w-xl" />
             </div>
 
             <p className="text-neutral-700 text-base sm:text-lg font-light leading-relaxed max-w-2xl">
