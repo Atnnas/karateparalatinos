@@ -148,6 +148,7 @@ export default function KihonOnline() {
   const savedPoseAnglesRef = useRef<{ left: number; right: number } | null>(null);
   const handlePoseResultsRef = useRef<((results: { poseLandmarks?: PoseLandmark[]; image?: CanvasImageSource }) => void) | null>(null);
   const lastTriggerTimeRef = useRef<number>(0);
+  const lastKimePowerRef = useRef<number>(0);
 
   // Sincronizar Refs
   useEffect(() => {
@@ -489,18 +490,52 @@ export default function KihonOnline() {
     ctx.save();
     ctx.lineCap = "round";
 
+    // Si el Kime está activo, hacemos vibrar visualmente el esqueleto
+    const isKimeActive = Date.now() - kimeAlertActiveRef.current < 500;
+
+    const getJointShake = () => {
+      if (isKimeActive) {
+        const progress = (Date.now() - kimeAlertActiveRef.current) / 500;
+        const intensity = 15 * (1 - progress); // Desplazamiento de hasta 15px que decae a 0
+        return {
+          x: (Math.random() - 0.5) * intensity,
+          y: (Math.random() - 0.5) * intensity
+        };
+      }
+      return { x: 0, y: 0 };
+    };
+
     const drawJointLine = (idxA: number, idxB: number, color: string, thickness = 4) => {
       const ptA = lms[idxA];
       const ptB = lms[idxB];
       if (ptA && ptB) {
         ctx.save();
-        ctx.strokeStyle = color;
-        ctx.lineWidth = thickness;
-        ctx.shadowBlur = color.includes("255, 255, 255") ? 2 : 12;
-        ctx.shadowColor = color;
+        
+        let drawColor = color;
+        let drawThickness = thickness;
+
+        if (isKimeActive) {
+          drawThickness = thickness * 1.6;
+          // Si el Kime está activo, los vectores activos brillan con un rojo intenso e impactante,
+          // y los no activos se atenúan un poco
+          drawColor = color.includes("255, 255, 255") ? "rgba(255, 255, 255, 0.4)" : "rgba(229, 43, 52, 0.95)";
+          ctx.strokeStyle = drawColor;
+          ctx.shadowBlur = 25;
+          ctx.shadowColor = "rgba(229, 43, 52, 0.95)";
+        } else {
+          ctx.strokeStyle = color;
+          ctx.shadowBlur = color.includes("255, 255, 255") ? 2 : 12;
+          ctx.shadowColor = color;
+        }
+
+        ctx.lineWidth = drawThickness;
+
+        const shakeA = getJointShake();
+        const shakeB = getJointShake();
+
         ctx.beginPath();
-        ctx.moveTo((1 - ptA.x) * w, ptA.y * h);
-        ctx.lineTo((1 - ptB.x) * w, ptB.y * h);
+        ctx.moveTo((1 - ptA.x) * w + shakeA.x, ptA.y * h + shakeA.y);
+        ctx.lineTo((1 - ptB.x) * w + shakeB.x, ptB.y * h + shakeB.y);
         ctx.stroke();
         ctx.restore();
       }
@@ -510,27 +545,42 @@ export default function KihonOnline() {
       const pt = lms[idx];
       if (pt) {
         ctx.save();
-        ctx.shadowBlur = color.includes("255, 255, 255") ? 2 : 12;
-        ctx.shadowColor = color;
+
+        let drawColor = color;
+        let drawRadius = radius;
+
+        if (isKimeActive) {
+          ctx.shadowBlur = 25;
+          ctx.shadowColor = "rgba(229, 43, 52, 0.95)";
+          drawColor = color.includes("255, 255, 255") ? "rgba(255, 255, 255, 0.4)" : "rgba(229, 43, 52, 0.95)";
+          drawRadius = radius * 1.4;
+        } else {
+          ctx.shadowBlur = color.includes("255, 255, 255") ? 2 : 12;
+          ctx.shadowColor = color;
+        }
+
+        const shake = getJointShake();
+        const px = (1 - pt.x) * w + shake.x;
+        const py = pt.y * h + shake.y;
 
         if (outerRing) {
           // Dibujar anillo exterior brillante
-          ctx.fillStyle = color;
+          ctx.fillStyle = drawColor;
           ctx.beginPath();
-          ctx.arc((1 - pt.x) * w, pt.y * h, radius + 4, 0, 2 * Math.PI);
+          ctx.arc(px, py, drawRadius + 4, 0, 2 * Math.PI);
           ctx.fill();
 
           // Dibujar centro blanco sólido
           ctx.fillStyle = "#ffffff";
           ctx.shadowBlur = 0; // Sin sombra interna
           ctx.beginPath();
-          ctx.arc((1 - pt.x) * w, pt.y * h, radius - 2, 0, 2 * Math.PI);
+          ctx.arc(px, py, drawRadius - 2, 0, 2 * Math.PI);
           ctx.fill();
         } else {
           // Punto normal
-          ctx.fillStyle = color;
+          ctx.fillStyle = drawColor;
           ctx.beginPath();
-          ctx.arc((1 - pt.x) * w, pt.y * h, radius, 0, 2 * Math.PI);
+          ctx.arc(px, py, drawRadius, 0, 2 * Math.PI);
           ctx.fill();
         }
         ctx.restore();
@@ -867,14 +917,22 @@ export default function KihonOnline() {
           currentSpeedRef.current = smoothedSpeed;
 
           // Detección de Kime (Explosividad)
-          // Umbral de velocidad rápida y parada brusca en 2D (ajustado a 1.6)
-          if (smoothedSpeed > 1.6) {
+          // Umbral de velocidad rápida y parada brusca en 2D (ajustado a 2.2 para ser más riguroso)
+          if (smoothedSpeed > 2.2) {
             peakSpeedRef.current = Math.max(peakSpeedRef.current, smoothedSpeed);
           }
 
-          if (peakSpeedRef.current > 1.6 && smoothedSpeed < 0.35) {
+          if (peakSpeedRef.current > 2.2 && smoothedSpeed < 0.35) {
             // KIME detectado!
             kimeAlertActiveRef.current = Date.now();
+            
+            // Calculamos el poder del Kime basado en la velocidad pico alcanzada.
+            // Una velocidad de 2.2 (mínima requerida) equivale al 50% de poder, y 3.8 o más al 100%.
+            const calculatedPower = Math.round(
+              Math.min(100, ((peakSpeedRef.current - 2.2) / 1.6) * 50 + 50)
+            );
+            lastKimePowerRef.current = calculatedPower;
+            
             peakSpeedRef.current = 0; // Reset
 
             // Pitido agudo especial si voz activa
@@ -928,11 +986,19 @@ export default function KihonOnline() {
     // 2. Alerta de Kime activa
     if (Date.now() - kimeAlertActiveRef.current < 750) {
       ctx.fillStyle = "rgba(229, 43, 52, 0.95)";
-      ctx.font = "20px Impact, sans-serif";
+      ctx.font = "bold 28px Impact, sans-serif";
       ctx.textAlign = "center";
-      ctx.shadowBlur = 12;
-      ctx.shadowColor = "rgba(229, 43, 52, 0.8)";
-      ctx.fillText("¡KIME!", width / 2, height / 2 - 30);
+      ctx.shadowBlur = 20;
+      ctx.shadowColor = "rgba(229, 43, 52, 0.9)";
+      ctx.fillText("¡KIME!", width / 2, height / 2 - 40);
+      
+      // Mostrar el porcentaje de poder
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 13px monospace";
+      ctx.shadowBlur = 8;
+      ctx.shadowColor = "#000000";
+      ctx.fillText(`PODER: ${lastKimePowerRef.current}%`, width / 2, height / 2 - 15);
+      
       ctx.textAlign = "left";
     }
     ctx.restore();
