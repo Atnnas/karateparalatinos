@@ -95,6 +95,7 @@ interface ISpeechRecognitionEvent {
 interface ISpeechRecognition {
   continuous: boolean;
   interimResults: boolean;
+  maxAlternatives?: number;
   lang: string;
   onstart: () => void;
   onend: () => void;
@@ -146,6 +147,7 @@ export default function KihonOnline() {
   const savedPoseLandmarksRef = useRef<PoseLandmark[] | null>(null);
   const savedPoseAnglesRef = useRef<{ left: number; right: number } | null>(null);
   const handlePoseResultsRef = useRef<((results: { poseLandmarks?: PoseLandmark[]; image?: CanvasImageSource }) => void) | null>(null);
+  const lastTriggerTimeRef = useRef<number>(0);
 
   // Sincronizar Refs
   useEffect(() => {
@@ -264,25 +266,73 @@ export default function KihonOnline() {
     speak(mode === "superior" ? "Cambiado a entrenamiento de tren superior." : "Cambiado a entrenamiento de tren inferior.");
   };
 
-  // Procesamiento de Comandos de Voz
-  const handleSpeechCommand = (text: string) => {
-    setLastHeardCommand(text);
+  // Procesamiento de Comandos de Voz (retorna true si reconoció un comando válido)
+  const handleSpeechCommand = (text: string): boolean => {
+    // Solo actualizamos visualmente el comando en el HUD si no está vacío
+    if (text.trim()) {
+      setLastHeardCommand(text);
+    }
 
-    if (text.includes("guardar") || text.includes("fijar")) {
+    const now = Date.now();
+    if (now - lastTriggerTimeRef.current < 2000) {
+      return false; // Evita ejecuciones duplicadas en ráfaga
+    }
+
+    let triggered = false;
+
+    // Listas amplias de palabras clave y fonéticas para entrenar a distancia (con eco y menor volumen)
+    const saveKeywords = [
+      "guardar", "guarda", "grabar", "graba", "fijar", "fija", "capturar", "captura", 
+      "salvar", "salva", "cuadrar", "cuadra", "gualdar", "wardar", "listo", "hecho", 
+      "ya", "toma", "save", "ok"
+    ];
+    const resetKeywords = [
+      "reiniciar", "reinicia", "borrar", "borra", "limpiar", "limpia", "reset", 
+      "resetear", "quitar", "quita", "eliminar", "elimina", "clear"
+    ];
+    const upperKeywords = [
+      "superior", "arriba", "brazo", "brazos", "mano", "manos", "pecho", "hombro", "hombros"
+    ];
+    const lowerKeywords = [
+      "inferior", "abajo", "pierna", "piernas", "pie", "pies", "rodilla", "rodillas"
+    ];
+    const guidedKeywords = [
+      "guiado", "guía", "guia", "ayuda", "ayudas", "indicaciones"
+    ];
+    const expertKeywords = [
+      "experto", "libre", "solos", "solo", "silencio"
+    ];
+
+    const matches = (keywords: string[]) => {
+      return keywords.some(keyword => text.includes(keyword));
+    };
+
+    if (matches(saveKeywords)) {
       triggerSavePose();
-    } else if (text.includes("reiniciar") || text.includes("borrar") || text.includes("limpiar")) {
+      triggered = true;
+    } else if (matches(resetKeywords)) {
       triggerResetPose();
-    } else if (text.includes("guiado")) {
+      triggered = true;
+    } else if (matches(guidedKeywords)) {
       setIsGuidedMode(true);
       speak("Modo guiado activado.");
-    } else if (text.includes("experto")) {
+      triggered = true;
+    } else if (matches(expertKeywords)) {
       setIsGuidedMode(false);
       speak("Modo experto activado.");
-    } else if (text.includes("superior")) {
+      triggered = true;
+    } else if (matches(upperKeywords)) {
       changeTrainingMode("superior");
-    } else if (text.includes("inferior")) {
+      triggered = true;
+    } else if (matches(lowerKeywords)) {
       changeTrainingMode("inferior");
+      triggered = true;
     }
+
+    if (triggered) {
+      lastTriggerTimeRef.current = now;
+    }
+    return triggered;
   };
 
   const handleSpeechCommandRef = useRef(handleSpeechCommand);
@@ -313,7 +363,8 @@ export default function KihonOnline() {
 
     const rec = new SpeechRecognitionClass();
     rec.continuous = true;
-    rec.interimResults = false;
+    rec.interimResults = true;
+    rec.maxAlternatives = 3;
     rec.lang = "es-MX";
 
     rec.onstart = () => {
@@ -334,9 +385,17 @@ export default function KihonOnline() {
 
     rec.onresult = (event: ISpeechRecognitionEvent) => {
       const lastIndex = event.results.length - 1;
-      const text = event.results[lastIndex][0].transcript.trim().toLowerCase();
-      console.log("Comando escuchado:", text);
-      handleSpeechCommandRef.current(text);
+      const result = event.results[lastIndex];
+      
+      // Recorrer las alternativas de reconocimiento (útil a distancia o con eco)
+      for (let i = 0; i < result.length; i++) {
+        const text = result[i].transcript.trim().toLowerCase();
+        console.log(`Comando escuchado (alt ${i}):`, text);
+        const matched = handleSpeechCommandRef.current(text);
+        if (matched) {
+          break; // Detener si alguna alternativa coincidió con un comando válido
+        }
+      }
     };
 
     recognitionRef.current = rec;
