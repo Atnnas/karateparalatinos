@@ -17,8 +17,14 @@ export const authOptions: NextAuthOptions = {
       try {
         await dbConnect();
         let dbUser = await User.findOne({ email: user.email });
+        
+        const adminEmails = [
+          "david.artavia.rodriguez@gmail.com",
+          "caravisalazar@gmail.com"
+        ];
+        const isAdmin = adminEmails.includes(user.email.toLowerCase());
+
         if (!dbUser) {
-          const isAdmin = user.email.toLowerCase() === "david.artavia.rodriguez@gmail.com";
           dbUser = await User.create({
             name: user.name || "Usuario Google",
             email: user.email,
@@ -26,6 +32,12 @@ export const authOptions: NextAuthOptions = {
             role: isAdmin ? "admin" : "user",
             status: isAdmin ? "approved" : "pending",
           });
+        } else if (isAdmin && (dbUser.role !== "admin" || dbUser.status !== "approved")) {
+          // Si el usuario ya existe pero ahora está en la lista de administradores,
+          // lo actualizamos automáticamente a administrador aprobado en la base de datos.
+          dbUser.role = "admin";
+          dbUser.status = "approved";
+          await dbUser.save();
         }
         return true;
       } catch (error) {
