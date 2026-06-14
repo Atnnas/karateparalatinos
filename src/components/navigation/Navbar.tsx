@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogOut } from "lucide-react";
 import KPLLogo from "../../../KPLLogo.png";
 
 const navLinks = [
@@ -17,8 +18,13 @@ const navLinks = [
 ];
 
 export default function Navbar() {
+  const { data: session, status } = useSession();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const currentNavLinks = (session?.user as any)?.role === "admin"
+    ? [...navLinks, { name: "Admin", href: "/admin/users" }]
+    : navLinks;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -43,7 +49,7 @@ export default function Navbar() {
         {/* Background Overlay - Textura madera de dojo */}
         <div className="absolute inset-0 bg-dojo-wood shadow-wood-3d shine-sweep-wood glass-reflection-wood -z-10" />
 
-        <div className="max-w-7xl mx-auto px-8 sm:px-12 lg:px-16 flex items-center justify-between relative z-10 w-full">
+        <div className="w-full px-8 sm:px-12 lg:px-16 flex items-center justify-between relative z-10">
           {/* Logo Brand */}
           <Link href="/" className="flex items-center gap-4 group relative z-20">
             <div className={`relative flex items-center justify-center rounded-full border-2 border-[#8B6914]/50 bg-white shadow-[0_6px_15px_rgba(80,50,10,0.35)] transition-all duration-300 ${
@@ -66,7 +72,7 @@ export default function Navbar() {
 
           {/* Desktop Nav - Clean links matching Footer style */}
           <nav className="hidden md:flex items-center gap-8 relative z-20">
-            {navLinks.map((link) => (
+            {currentNavLinks.map((link) => (
               <Link
                 key={link.name}
                 href={link.href}
@@ -78,22 +84,87 @@ export default function Navbar() {
             ))}
           </nav>
 
-          <Link href="/contacto" className="hidden md:inline-flex bg-[#E52B34] text-white hover:bg-[#c82028] font-impact-condensed text-xs py-2.5 px-5 rounded border border-[#E52B34] transition-all shadow-[0_4px_10px_rgba(120,80,30,0.3)] hover:-translate-y-0.5 hover:shadow-[0_6px_15px_rgba(229,43,52,0.4)] font-bold relative z-20">
-            Solicitar Asesoría
-          </Link>
-
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 rounded-md text-[#3B2210] hover:text-[#E52B34] focus:outline-none transition-colors"
-            aria-label="Abrir menú"
-          >
-            {isMobileMenuOpen ? (
-              <X className="h-6 w-6 text-[#3B2210]" />
+          {/* Desktop Right Container */}
+          <div className="hidden md:flex items-center gap-4 relative z-20">
+            {/* Desktop Auth Section */}
+            {status === "loading" ? null : session?.user ? (
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 overflow-hidden rounded-full border-2 border-[#8B6914]/40 bg-white shadow-sm hover:scale-105 transition-all">
+                  {session.user.image ? (
+                    <img
+                      src={session.user.image}
+                      alt={session.user.name || "Usuario"}
+                      className="h-full w-full object-cover animate-fade-in"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center font-bold text-[#E52B34] bg-neutral-100 text-xs">
+                      {session.user.name?.charAt(0).toUpperCase() || "U"}
+                    </div>
+                  )}
+                </div>
+                <button
+                  onClick={() => signOut()}
+                  className="flex items-center justify-center p-2 rounded-full text-[#3B2210] hover:text-[#E52B34] hover:bg-[#8B6914]/10 transition-all active:scale-95 cursor-pointer"
+                  title="Cerrar sesión"
+                >
+                  <LogOut className="h-5 w-5" />
+                </button>
+              </div>
             ) : (
-              <Menu className="h-6 w-6" />
+              <button onClick={() => signIn("google")} className="bg-white text-[#E52B34] hover:bg-gray-100 font-impact-condensed text-xs py-2.5 px-5 rounded border border-[#E52B34] transition-all shadow-[0_4px_10px_rgba(120,80,30,0.3)]">
+                Iniciar sesión
+              </button>
             )}
-          </button>
+          </div>
+
+          {/* Mobile Right Container */}
+          <div className="flex md:hidden items-center gap-2 relative z-20">
+            {/* Mobile Auth Button / Status */}
+            {status === "loading" ? null : session?.user ? (
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 overflow-hidden rounded-full border border-[#8B6914]/40 bg-white shadow-sm">
+                  {session.user.image ? (
+                    <img
+                      src={session.user.image}
+                      alt={session.user.name || "Usuario"}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center font-bold text-[#E52B34] bg-neutral-100 text-[10px]">
+                      {session.user.name?.charAt(0).toUpperCase() || "U"}
+                    </div>
+                  )}
+                </div>
+                <button
+                  onClick={() => signOut()}
+                  className="flex items-center justify-center p-1.5 rounded-full text-[#3B2210] hover:text-[#E52B34] transition-all cursor-pointer"
+                  title="Cerrar sesión"
+                >
+                  <LogOut className="h-4 w-4" />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => signIn("google")}
+                className="bg-white text-[#E52B34] hover:bg-gray-100 font-impact-condensed text-[10px] py-1.5 px-3 rounded border border-[#E52B34] transition-all shadow-sm"
+              >
+                Entrar
+              </button>
+            )}
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2 rounded-md text-[#3B2210] hover:text-[#E52B34] focus:outline-none transition-colors"
+              aria-label="Abrir menú"
+            >
+              {isMobileMenuOpen ? (
+                <X className="h-6 w-6 text-[#3B2210]" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -117,7 +188,7 @@ export default function Navbar() {
                 />
               </div>
 
-              {navLinks.map((link) => (
+              {currentNavLinks.map((link) => (
                 <Link
                   key={link.name}
                   href={link.href}
@@ -128,13 +199,7 @@ export default function Navbar() {
                 </Link>
               ))}
 
-              <Link
-                href="/contacto"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="bg-[#E52B34] text-white hover:bg-[#c82028] font-impact-condensed text-md py-3 px-8 rounded border border-[#E52B34] transition-all shadow-[0_6px_15px_rgba(229,43,52,0.3)] hover:-translate-y-0.5 z-10"
-              >
-                Solicitar Asesoría
-              </Link>
+              {/* Solicitar Asesoría button removed */}
             </div>
           </motion.div>
         )}

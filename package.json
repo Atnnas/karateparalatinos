@@ -9,9 +9,12 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@babel/runtime": "^7.29.7",
     "framer-motion": "^12.40.0",
     "lucide-react": "^1.17.0",
+    "mongoose": "^9.7.0",
     "next": "16.2.7",
+    "next-auth": "^4.24.14",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },

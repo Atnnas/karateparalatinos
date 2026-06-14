@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/navigation/Footer";
 import FloatingWhatsApp from "@/components/navigation/FloatingWhatsApp";
+import SessionProviderWrapper from "@/components/providers/SessionProviderWrapper";
 
 const cinzel = Cinzel({
   variable: "--font-cinzel",
@@ -39,10 +40,12 @@ export default function RootLayout({
       className={`${cinzel.variable} ${oswald.variable} ${inter.variable} h-full scroll-smooth antialiased`}
     >
       <body className="min-h-full flex flex-col bg-[var(--background)] text-[var(--foreground)] selection:bg-[#E52B34] selection:text-white">
-        <Navbar />
-        <main className="flex-1 flex flex-col">
-          {children}
-        </main>
+        <SessionProviderWrapper>
+          <Navbar />
+          <main className="flex-1 shrink-0">
+            {children}
+          </main>
+        </SessionProviderWrapper>
         <Footer />
         <FloatingWhatsApp />
       </body>

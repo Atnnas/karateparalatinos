@@ -1,43 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import { motion } from "framer-motion";
-import { Send, CheckCircle2 } from "lucide-react";
+import { Mail, MessageCircle, ArrowUpRight } from "lucide-react";
 
 export default function Contacto() {
-  const [formState, setFormState] = useState({
-    nombre: "",
-    email: "",
-    cinturon: "Blanco",
-    mensaje: "",
-  });
-  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setStatus("sending");
-
-    // Simular envío de datos
-    setTimeout(() => {
-      setStatus("success");
-      setFormState({
-        nombre: "",
-        email: "",
-        cinturon: "Blanco",
-        mensaje: "",
-      });
-    }, 1500);
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormState((prev) => ({ ...prev, [name]: value }));
-  };
-
   return (
     <section
       id="contacto"
-      className="relative min-h-[calc(100vh-80px)] lg:min-h-0 lg:flex-1 flex justify-center items-center overflow-hidden bg-[var(--background)] pt-24 pb-0"
+      className="relative w-full min-h-[calc(100vh-80px)] flex flex-col justify-start items-center overflow-x-hidden bg-[var(--background)] preguntas-section pb-20"
     >
       {/* ===== Background Watermark Kanji (Traditional Vibe) ===== */}
       <div className="absolute right-10 md:right-20 lg:right-32 top-[18%] md:top-[12%] text-[24vw] md:text-[14vw] font-black text-neutral-900/[0.02] select-none pointer-events-none leading-none z-0 font-serif">
@@ -67,10 +37,10 @@ export default function Contacto() {
         className="absolute top-28 left-10 lg:left-16 w-[2px] bg-gradient-to-b from-[#E52B34] to-transparent z-[2] hidden md:block"
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full h-full flex flex-col justify-center">
+      <div className="relative z-10 max-w-5xl mx-auto px-6 sm:px-10 lg:px-16 w-full flex flex-col justify-start items-center">
         
         {/* Encabezado */}
-        <div className="text-center max-w-3xl mx-auto mb-6 lg:mb-8">
+        <div className="text-center max-w-3xl mx-auto mb-10">
           <motion.span
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -94,148 +64,90 @@ export default function Contacto() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="font-body text-neutral-600 mt-6 font-light leading-relaxed text-sm sm:text-base"
+            className="font-body text-neutral-600 mt-6 font-light leading-relaxed text-sm sm:text-base max-w-xl mx-auto"
           >
-            ¿Listo para llevar tu entrenamiento al siguiente nivel? Rellena el formulario para solicitar una asesoría gratuita de diagnóstico técnico.
+            ¿Tienes dudas sobre el material o quieres solicitar tu asesoría personalizada? Escríbenos por cualquiera de nuestros canales directos.
           </motion.p>
         </div>
 
-        {/* Formulario y Tarjeta */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+        {/* Tarjetas de Contacto directas en Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl px-4">
           
-          {/* Información General Lateral */}
-          <div className="lg:col-span-1 space-y-6">
-            <div className="glass-card p-8 space-y-6 border-l-4 border-[#E52B34] shadow-sm">
+          {/* Tarjeta de WhatsApp */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="glass-card p-8 bg-white/70 shadow-md border border-neutral-200/90 rounded-2xl relative overflow-hidden flex flex-col justify-between items-center text-center group"
+          >
+            {/* Barra de acento verde oficial de WhatsApp */}
+            <div className="absolute top-0 bottom-0 left-0 w-2 bg-[#25D366]" />
+
+            <div className="space-y-4 w-full flex flex-col items-center">
+              <div className="w-16 h-16 rounded-full bg-[#25D366]/10 border border-[#25D366]/25 flex items-center justify-center text-[#25D366] transition-transform duration-300 group-hover:scale-110">
+                <MessageCircle className="w-8 h-8" />
+              </div>
+              
               <h3 className="font-impact-condensed text-2xl text-neutral-900 tracking-wide">
-                Diagnóstico Técnico Gratuito
+                Chat de WhatsApp
               </h3>
-              <p className="font-body text-neutral-600 text-sm font-light leading-relaxed">
-                Nuestra primera asesoría incluye un análisis inicial de 15 minutos donde revisamos un video tuyo ejecutando un Kata básico o técnicas de golpeo.
+              
+              <p className="font-body text-neutral-600 text-sm font-light leading-relaxed max-w-xs">
+                Comunícate directamente con nosotros para soporte rápido, preguntas sobre el contenido o programar asesorías.
               </p>
-              <div className="space-y-3 pt-4 border-t border-neutral-200/60">
-                <div className="flex items-start gap-3 text-xs">
-                  <CheckCircle2 className="w-4 h-4 text-[#E52B34] shrink-0 mt-0.5" />
-                  <span className="text-neutral-800">Respuesta garantizada en menos de 48 horas.</span>
-                </div>
-                <div className="flex items-start gap-3 text-xs">
-                  <CheckCircle2 className="w-4 h-4 text-[#E52B34] shrink-0 mt-0.5" />
-                  <span className="text-neutral-800">Asesorías guiadas por cinturones negros certificados.</span>
-                </div>
+
+              <div className="font-sans-condensed text-lg sm:text-xl font-bold text-neutral-800 pt-2">
+                +52 921 120 5618
               </div>
             </div>
-          </div>
 
-          {/* Formulario de Contacto */}
-          <div className="lg:col-span-2">
-            <div className="glass-card p-8 sm:p-10 bg-white/60 shadow-sm">
-              {status === "success" ? (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="text-center py-12 space-y-4"
-                >
-                  <div className="w-16 h-16 bg-[#556358]/10 border border-[#556358]/35 rounded-full flex items-center justify-center mx-auto text-[#556358]">
-                    <CheckCircle2 className="w-8 h-8" />
-                  </div>
-                  <h3 className="font-impact-condensed text-2xl text-neutral-900">
-                    ¡Mensaje Enviado con Éxito!
-                  </h3>
-                  <p className="font-body text-neutral-600 text-sm font-light max-w-md mx-auto leading-relaxed">
-                    Hemos recibido tu solicitud de asesoría. Uno de nuestros instructores se pondrá en contacto contigo muy pronto para agendar la videollamada.
-                  </p>
-                  <button
-                    onClick={() => setStatus("idle")}
-                    className="btn-kpl-secondary text-xs mt-6"
-                  >
-                    Enviar otro mensaje
-                  </button>
-                </motion.div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-xs font-title-serif text-[#556358] uppercase tracking-wider mb-2">
-                        Nombre Completo
-                      </label>
-                      <input
-                        type="text"
-                        name="nombre"
-                        required
-                        value={formState.nombre}
-                        onChange={handleChange}
-                        className="w-full bg-white border border-neutral-200 rounded-lg py-3 px-4 text-sm font-body text-neutral-900 focus:border-[#E52B34] focus:outline-none transition-colors shadow-sm"
-                        placeholder="Ej. Juan Pérez"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-title-serif text-[#556358] uppercase tracking-wider mb-2">
-                        Correo Electrónico
-                      </label>
-                      <input
-                        type="email"
-                        name="email"
-                        required
-                        value={formState.email}
-                        onChange={handleChange}
-                        className="w-full bg-white border border-neutral-200 rounded-lg py-3 px-4 text-sm font-body text-neutral-900 focus:border-[#E52B34] focus:outline-none transition-colors shadow-sm"
-                        placeholder="juan@ejemplo.com"
-                      />
-                    </div>
-                  </div>
+            <a
+              href="https://wa.me/529211205618?text=Hola,%20me%20gustar%C3%ADa%20obtener%20m%C3%A1s%20informaci%C3%B3n%20sobre%20la%20Gu%C3%ADa%20de%20Estudio%20de%20Karate"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-6 inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#20ba59] text-white font-impact-condensed text-sm py-3 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 font-bold w-full justify-center"
+            >
+              Iniciar Chat <ArrowUpRight className="w-4 h-4" />
+            </a>
+          </motion.div>
 
-                  <div>
-                    <label className="block text-xs font-title-serif text-[#556358] uppercase tracking-wider mb-2">
-                      Grado o Cinturón Actual
-                    </label>
-                    <select
-                      name="cinturon"
-                      value={formState.cinturon}
-                      onChange={handleChange}
-                      className="w-full bg-white border border-neutral-200 rounded-lg py-3 px-4 text-sm font-body text-neutral-900 focus:border-[#E52B34] focus:outline-none transition-colors shadow-sm"
-                    >
-                      <option value="Blanco">Blanco (9º Kyu)</option>
-                      <option value="Amarillo">Amarillo / Naranja</option>
-                      <option value="Verde">Verde / Azul</option>
-                      <option value="Marron">Marrón (3º - 1º Kyu)</option>
-                      <option value="Negro">Negro (Dan)</option>
-                      <option value="Sin Rango">No he practicado karate antes</option>
-                    </select>
-                  </div>
+          {/* Tarjeta de Correo Electrónico */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="glass-card p-8 bg-white/70 shadow-md border border-neutral-200/90 rounded-2xl relative overflow-hidden flex flex-col justify-between items-center text-center group"
+          >
+            {/* Barra de acento rojo de la marca */}
+            <div className="absolute top-0 bottom-0 left-0 w-2 bg-[#E52B34]" />
 
-                  <div>
-                    <label className="block text-xs font-title-serif text-[#556358] uppercase tracking-wider mb-2">
-                      ¿Qué buscas lograr con la asesoría?
-                    </label>
-                    <textarea
-                      name="mensaje"
-                      required
-                      rows={2}
-                      value={formState.mensaje}
-                      onChange={handleChange}
-                      className="w-full bg-white border border-neutral-200 rounded-lg py-3 px-4 text-sm font-body text-neutral-900 focus:border-[#E52B34] focus:outline-none transition-colors resize-none shadow-sm"
-                      placeholder="Cuéntanos brevemente sobre tu nivel de experiencia, tus metas en el karate o qué Katas/Técnicas te gustaría revisar."
-                    />
-                  </div>
+            <div className="space-y-4 w-full flex flex-col items-center">
+              <div className="w-16 h-16 rounded-full bg-[#E52B34]/10 border border-[#E52B34]/25 flex items-center justify-center text-[#E52B34] transition-transform duration-300 group-hover:scale-110">
+                <Mail className="w-8 h-8" />
+              </div>
+              
+              <h3 className="font-impact-condensed text-2xl text-neutral-900 tracking-wide">
+                Correo Electrónico
+              </h3>
+              
+              <p className="font-body text-neutral-600 text-sm font-light leading-relaxed max-w-xs">
+                Escríbenos un mensaje detallado a nuestra casilla de correo oficial para cualquier consulta institucional o comercial.
+              </p>
 
-                  <div className="flex justify-end pt-2">
-                    <button
-                      type="submit"
-                      disabled={status === "sending"}
-                      className="btn-kpl-primary w-full sm:w-auto justify-center"
-                    >
-                      {status === "sending" ? (
-                        "Enviando..."
-                      ) : (
-                        <>
-                          Solicitar Diagnóstico <Send className="w-4 h-4 ml-1" />
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </form>
-              )}
+              <div className="font-sans-condensed text-base sm:text-lg md:text-xl font-bold text-neutral-800 pt-2 break-all w-full px-2">
+                ikigaidojutsu@gmail.com
+              </div>
             </div>
-          </div>
+
+            <a
+              href="mailto:ikigaidojutsu@gmail.com"
+              className="mt-6 inline-flex items-center gap-2 bg-[#E52B34] hover:bg-[#c82028] text-white font-impact-condensed text-sm py-3 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 font-bold w-full justify-center"
+            >
+              Enviar Correo <ArrowUpRight className="w-4 h-4" />
+            </a>
+          </motion.div>
 
         </div>
 

@@ -6,7 +6,7 @@ export default function Servicios() {
   return (
     <section
       id="servicios"
-      className="relative min-h-[calc(100vh-80px)] lg:min-h-0 lg:flex-1 flex justify-center items-center overflow-hidden bg-[var(--background)] pt-24 pb-0"
+      className="relative w-full min-h-[calc(100vh-80px)] flex flex-col justify-center items-center overflow-x-hidden bg-[var(--background)] pt-32 pb-16 md:pt-40 md:pb-24"
     >
       {/* ===== Background Watermark Kanji (Traditional Vibe) ===== */}
       <div className="absolute right-10 md:right-20 lg:right-32 top-[18%] md:top-[12%] text-[24vw] md:text-[14vw] font-black text-neutral-900/[0.02] select-none pointer-events-none leading-none z-0 font-serif">
@@ -42,7 +42,7 @@ export default function Servicios() {
           {/* Column 1: Copywriting (Left) */}
           <div className="lg:col-span-7 space-y-6 z-10">
             <div className="space-y-4">
-              <h1 className="font-impact-condensed text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-wide text-neutral-900 leading-[1.08]">
+              <h1 className="font-impact-condensed text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-wide text-neutral-900 leading-[1.08]">
                 ¿Qué <span className="text-[#E52B34] drop-shadow-[0_2px_8px_rgba(229,43,52,0.15)]">obtienes?</span>
               </h1>
               {/* Red Divider Line */}
@@ -57,12 +57,27 @@ export default function Servicios() {
               <h3 className="text-[#8B6914] font-bold text-base sm:text-lg tracking-wider">
                 CONTENIDO:
               </h3>
-              <ul className="space-y-2.5 text-[#8B6914]/90 text-sm sm:text-base font-semibold">
-                <li>1.- Todas las Katas y Bunkais de 9°Kyu hasta 1er Dan C.N.</li>
-                <li>2.- Todos los IDO-KIHON y KOTEI-KIHON correspondientes</li>
-                <li>3.- Guía en PDFs con vocabulario en Japones/Español</li>
-                <li>4.- Acceso a la Comunidad KARATE PARA LATINOS</li>
-                <li>5.- Acceso a WEBINARS y ASESORÍAS personalizadas por 1 año</li>
+              <ul className="space-y-3.5 text-neutral-800 text-sm sm:text-base md:text-lg font-light">
+                <li className="flex items-start gap-2">
+                  <span className="font-bold text-[#E52B34] shrink-0">1.-</span>
+                  <span>Todas las Katas y Bunkais de 9°Kyu hasta 1er Dan C.N.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-bold text-[#E52B34] shrink-0">2.-</span>
+                  <span>Todos los IDO-KIHON y KOTEI-KIHON correspondientes</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-bold text-[#E52B34] shrink-0">3.-</span>
+                  <span>Guía en PDFs con vocabulario en Japonés/Español</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-bold text-[#E52B34] shrink-0">4.-</span>
+                  <span>Acceso a la Comunidad KARATE PARA LATINOS</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-bold text-[#E52B34] shrink-0">5.-</span>
+                  <span>Acceso a WEBINARS y ASESORÍAS personalizadas por 1 año</span>
+                </li>
               </ul>
             </div>
 

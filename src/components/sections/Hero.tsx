@@ -9,7 +9,7 @@ export default function Hero() {
   return (
     <section
       id="inicio"
-      className="relative min-h-[calc(100vh-80px)] lg:min-h-0 lg:flex-1 flex justify-center items-center overflow-hidden bg-[var(--background)] pt-24 pb-0"
+      className="relative w-full min-h-[calc(100vh-80px)] flex justify-center items-center overflow-hidden bg-[var(--background)] pt-24 pb-0"
     >
       {/* ===== Background Watermark Kanji (Traditional Vibe) ===== */}
       <div className="absolute right-10 md:right-20 lg:right-32 top-[18%] md:top-[12%] text-[24vw] md:text-[14vw] font-black text-neutral-900/[0.02] select-none pointer-events-none leading-none z-0 font-serif">
@@ -33,9 +33,9 @@ export default function Hero() {
         initial={{ opacity: 0, y: 60, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-        className="absolute right-0 bottom-0 w-full md:w-[55%] lg:w-[48%] h-[65%] md:h-[88%] z-10 select-none pointer-events-none flex items-end justify-end"
+        className="absolute right-0 bottom-0 w-full md:w-[55%] lg:w-[50%] h-[70%] md:h-[85%] lg:h-[86%] z-10 select-none pointer-events-none flex items-end justify-end"
       >
-        <div className="relative w-full h-full max-h-[500px] md:max-h-[660px] lg:max-h-[720px] px-6 sm:px-12 md:px-0">
+        <div className="relative w-full h-full max-h-[520px] md:max-h-[680px] lg:max-h-[720px] px-6 sm:px-12 md:px-0">
           <Image
             src="/senseiPortadaSinFondo.png"
             alt="Sensei — Karate para Latinos"

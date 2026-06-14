@@ -1,138 +1,14 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Play, Square, Award } from "lucide-react";
-
-// Requisitos de cinturones
-const beltRequirements = [
-  {
-    current: "Blanco (9º Kyu)",
-    next: "Amarillo (8º Kyu)",
-    time: "3-4 meses de entrenamiento regular",
-    katas: ["Taikyoku Shodan", "Heian Shodan (Básico)"],
-    kihon: "Golpes rectos (Oi-Tsuki), bloqueos básicos (Gedan-Barai, Age-Uke) y posición Zenkutsu-Dachi.",
-    tips: "Enfócate en la estabilidad de tus posiciones y en mantener la espalda recta al avanzar."
-  },
-  {
-    current: "Amarillo (8º Kyu)",
-    next: "Naranja (7º Kyu)",
-    time: "4 meses desde el grado anterior",
-    katas: ["Heian Shodan", "Heian Nidan"],
-    kihon: "Bloqueos dobles (Morote-Uke), patada frontal (Mae-Geri) y transición fluida a Kokutsu-Dachi.",
-    tips: "Asegura la rotación de cadera en los bloqueos y la correcta recogida de la pierna en las patadas."
-  },
-  {
-    current: "Naranja (7º Kyu)",
-    next: "Verde (6º Kyu)",
-    time: "4-5 meses desde el grado anterior",
-    katas: ["Heian Nidan", "Heian Sandan"],
-    kihon: "Patada lateral (Yoko-Geri Keage/Kekomi), golpe de codo (Empi-Uchi) y Shuto-Uke (mano espada).",
-    tips: "Desarrolla fuerza en los costados y practica el balance sobre un solo pie para las patadas laterales."
-  },
-  {
-    current: "Verde (6º Kyu)",
-    next: "Azul (5º/4º Kyu)",
-    time: "5-6 meses desde el grado anterior",
-    katas: ["Heian Sandan", "Heian Yondan"],
-    kihon: "Golpe de revés (Uraken-Uchi), bloqueos combinados a doble altura y patada circular (Mawashi-Geri).",
-    tips: "Aumenta el control de tu respiración en los puntos de tensión y mejora la fluidez de tus Katas."
-  },
-  {
-    current: "Azul (4º Kyu)",
-    next: "Marrón (3º/2º/1º Kyu)",
-    time: "6 meses desde el grado anterior",
-    katas: ["Heian Yondan", "Heian Godan", "Tekki Shodan"],
-    kihon: "Bloqueo y contraataque simultáneos, defensa personal aplicada (Bunkai) y combinaciones dinámicas.",
-    tips: "Es hora de transicionar de la fuerza muscular bruta al uso inteligente de la biomecánica corporal."
-  },
-  {
-    current: "Marrón (1º Kyu)",
-    next: "Negro (1º Dan - Shodan)",
-    time: "12 meses desde el grado anterior",
-    katas: ["Heian 1-5", "Tekki Shodan", "Bassai Dai (Kata de Selección)"],
-    kihon: "Kihon-Kumite formal, Jiyu-Kumite (combate libre regulado) y dominio total de la teoría y filosofía marcial.",
-    tips: "El cinturón negro no es la meta final, sino el inicio del verdadero aprendizaje. Mantén tu mente de principiante."
-  }
-];
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { Camera, Mic, Target, Eye } from "lucide-react";
 
 export default function Herramientas() {
-  // Mokuso Breathing State
-  const [isBreathingActive, setIsBreathingActive] = useState(false);
-  const [breathingPhase, setBreathingPhase] = useState<"Inhalar" | "Retener" | "Exhalar" | "Listo">("Listo");
-  const [breathCount, setBreathCount] = useState(4); // 4s cycle
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Belt Checker State
-  const [selectedBeltIndex, setSelectedBeltIndex] = useState(0);
-
-  // Mokuso Loop Logic
-  useEffect(() => {
-    if (!isBreathingActive) {
-      if (timerRef.current) clearInterval(timerRef.current);
-      return;
-    }
-
-    timerRef.current = setInterval(() => {
-      setBreathCount((prev) => {
-        if (prev === 1) {
-          // Cambiar fase
-          setBreathingPhase((currentPhase) => {
-            if (currentPhase === "Inhalar") return "Retener";
-            if (currentPhase === "Retener") return "Exhalar";
-            return "Inhalar"; // Loop
-          });
-          return 4; // Reiniciar cuenta
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [isBreathingActive]);
-
-  const toggleBreathing = () => {
-    setIsBreathingActive((prev) => {
-      const next = !prev;
-      if (next) {
-        setBreathingPhase("Inhalar");
-        setBreathCount(4);
-      } else {
-        setBreathingPhase("Listo");
-      }
-      return next;
-    });
-  };
-
-  // Breathing Visual Helper Values
-  const getCircleScale = () => {
-    if (breathingPhase === "Inhalar") {
-      // Scale from 1 to 1.4 based on breathCount (4 down to 1)
-      return 1 + (4 - breathCount) * 0.1;
-    }
-    if (breathingPhase === "Retener") {
-      return 1.4;
-    }
-    if (breathingPhase === "Exhalar") {
-      // Scale from 1.4 down to 1 based on breathCount (4 down to 1)
-      return 1 + breathCount * 0.1;
-    }
-    return 1;
-  };
-
-  const getCircleColor = () => {
-    if (breathingPhase === "Inhalar") return "rgba(229, 43, 52, 0.25)"; // Soft red
-    if (breathingPhase === "Retener") return "rgba(229, 43, 52, 0.4)"; // Deep red
-    if (breathingPhase === "Exhalar") return "rgba(85, 99, 88, 0.25)"; // Sage
-    return "rgba(85, 99, 88, 0.1)";
-  };
-
   return (
     <section
       id="herramientas"
-      className="relative min-h-[calc(100vh-80px)] lg:min-h-0 lg:flex-1 flex justify-center items-center overflow-hidden bg-[var(--background)] pt-24 pb-0"
+      className="relative w-full min-h-[calc(100vh-80px)] flex flex-col justify-start items-center overflow-x-hidden bg-[var(--background)] preguntas-section pb-20"
     >
       {/* ===== Background Watermark Kanji (Traditional Vibe) ===== */}
       <div className="absolute right-10 md:right-20 lg:right-32 top-[18%] md:top-[12%] text-[24vw] md:text-[14vw] font-black text-neutral-900/[0.02] select-none pointer-events-none leading-none z-0 font-serif">
@@ -162,10 +38,10 @@ export default function Herramientas() {
         className="absolute top-28 left-10 lg:left-16 w-[2px] bg-gradient-to-b from-[#E52B34] to-transparent z-[2] hidden md:block"
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full h-full flex flex-col justify-center">
+      <div className="relative z-20 max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 w-full flex flex-col justify-start items-center pt-0 pb-10">
         
         {/* Encabezado */}
-        <div className="text-center max-w-3xl mx-auto mb-6 lg:mb-8">
+        <div className="text-center max-w-3xl mx-auto mb-10 lg:mb-14">
           <motion.span
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -180,7 +56,7 @@ export default function Herramientas() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="font-impact-condensed text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-wide text-neutral-900 leading-[1.08]"
+            className="font-impact-condensed text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-wide text-neutral-900 leading-[1.08] mb-4"
           >
             HERRAMIENTAS PARA <span className="text-[#E52B34] drop-shadow-[0_2px_8px_rgba(229,43,52,0.15)]">ENTRENAR</span> EN CASA
           </motion.h2>
@@ -189,181 +65,68 @@ export default function Herramientas() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="font-body text-neutral-600 mt-6 font-light leading-relaxed text-sm sm:text-base"
+            className="font-body text-neutral-600 mt-4 font-light leading-relaxed text-sm sm:text-base max-w-2xl mx-auto"
           >
-            Integramos utilidades web interactivas y gratuitas para complementar tus prácticas diarias de meditación y estructurar tu progreso técnico.
+            Aprovecha la última tecnología de visión artificial y control por voz en el navegador para perfeccionar tu karate desde tu propio hogar.
           </motion.p>
         </div>
 
-        {/* Dos Columnas de Herramientas */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          
-          {/* Herramienta 1: Mokuso Breathing Timer */}
-          <div className="glass-card p-6 sm:p-7 flex flex-col justify-between items-center relative overflow-hidden shadow-sm">
-            <div className="w-full text-center sm:text-left mb-4">
-              <span className="font-title-serif text-[10px] text-[#556358] tracking-[0.2em] uppercase">
-                Meditación Activa
-              </span>
-              <h3 className="font-impact-condensed text-xl text-neutral-900 mt-1">
-                Temporizador de Mokuso (黙想)
-              </h3>
-              <p className="font-body text-neutral-600 text-xs font-light mt-1.5 leading-relaxed max-w-md">
-                Usa este temporizador basado en el patrón box breathing (4s inhalar, 4s retener, 4s exhalar) para calmar tu mente antes de entrenar o competir.
-              </p>
-            </div>
+        {/* Kihon Online Presentation Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+          className="glass-card w-full max-w-4xl p-8 sm:p-10 md:p-12 bg-white/70 shadow-md border border-neutral-200/90 rounded-2xl relative overflow-hidden text-center flex flex-col items-center"
+        >
+          {/* Accent border left */}
+          <div className="absolute top-0 bottom-0 left-0 w-2 bg-[#E52B34] rounded-l-2xl" />
 
-            {/* Círculo Interactivo de Respiración */}
-            <div className="relative w-48 h-48 flex items-center justify-center my-4">
-              {/* Círculo pulsante exterior */}
-              <motion.div
-                animate={{
-                  scale: getCircleScale(),
-                  backgroundColor: getCircleColor(),
-                }}
-                transition={{ duration: 1, ease: "linear" }}
-                className="absolute w-32 h-32 rounded-full flex items-center justify-center"
-              />
+          <div className="space-y-6 w-full max-w-2xl">
+            <span className="font-title-serif text-xs text-[#E52B34] tracking-[0.2em] uppercase font-bold block">
+              ANALIZADOR INTELIGENTE DE POSTURA
+            </span>
+            <h3 className="font-impact-condensed text-2xl sm:text-3xl md:text-4xl text-neutral-900 tracking-wide leading-snug">
+              KIHON ONLINE (Kihon - 基本)
+            </h3>
+            
+            <div className="h-[2px] w-24 bg-gradient-to-r from-transparent via-[#E52B34] to-transparent mx-auto" />
 
-              {/* Anillo límite */}
-              <div className="absolute w-40 h-40 rounded-full border border-neutral-200 pointer-events-none" />
-              <div className="absolute w-32 h-32 rounded-full border border-[#556358]/20 pointer-events-none" />
+            <p className="font-body text-neutral-700 text-base sm:text-lg font-light leading-relaxed">
+              Corrige y perfecciona tus posiciones básicas (Dachi) y técnicas de defensa y golpeo mediante visión artificial en tiempo real. Activa tu cámara web para obtener métricas biomecánicas inmediatas de tus codos y rodillas.
+            </p>
 
-              {/* Contenido Central */}
-              <div className="relative z-10 flex flex-col items-center justify-center">
-                <AnimatePresence mode="wait">
-                  <motion.span
-                    key={breathingPhase}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    transition={{ duration: 0.2 }}
-                    className="font-impact-condensed text-xl sm:text-2xl text-neutral-900 tracking-widest"
-                  >
-                    {breathingPhase}
-                  </motion.span>
-                </AnimatePresence>
-
-                {isBreathingActive && (
-                  <motion.span
-                    key={breathCount}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="text-[#E52B34] font-mono font-bold text-xl mt-2"
-                  >
-                    {breathCount}s
-                  </motion.span>
-                )}
+            {/* Feature Highlights Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left pt-4 font-body text-sm text-neutral-600">
+              <div className="flex gap-3 items-start">
+                <Camera className="w-5 h-5 text-[#E52B34] shrink-0 mt-0.5" />
+                <span><strong className="text-neutral-900 font-semibold">Análisis en tiempo real:</strong> Mide y visualiza los ángulos de tus articulaciones de manera instantánea.</span>
+              </div>
+              <div className="flex gap-3 items-start">
+                <Mic className="w-5 h-5 text-[#E52B34] shrink-0 mt-0.5" />
+                <span><strong className="text-neutral-900 font-semibold">Comandos por voz:</strong> Di la palabra <span className="font-bold text-[#E52B34]">&quot;Guardar&quot;</span> para fijar una pose sin necesidad de tocar la pantalla.</span>
+              </div>
+              <div className="flex gap-3 items-start">
+                <Target className="w-5 h-5 text-[#E52B34] shrink-0 mt-0.5" />
+                <span><strong className="text-neutral-900 font-semibold">Silueta fantasma:</strong> Compara tu posición actual directamente contra tu pose de referencia guardada.</span>
+              </div>
+              <div className="flex gap-3 items-start">
+                <Eye className="w-5 h-5 text-[#E52B34] shrink-0 mt-0.5" />
+                <span><strong className="text-neutral-900 font-semibold">Dos modos de entrenamiento:</strong> Alterna entre el modo guiado asistido o el modo experto minimalista.</span>
               </div>
             </div>
 
-            {/* Controles del temporizador */}
-            <div className="flex gap-4 w-full justify-center">
-              <button
-                onClick={toggleBreathing}
-                className={`btn-kpl-primary text-xs ${isBreathingActive ? "bg-neutral-200 border-neutral-300 text-neutral-800 hover:text-neutral-900" : ""}`}
-              >
-                {isBreathingActive ? (
-                  <>
-                    <Square className="w-4 h-4" /> Detener
-                  </>
-                ) : (
-                  <>
-                    <Play className="w-4 h-4" /> Iniciar Mokuso
-                  </>
-                )}
-              </button>
+            {/* Action Button */}
+            <div className="pt-6">
+              <Link href="/herramientas/kihon-online" className="btn-kpl-primary text-sm tracking-widest px-8 py-3.5 shadow-md">
+                ENTRAR AL DOJO DIGITAL
+              </Link>
             </div>
           </div>
-
-          {/* Herramienta 2: Calculadora de Requisitos de Grado */}
-          <div className="glass-card p-6 sm:p-7 flex flex-col justify-between relative overflow-hidden shadow-sm">
-            <div className="w-full text-center sm:text-left mb-4">
-              <span className="font-title-serif text-[10px] text-[#556358] tracking-[0.2em] uppercase">
-                Requisitos Técnicos
-              </span>
-              <h3 className="font-impact-condensed text-xl text-neutral-900 mt-1">
-                Consultar Siguiente Grado
-              </h3>
-              <p className="font-body text-neutral-600 text-xs font-light mt-1.5 leading-relaxed">
-                Selecciona tu rango actual en karate para revisar qué Katas, Kihon y tiempos mínimos requiere tu próximo paso de cinturón.
-              </p>
-            </div>
-
-            {/* Selector de Cinturón */}
-            <div className="space-y-3 my-2">
-              <div>
-                <label className="block text-[10px] font-title-serif text-[#556358] uppercase tracking-wider mb-1">
-                  Cinturón Actual
-                </label>
-                <select
-                  value={selectedBeltIndex}
-                  onChange={(e) => setSelectedBeltIndex(Number(e.target.value))}
-                  className="w-full bg-white border border-neutral-200 rounded-lg py-2.5 px-3 text-xs font-body text-neutral-900 focus:border-[#E52B34] focus:outline-none transition-colors shadow-sm"
-                >
-                  {beltRequirements.map((item, idx) => (
-                    <option key={idx} value={idx}>
-                      {item.current}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Panel de Requisitos */}
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={selectedBeltIndex}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -15 }}
-                  transition={{ duration: 0.3 }}
-                  className="border border-neutral-200 rounded-xl p-4 bg-white space-y-2.5 text-left shadow-sm animate-fade-in"
-                >
-                  <div className="flex items-center justify-between gap-2 border-b border-neutral-200/60 pb-2">
-                    <span className="text-[10px] text-neutral-500 font-body">Siguiente objetivo:</span>
-                    <span className="font-impact-condensed text-sm text-[#E52B34] tracking-wider flex items-center gap-1.5">
-                      <Award className="w-3.5 h-3.5" /> {beltRequirements[selectedBeltIndex].next}
-                    </span>
-                  </div>
-
-                  <div>
-                    <span className="text-[9px] font-title-serif text-[#556358] block mb-0.5">TIEMPO MÍNIMO REQUERIDO</span>
-                    <p className="text-xs text-neutral-900 font-body font-medium">
-                      {beltRequirements[selectedBeltIndex].time}
-                    </p>
-                  </div>
-
-                  <div>
-                    <span className="text-[9px] font-title-serif text-[#556358] block mb-0.5">KATAS CLAVE A MASTERIZAR</span>
-                    <div className="flex flex-wrap gap-1.5 mt-0.5">
-                      {beltRequirements[selectedBeltIndex].katas.map((kata, kIdx) => (
-                        <span key={kIdx} className="text-[9px] bg-[var(--background-alt)] border border-neutral-200/60 text-neutral-800 py-0.5 px-2 rounded-full font-mono font-medium">
-                          {kata}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <span className="text-[9px] font-title-serif text-[#556358] block mb-0.5">ENFOQUE KIHON (TÉCNICO)</span>
-                    <p className="text-[11px] text-neutral-600 font-body leading-normal">
-                      {beltRequirements[selectedBeltIndex].kihon}
-                    </p>
-                  </div>
-
-                  <div className="bg-[#556358]/8 border-l-2 border-[#556358] p-2.5 rounded-r-md">
-                    <span className="text-[8px] font-title-serif text-[#556358] block mb-0.5">CONSEJO DOJO</span>
-                    <p className="text-[10px] italic text-neutral-800 font-body leading-normal">
-                      {beltRequirements[selectedBeltIndex].tips}
-                    </p>
-                  </div>
-                </motion.div>
-              </AnimatePresence>
-            </div>
-          </div>
-
-        </div>
+        </motion.div>
 
       </div>
     </section>
   );
 }
+

@@ -432,4 +432,40 @@ body {
   }
 }
 
+/* Custom spacing class for FAQ page to prevent header overlap */
+.preguntas-section {
+  padding-top: 140px !important;
+}
+
+@media (min-width: 768px) {
+  .preguntas-section {
+    padding-top: 165px !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .preguntas-section {
+    padding-top: 190px !important;
+  }
+}
+
+/* Custom spacing class for Admin page to prevent header overlap */
+.admin-page-section {
+  padding-top: 140px !important;
+}
+
+@media (min-width: 768px) {
+  .admin-page-section {
+    padding-top: 165px !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .admin-page-section {
+    padding-top: 190px !important;
+  }
+}
+
+
+
 
