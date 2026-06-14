@@ -792,24 +792,28 @@ export default function KihonOnline() {
         if (dt > 0) {
           const dlX = curr.left.x - prev.left.x;
           const dlY = curr.left.y - prev.left.y;
-          const dlZ = curr.left.z - prev.left.z;
-          const speedL = Math.sqrt(dlX * dlX + dlY * dlY + dlZ * dlZ) / dt;
+          // Ignoramos el eje Z porque MediaPipe tiene mucho ruido en la profundidad (eje Z),
+          // lo que causa picos de velocidad falsos incluso si el usuario está quieto.
+          const speedL = Math.sqrt(dlX * dlX + dlY * dlY) / dt;
 
           const drX = curr.right.x - prev.right.x;
           const drY = curr.right.y - prev.right.y;
-          const drZ = curr.right.z - prev.right.z;
-          const speedR = Math.sqrt(drX * drX + drY * drY + drZ * drZ) / dt;
+          const speedR = Math.sqrt(drX * drX + drY * drY) / dt;
 
-          const speed = Math.max(speedL, speedR);
-          currentSpeedRef.current = speed;
+          const rawSpeed = Math.max(speedL, speedR);
+          
+          // Aplicamos un suavizado con filtro de promedio móvil exponencial (EMA) 
+          // para eliminar ruidos bruscos de un solo fotograma (jitter).
+          const smoothedSpeed = currentSpeedRef.current * 0.6 + rawSpeed * 0.4;
+          currentSpeedRef.current = smoothedSpeed;
 
           // Detección de Kime (Explosividad)
-          // Umbral de velocidad rápida y parada brusca
-          if (speed > 1.8) {
-            peakSpeedRef.current = Math.max(peakSpeedRef.current, speed);
+          // Umbral de velocidad rápida y parada brusca en 2D (ajustado a 1.6)
+          if (smoothedSpeed > 1.6) {
+            peakSpeedRef.current = Math.max(peakSpeedRef.current, smoothedSpeed);
           }
 
-          if (peakSpeedRef.current > 1.8 && speed < 0.35) {
+          if (peakSpeedRef.current > 1.6 && smoothedSpeed < 0.35) {
             // KIME detectado!
             kimeAlertActiveRef.current = Date.now();
             peakSpeedRef.current = 0; // Reset
@@ -833,7 +837,7 @@ export default function KihonOnline() {
           }
 
           // Decaimiento del pico si la velocidad es baja
-          if (speed < 0.4) {
+          if (smoothedSpeed < 0.4) {
             peakSpeedRef.current = Math.max(0, peakSpeedRef.current - 0.08);
           }
         }
@@ -852,8 +856,8 @@ export default function KihonOnline() {
     ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
     ctx.fillRect(bx, by, barW, barH);
 
-    // Barra de velocidad actual
-    const valPercent = Math.min(100, (currentSpeedRef.current / 3.5) * 100);
+    // Barra de velocidad actual (escalada de 3.5 a 3.0 por la eliminación de la componente Z)
+    const valPercent = Math.min(100, (currentSpeedRef.current / 3.0) * 100);
     ctx.fillStyle = valPercent > 60 ? "rgba(229, 43, 52, 0.85)" : "rgba(6, 182, 212, 0.8)";
     ctx.fillRect(bx, by, (valPercent / 100) * barW, barH);
 
