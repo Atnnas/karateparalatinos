@@ -145,6 +145,7 @@ export default function KihonOnline() {
   const recognitionActiveRef = useRef<boolean>(true);
   const errorCountRef = useRef<number>(0);
   const lastErrorTimeRef = useRef<number>(0);
+  const lastErrorRef = useRef<string>("");
   const hasTriggeredAlignRef = useRef<boolean>(false);
   const isGuidedModeRef = useRef<boolean>(true);
   const trainingModeRef = useRef<"superior" | "inferior">("superior");
@@ -424,15 +425,21 @@ export default function KihonOnline() {
       setIsListening(true);
       setMicPermissionError(false);
       errorCountRef.current = 0;
+      lastErrorRef.current = "";
     };
 
     rec.onend = () => {
       if (recognitionActiveRef.current) {
         const now = Date.now();
-        if (now - lastErrorTimeRef.current < 1000) {
-          errorCountRef.current += 1;
-        } else {
-          errorCountRef.current = 0;
+        const lastErr = lastErrorRef.current;
+
+        // Solo incrementamos contador de fallas rápidas ante errores reales (no silencios o stop intencional)
+        if (lastErr && lastErr !== "no-speech" && lastErr !== "aborted") {
+          if (now - lastErrorTimeRef.current < 1000) {
+            errorCountRef.current += 1;
+          } else {
+            errorCountRef.current = 0;
+          }
         }
 
         if (errorCountRef.current > 5) {
@@ -457,10 +464,19 @@ export default function KihonOnline() {
     };
 
     rec.onerror = (event: any) => {
-      console.error("SpeechRecognition error:", event.error);
+      const err = event.error || "";
+      lastErrorRef.current = err;
       lastErrorTimeRef.current = Date.now();
       
-      if (event.error === "not-allowed" || event.error === "service-not-allowed") {
+      // Usamos console.warn en lugar de console.error para no gatillar el overlay de Next.js
+      // en avisos normales del ciclo de vida (no-speech o aborted).
+      if (err === "aborted" || err === "no-speech") {
+        console.warn(`SpeechRecognition notice: ${err}`);
+      } else {
+        console.error("SpeechRecognition error:", err);
+      }
+      
+      if (err === "not-allowed" || err === "service-not-allowed") {
         setMicPermissionError(true);
         recognitionActiveRef.current = false;
         setIsListening(false);
