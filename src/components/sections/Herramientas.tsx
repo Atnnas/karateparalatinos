@@ -168,7 +168,7 @@ export default function Herramientas() {
         <div className="absolute w-[80%] h-[80%] border border-dashed border-[#E52B34]/10 rounded-full animate-[spin_120s_linear_infinite] z-0" />
       </div>
 
-      <div className="relative z-20 max-w-[96vw] xl:max-w-[94vw] 2xl:max-w-[1620px] mx-auto px-4 sm:px-8 lg:px-12 w-full flex flex-col justify-start items-center pt-0">
+      <div className="relative z-20 w-full max-w-[99vw] mx-auto px-2 sm:px-4 md:px-6 lg:px-8 flex flex-col justify-start items-center pt-0">
         
         {/* Encabezado */}
         <div className="text-center max-w-3xl mx-auto mb-10">
@@ -197,7 +197,7 @@ export default function Herramientas() {
         </div>
 
         {/* Dashboard Layout Container */}
-        <div className="w-full flex flex-col md:flex-row gap-6 bg-white/65 border border-neutral-200/90 shadow-lg rounded-2xl overflow-hidden p-4 sm:p-6 min-h-[580px] backdrop-blur-md">
+        <div className="w-full flex flex-col md:flex-row gap-8 bg-white/65 border border-neutral-200/90 shadow-lg rounded-none overflow-hidden p-6 sm:p-8 md:p-10 min-h-[580px] backdrop-blur-md">
           
           {/* LEFT: Sidebar Tabs (Responsive menu) */}
           <div className="w-full md:w-[280px] xl:w-[320px] shrink-0 flex flex-col gap-2.5">
@@ -215,14 +215,14 @@ export default function Herramientas() {
                   <button
                     key={tool.id}
                     onClick={() => setActiveTab(tool.id)}
-                    className={`snap-center flex items-center justify-between gap-3 text-left px-4 py-3 border rounded-xl transition-all cursor-pointer min-w-[200px] md:min-w-0 ${
+                    className={`snap-center flex items-center justify-between gap-3.5 text-left px-5 py-4 border rounded-none transition-all cursor-pointer min-w-[200px] md:min-w-0 ${
                       isSelected
                         ? "bg-neutral-900 text-white border-neutral-900 shadow-md shadow-neutral-900/10 scale-[1.01]"
                         : "bg-white/95 text-neutral-700 border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50"
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all ${
+                      <div className={`w-9 h-9 rounded-none flex items-center justify-center transition-all ${
                         isSelected ? "bg-[#E52B34] text-white" : "bg-neutral-100 text-[#E52B34]"
                       }`}>
                         <TabIcon className="w-4.5 h-4.5" />
@@ -263,7 +263,7 @@ export default function Herramientas() {
           </div>
 
           {/* RIGHT: Main Viewport (App details) */}
-          <div className="flex-1 border border-neutral-200 bg-white/95 rounded-2xl p-6 sm:p-8 md:p-10 flex flex-col justify-between relative min-w-0">
+          <div className="flex-1 border border-neutral-200 bg-white/95 rounded-none p-8 sm:p-10 md:p-12 flex flex-col justify-between relative min-w-0">
             
             <AnimatePresence mode="wait">
               <motion.div
@@ -278,7 +278,7 @@ export default function Herramientas() {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-200 pb-5">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className={`text-[9px] font-bold font-title-serif uppercase tracking-wider px-2 py-0.5 border ${currentTool.statusColor}`}>
+                      <span className={`text-[9px] font-bold font-title-serif uppercase tracking-wider px-2.5 py-1 border rounded-none ${currentTool.statusColor}`}>
                         {currentTool.status}
                       </span>
                       <span className="text-xs font-title-serif font-bold text-neutral-400 tracking-wider">
@@ -291,7 +291,7 @@ export default function Herramientas() {
                     </h3>
                   </div>
                   
-                  <div className="w-12 h-12 rounded-2xl bg-neutral-900 text-white flex items-center justify-center shrink-0 shadow-md">
+                  <div className="w-12 h-12 rounded-none bg-neutral-900 text-white flex items-center justify-center shrink-0 shadow-md">
                     <ToolIcon className="w-6 h-6 text-[#E52B34]" />
                   </div>
                 </div>
@@ -307,7 +307,7 @@ export default function Herramientas() {
                 </div>
 
                 {/* Features & Specs Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-4">
                   <div className="space-y-4">
                     <h4 className="text-xs font-title-serif font-extrabold uppercase text-[#E52B34] tracking-wider">
                       Características Principales
@@ -342,7 +342,7 @@ export default function Herramientas() {
                     </div>
                     
                     {!currentTool.active && (
-                      <div className="bg-amber-50 border border-amber-200 text-amber-800 p-3 text-[11px] font-body leading-relaxed flex gap-2.5 items-start rounded-xl mt-4">
+                      <div className="bg-amber-50 border border-amber-200 text-amber-800 p-4 sm:p-5 text-[11px] font-body leading-relaxed flex gap-2.5 items-start rounded-none mt-4">
                         <Lock className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                         <span>Este módulo se encuentra en fase de desarrollo o planificación de diseño y requiere roles autorizados para el acceso una vez desplegado.</span>
                       </div>
@@ -360,14 +360,14 @@ export default function Herramientas() {
                   {currentTool.active ? (
                     <Link
                       href={currentTool.actionLink}
-                      className="btn-kpl-primary text-xs tracking-widest px-8 py-3.5 shadow-md flex items-center justify-center gap-2 self-end"
+                      className="btn-kpl-primary rounded-none text-xs tracking-widest px-8 py-3.5 shadow-md flex items-center justify-center gap-2 self-end"
                     >
                       {currentTool.actionText}
                     </Link>
                   ) : (
                     <button
                       disabled
-                      className="btn-kpl-secondary text-xs tracking-widest px-8 py-3.5 opacity-40 cursor-not-allowed flex items-center justify-center gap-2 self-end border-neutral-300 text-neutral-500 bg-neutral-100 font-bold"
+                      className="btn-kpl-secondary rounded-none text-xs tracking-widest px-8 py-3.5 opacity-40 cursor-not-allowed flex items-center justify-center gap-2 self-end border-neutral-300 text-neutral-500 bg-neutral-100 font-bold"
                     >
                       <Lock className="w-3.5 h-3.5" /> {currentTool.actionText}
                     </button>
