@@ -469,9 +469,9 @@ export default function KihonOnline() {
       lastErrorTimeRef.current = Date.now();
       
       // Usamos console.warn en lugar de console.error para no gatillar el overlay de Next.js
-      // en avisos normales del ciclo de vida (no-speech o aborted).
-      if (err === "aborted" || err === "no-speech") {
-        console.warn(`SpeechRecognition notice: ${err}`);
+      // en avisos y errores transitorios normales (no-speech, aborted, network o audio-capture).
+      if (err === "aborted" || err === "no-speech" || err === "network" || err === "audio-capture") {
+        console.warn(`SpeechRecognition notice (transient): ${err}`);
       } else {
         console.error("SpeechRecognition error:", err);
       }
