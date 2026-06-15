@@ -168,7 +168,7 @@ export default function Herramientas() {
         <div className="absolute w-[80%] h-[80%] border border-dashed border-[#E52B34]/10 rounded-full animate-[spin_120s_linear_infinite] z-0" />
       </div>
 
-      <div className="relative z-20 max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 w-full flex flex-col justify-start items-center pt-0">
+      <div className="relative z-20 max-w-[96vw] xl:max-w-[94vw] 2xl:max-w-[1620px] mx-auto px-4 sm:px-8 lg:px-12 w-full flex flex-col justify-start items-center pt-0">
         
         {/* Encabezado */}
         <div className="text-center max-w-3xl mx-auto mb-10">
@@ -275,7 +275,7 @@ export default function Herramientas() {
                 className="space-y-6 flex-1"
               >
                 {/* Viewport Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-150 pb-5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-200 pb-5">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <span className={`text-[9px] font-bold font-title-serif uppercase tracking-wider px-2 py-0.5 border ${currentTool.statusColor}`}>
@@ -351,7 +351,7 @@ export default function Herramientas() {
                 </div>
 
                 {/* Viewport Footer Trigger */}
-                <div className="pt-8 border-t border-neutral-150 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="pt-8 border-t border-neutral-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="flex items-center gap-2 text-neutral-400 text-[11px] font-body font-light">
                     <HelpCircle className="w-3.5 h-3.5" />
                     <span>¿Tienes dudas? Consulta con el Sensei.</span>
