@@ -132,6 +132,7 @@ export default function KihonOnline() {
   const [lastHeardCommand, setLastHeardCommand] = useState<string>("");
   const [voiceEnabled, setVoiceEnabled] = useState(false);
   const [tolerance, setTolerance] = useState(15);
+  const [micPermissionError, setMicPermissionError] = useState(false);
 
   // Refs de Hardware y Canvas
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -140,8 +141,10 @@ export default function KihonOnline() {
   const cameraInstanceRef = useRef<unknown>(null);
   
   // Refs para Lógica de Estado y Evitar Re-declaraciones en Callback
-  const recognitionRef = useRef<ISpeechRecognition | null>(null);
+  const recognitionRef = useRef<any>(null);
   const recognitionActiveRef = useRef<boolean>(true);
+  const errorCountRef = useRef<number>(0);
+  const lastErrorTimeRef = useRef<number>(0);
   const hasTriggeredAlignRef = useRef<boolean>(false);
   const isGuidedModeRef = useRef<boolean>(true);
   const trainingModeRef = useRef<"superior" | "inferior">("superior");
@@ -152,11 +155,36 @@ export default function KihonOnline() {
   const kimeAlertActiveRef = useRef<number>(0);
   const currentSpeedRef = useRef<number>(0);
   const latestPoseLandmarksRef = useRef<PoseLandmark[] | null>(null);
+  const lastValidPoseLandmarksRef = useRef<{ landmarks: PoseLandmark[]; timestamp: number } | null>(null);
   const savedPoseLandmarksRef = useRef<PoseLandmark[] | null>(null);
   const savedPoseAnglesRef = useRef<{ left: number; right: number } | null>(null);
   const handlePoseResultsRef = useRef<((results: { poseLandmarks?: PoseLandmark[]; image?: CanvasImageSource }) => void) | null>(null);
   const lastTriggerTimeRef = useRef<number>(0);
   const lastKimePowerRef = useRef<number>(0);
+
+  // Funciones de control de voz / micrófono
+  const startSpeechRecognition = () => {
+    recognitionActiveRef.current = true;
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.start();
+      } catch (e) {
+        console.error("Error al iniciar SpeechRecognition:", e);
+      }
+    }
+  };
+
+  const stopSpeechRecognition = () => {
+    recognitionActiveRef.current = false;
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch (e) {
+        console.error("Error al detener SpeechRecognition:", e);
+      }
+    }
+    setIsListening(false);
+  };
 
   // Sincronizar Refs
   useEffect(() => {
@@ -259,7 +287,7 @@ export default function KihonOnline() {
 
   // Guardar Pose de Referencia (Manual o Voz)
   const triggerSavePose = () => {
-    const lms = latestPoseLandmarksRef.current;
+    const lms = latestPoseLandmarksRef.current || (lastValidPoseLandmarksRef.current && Date.now() - lastValidPoseLandmarksRef.current.timestamp < 1500 ? lastValidPoseLandmarksRef.current.landmarks : null);
     if (lms) {
       const currentAngles = calculateCurrentAngles(lms, trainingModeRef.current);
       setSavedPoseLandmarks(lms);
@@ -378,8 +406,7 @@ export default function KihonOnline() {
   // Lógica de Reconocimiento de Voz
   useEffect(() => {
     const SpeechRecognitionClass = typeof window !== "undefined"
-      ? ((window as unknown as { SpeechRecognition?: new () => ISpeechRecognition }).SpeechRecognition ||
-         (window as unknown as { webkitSpeechRecognition?: new () => ISpeechRecognition }).webkitSpeechRecognition)
+      ? ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition)
       : undefined;
 
     if (!SpeechRecognitionClass) {
@@ -395,16 +422,47 @@ export default function KihonOnline() {
 
     rec.onstart = () => {
       setIsListening(true);
+      setMicPermissionError(false);
+      errorCountRef.current = 0;
     };
 
     rec.onend = () => {
       if (recognitionActiveRef.current) {
-        try {
-          rec.start();
-        } catch (e) {
-          console.error("Error al reiniciar SpeechRecognition:", e);
+        const now = Date.now();
+        if (now - lastErrorTimeRef.current < 1000) {
+          errorCountRef.current += 1;
+        } else {
+          errorCountRef.current = 0;
         }
+
+        if (errorCountRef.current > 5) {
+          console.warn("Demasiados errores seguidos en SpeechRecognition. Desactivando por seguridad.");
+          recognitionActiveRef.current = false;
+          setIsListening(false);
+          return;
+        }
+
+        setTimeout(() => {
+          if (recognitionActiveRef.current) {
+            try {
+              rec.start();
+            } catch (e) {
+              console.error("Error al reiniciar SpeechRecognition:", e);
+            }
+          }
+        }, 300);
       } else {
+        setIsListening(false);
+      }
+    };
+
+    rec.onerror = (event: any) => {
+      console.error("SpeechRecognition error:", event.error);
+      lastErrorTimeRef.current = Date.now();
+      
+      if (event.error === "not-allowed" || event.error === "service-not-allowed") {
+        setMicPermissionError(true);
+        recognitionActiveRef.current = false;
         setIsListening(false);
       }
     };
@@ -690,6 +748,7 @@ export default function KihonOnline() {
 
     // Guardar última pose en global para el comando de voz
     latestPoseLandmarksRef.current = landmarks;
+    lastValidPoseLandmarksRef.current = { landmarks, timestamp: Date.now() };
 
     const mode = trainingModeRef.current;
     const currentAngles = calculateCurrentAngles(landmarks, mode);
@@ -1201,8 +1260,22 @@ export default function KihonOnline() {
               <span>{voiceEnabled ? "Voz Activa" : "Voz Mutada"}</span>
             </button>
 
-            {/* Voice Listening Status */}
-            <div className="flex items-center gap-3 bg-white border border-neutral-300 py-2 px-4 h-10 rounded-none shadow-sm">
+            {/* Voice Listening Status Toggle Button */}
+            <button
+              onClick={() => {
+                if (isListening) {
+                  stopSpeechRecognition();
+                } else {
+                  startSpeechRecognition();
+                }
+              }}
+              className={`h-10 px-4 border flex items-center gap-3 text-xs font-bold font-title-serif uppercase tracking-wider transition-all shadow-sm cursor-pointer ${
+                isListening 
+                  ? "bg-emerald-50 border-[#00875A] text-[#00875A] hover:bg-emerald-100" 
+                  : "bg-neutral-50 border-neutral-300 text-neutral-500 hover:bg-neutral-100"
+              }`}
+              title={isListening ? "Desactivar comandos de voz (micrófono)" : "Activar comandos de voz (micrófono)"}
+            >
               <div className="relative flex h-3 w-3">
                 {isListening && (
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-none bg-emerald-400 opacity-75"></span>
@@ -1216,9 +1289,27 @@ export default function KihonOnline() {
                   <span className="flex items-center gap-1.5"><MicOff className="w-3.5 h-3.5 text-neutral-400" /> Micrófono inactivo</span>
                 )}
               </span>
-            </div>
+            </button>
           </div>
         </div>
+
+        {/* Error de Micrófono / Permiso */}
+        {micPermissionError && (
+          <div className="w-full bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-none flex items-center justify-between gap-4 font-body text-xs shadow-sm">
+            <div className="flex items-center gap-2">
+              <MicOff className="w-4 h-4 text-red-650 shrink-0" />
+              <span>
+                <strong>Permiso de micrófono denegado:</strong> Por favor, permite el acceso al micrófono en tu navegador (haz clic en el icono de cámara/micrófono de la barra de direcciones) y presiona el botón <strong>&quot;Micrófono inactivo&quot;</strong> para reintentar.
+              </span>
+            </div>
+            <button 
+              onClick={() => setMicPermissionError(false)} 
+              className="text-red-500 hover:text-red-800 font-bold font-mono px-2 cursor-pointer"
+            >
+              X
+            </button>
+          </div>
+        )}
 
         {/* main interactive viewport section - flex layout without fixed height */}
         <div className="w-full flex flex-col lg:flex-row gap-6 items-start justify-center mt-2">
@@ -1331,7 +1422,7 @@ export default function KihonOnline() {
                 />
                 <button
                   onClick={async () => {
-                    const lms = latestPoseLandmarksRef.current;
+                    const lms = latestPoseLandmarksRef.current || (lastValidPoseLandmarksRef.current && Date.now() - lastValidPoseLandmarksRef.current.timestamp < 1500 ? lastValidPoseLandmarksRef.current.landmarks : null);
                     if (!lms) {
                       speak("Asegúrate de estar visible frente a la cámara antes de guardar.");
                       return;
