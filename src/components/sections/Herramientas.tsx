@@ -73,26 +73,26 @@ const tools: Tool[] = [
     id: "dojo-virtual",
     name: "Dojo Virtual",
     jpName: "バーチャル道場",
-    status: "En Desarrollo",
-    statusColor: "bg-amber-500/10 border-amber-500/30 text-amber-600",
+    status: "Disponible",
+    statusColor: "bg-emerald-500/10 border-emerald-500/30 text-emerald-600",
     category: "Clase en Vivo (Meet)",
     icon: Users,
     description: "Conexión interactiva remota en tiempo real en colaboración con Google Meet. Permite al Sensei evaluar la postura del alumno a distancia, activar siluetas guía de manera remota y capturar posiciones directamente a la base de datos sin interrumpir el entrenamiento del alumno.",
     features: [
-      { label: "Integración Meet", desc: "Funciona directamente en el panel lateral de Google Meet." },
+      { label: "Integración Meet", desc: "Funciona directamente en el panel lateral de Google Meet o navegador." },
       { label: "Captura Remota", desc: "El Sensei guarda tus poses a la base de datos desde su pantalla." },
       { label: "Guía Interactiva", desc: "El Sensei activa siluetas fantasma en tu pantalla a distancia." },
       { label: "Seguridad Elevada", desc: "Acceso protegido exclusivo para instructores con rol de admin." }
     ],
     requirements: [
-      { name: "Google Meet", supported: true },
+      { name: "Cámara y Micro", supported: true },
       { name: "Conexión Estable", supported: true },
-      { name: "Rol de Instructor", supported: true }
+      { name: "Código de Sala", supported: true }
     ],
-    actionText: "EXCLUSIVO PARA INSTRUCTORES",
-    actionLink: "#",
-    active: false,
-    badge: "Exclusivo Sensei"
+    actionText: "ENTRAR AL DOJO VIRTUAL",
+    actionLink: "/herramientas/dojo-virtual",
+    active: true,
+    badge: "Colaborativo"
   }
 ];
 
