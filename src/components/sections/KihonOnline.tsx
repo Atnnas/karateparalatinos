@@ -152,8 +152,6 @@ export default function KihonOnline() {
   const voiceEnabledRef = useRef<boolean>(false);
   const toleranceRef = useRef<number>(15);
   const motionHistoryRef = useRef<{ left: {x: number, y: number, z: number}, right: {x: number, y: number, z: number}, time: number }[]>([]);
-  const kimeParticlesRef = useRef<{ x: number, y: number, vx: number, vy: number, color: string, size: number, alpha: number, life: number }[]>([]);
-  const kimeShockwavesRef = useRef<{ x: number, y: number, radius: number, maxRadius: number, color: string, alpha: number, speed: number }[]>([]);
   const peakSpeedRef = useRef<number>(0);
   const kimeAlertActiveRef = useRef<number>(0);
   const currentSpeedRef = useRef<number>(0);
@@ -597,12 +595,12 @@ export default function KihonOnline() {
     ctx.lineCap = "round";
 
     // Si el Kime está activo, hacemos vibrar visualmente el esqueleto
-    const isKimeActive = Date.now() - kimeAlertActiveRef.current < 1000;
+    const isKimeActive = Date.now() - kimeAlertActiveRef.current < 600;
 
     const getJointShake = () => {
       if (isKimeActive) {
-        const progress = (Date.now() - kimeAlertActiveRef.current) / 1000;
-        const intensity = 25 * (1 - progress); // Sacudida intensa en las uniones
+        const progress = (Date.now() - kimeAlertActiveRef.current) / 600;
+        const intensity = 10 * (1 - progress); // Sacudida momentánea limpia de hasta 10px
         return {
           x: (Math.random() - 0.5) * intensity,
           y: (Math.random() - 0.5) * intensity
@@ -626,45 +624,25 @@ export default function KihonOnline() {
         const yB = ptB.y * h + shakeB.y;
 
         if (isKimeActive) {
-          const progress = (Date.now() - kimeAlertActiveRef.current) / 1000;
+          const progress = (Date.now() - kimeAlertActiveRef.current) / 600;
           const decay = 1 - progress;
           
-          // 1. Aura de brillo de plasma ultra ancha (Capta toda la atención)
+          // 1. Capa de brillo exterior de neón rojo carmesí puro y elegante
           ctx.save();
-          ctx.strokeStyle = progress < 0.4 
-            ? "rgba(255, 230, 0, 0.18)" 
-            : progress < 0.7 
-              ? "rgba(255, 90, 0, 0.18)" 
-              : "rgba(229, 43, 52, 0.12)";
-          ctx.lineWidth = thickness * 6.0 * decay;
-          ctx.shadowBlur = 40 * decay;
-          ctx.shadowColor = progress < 0.5 ? "#FFD700" : "#E52B34";
+          ctx.strokeStyle = "rgba(229, 43, 52, 0.9)";
+          ctx.lineWidth = thickness * 2.2 * decay;
+          ctx.shadowBlur = 20 * decay;
+          ctx.shadowColor = "rgba(229, 43, 52, 0.9)";
           ctx.beginPath();
           ctx.moveTo(xA, yA);
           ctx.lineTo(xB, yB);
           ctx.stroke();
           ctx.restore();
 
-          // 2. Vector intermedio ardiente
+          // 2. Núcleo central blanco puro incandescente
           ctx.save();
-          ctx.strokeStyle = progress < 0.4 
-            ? "rgba(255, 215, 0, 0.9)" 
-            : progress < 0.7 
-              ? "rgba(255, 80, 0, 0.9)" 
-              : "rgba(229, 43, 52, 0.85)";
-          ctx.lineWidth = thickness * 3.0 * decay;
-          ctx.shadowBlur = 18 * decay;
-          ctx.shadowColor = progress < 0.5 ? "#FFA500" : "#E52B34";
-          ctx.beginPath();
-          ctx.moveTo(xA, yA);
-          ctx.lineTo(xB, yB);
-          ctx.stroke();
-          ctx.restore();
-
-          // 3. Núcleo blanco caliente
-          ctx.save();
-          ctx.strokeStyle = "rgba(255, 255, 255, 0.98)";
-          ctx.lineWidth = thickness * 0.95;
+          ctx.strokeStyle = "rgba(255, 255, 255, 0.95)";
+          ctx.lineWidth = thickness * 0.9;
           ctx.beginPath();
           ctx.moveTo(xA, yA);
           ctx.lineTo(xB, yB);
@@ -694,23 +672,23 @@ export default function KihonOnline() {
         const py = pt.y * h + shake.y;
 
         if (isKimeActive) {
-          const progress = (Date.now() - kimeAlertActiveRef.current) / 1000;
+          const progress = (Date.now() - kimeAlertActiveRef.current) / 600;
           const decay = 1 - progress;
-          const r = radius * 1.6;
+          const r = radius * 1.4;
 
-          // Capa exterior de energía del punto
-          ctx.fillStyle = progress < 0.5 ? "rgba(255, 215, 0, 0.95)" : "rgba(229, 43, 52, 0.95)";
-          ctx.shadowBlur = 35 * decay;
-          ctx.shadowColor = progress < 0.5 ? "#FFD700" : "#E52B34";
+          // Brillo exterior rojo carmesí
+          ctx.fillStyle = "rgba(229, 43, 52, 0.95)";
+          ctx.shadowBlur = 25 * decay;
+          ctx.shadowColor = "rgba(229, 43, 52, 0.95)";
           ctx.beginPath();
-          ctx.arc(px, py, r + 7 * decay, 0, 2 * Math.PI);
+          ctx.arc(px, py, r + 4 * decay, 0, 2 * Math.PI);
           ctx.fill();
 
-          // Núcleo caliente blanco
+          // Núcleo blanco
           ctx.fillStyle = "#ffffff";
           ctx.shadowBlur = 0;
           ctx.beginPath();
-          ctx.arc(px, py, r - 1.5, 0, 2 * Math.PI);
+          ctx.arc(px, py, r - 1, 0, 2 * Math.PI);
           ctx.fill();
         } else {
           let drawColor = color;
@@ -798,13 +776,13 @@ export default function KihonOnline() {
     ctx.clearRect(0, 0, width, height);
 
     // Si el Kime está activo, hacemos vibrar toda la pantalla (cámara + vectores)
-    const isKimeActive = Date.now() - kimeAlertActiveRef.current < 1000;
+    const isKimeActive = Date.now() - kimeAlertActiveRef.current < 600;
     
     ctx.save(); // Salvar para el shake global de pantalla
     
     if (isKimeActive) {
-      const progress = (Date.now() - kimeAlertActiveRef.current) / 1000;
-      const intensity = 15 * (1 - progress); // Sacudida global de hasta 15px que decae
+      const progress = (Date.now() - kimeAlertActiveRef.current) / 600;
+      const intensity = 8 * (1 - progress); // Sacudida sutil de pantalla de hasta 8px
       const shakeX = (Math.random() - 0.5) * intensity;
       const shakeY = (Math.random() - 0.5) * intensity;
       ctx.translate(shakeX, shakeY);
@@ -903,60 +881,6 @@ export default function KihonOnline() {
 
     // 3. Dibujar esqueleto real-time
     drawRealtimeSkeleton(ctx, landmarks, width, height, leftColor, rightColor, mode);
-
-    // Actualizar y dibujar partículas de Kime (chispas flotantes)
-    const particles = kimeParticlesRef.current;
-    if (particles.length > 0) {
-      ctx.save();
-      for (let i = particles.length - 1; i >= 0; i--) {
-        const p = particles[i];
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vy -= 0.15; // Flotan hacia arriba (efecto fuego)
-        p.life -= 0.02;
-        p.alpha = Math.max(0, p.life);
-        
-        if (p.life <= 0) {
-          particles.splice(i, 1);
-          continue;
-        }
-        
-        ctx.fillStyle = p.color;
-        ctx.globalAlpha = p.alpha;
-        ctx.shadowBlur = p.size * 2;
-        ctx.shadowColor = p.color;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, 2 * Math.PI);
-        ctx.fill();
-      }
-      ctx.restore();
-    }
-
-    // Actualizar y dibujar ondas de choque de Kime (anillos expansivos)
-    const shockwaves = kimeShockwavesRef.current;
-    if (shockwaves.length > 0) {
-      ctx.save();
-      for (let i = shockwaves.length - 1; i >= 0; i--) {
-        const s = shockwaves[i];
-        s.radius += s.speed;
-        s.alpha = Math.max(0, 1 - (s.radius / s.maxRadius));
-        
-        if (s.radius >= s.maxRadius) {
-          shockwaves.splice(i, 1);
-          continue;
-        }
-        
-        ctx.strokeStyle = s.color;
-        ctx.globalAlpha = s.alpha;
-        ctx.lineWidth = 6 * s.alpha;
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = s.color;
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.radius, 0, 2 * Math.PI);
-        ctx.stroke();
-      }
-      ctx.restore();
-    }
 
     // 3.5. Dibujar Centro de Gravedad y Balance
     const ankleL = landmarks[27];
@@ -1157,56 +1081,6 @@ export default function KihonOnline() {
             lastKimePowerRef.current = calculatedPower;
             
             peakSpeedRef.current = 0; // Reset
-
-            // Generar onda de choque y partículas en la articulación más rápida
-            const fasterJoint = speedL > speedR ? activeL : activeR;
-            if (fasterJoint) {
-              const fx = (1 - fasterJoint.x) * width;
-              const fy = fasterJoint.y * height;
-              
-              // 1. Spawnea dos ondas de choque concéntricas expansivas
-              kimeShockwavesRef.current.push({
-                x: fx,
-                y: fy,
-                radius: 10,
-                maxRadius: 180,
-                color: "rgba(255, 230, 0, 0.95)", // Oro
-                alpha: 1.0,
-                speed: 12
-              });
-              kimeShockwavesRef.current.push({
-                x: fx,
-                y: fy,
-                radius: 20,
-                maxRadius: 240,
-                color: "rgba(229, 43, 52, 0.85)", // Carmesí
-                alpha: 0.8,
-                speed: 8
-              });
-
-              // 2. Spawnea 35 partículas de chispas de fuego
-              for (let pIdx = 0; pIdx < 35; pIdx++) {
-                const angle = Math.random() * Math.PI * 2;
-                const speed = 3 + Math.random() * 8;
-                const colorVal = Math.random();
-                const pColor = colorVal < 0.4 
-                  ? "rgba(255, 223, 0, 0.9)" 
-                  : colorVal < 0.8 
-                    ? "rgba(255, 110, 0, 0.9)" 
-                    : "rgba(229, 43, 52, 0.9)";
-                    
-                kimeParticlesRef.current.push({
-                  x: fx,
-                  y: fy,
-                  vx: Math.cos(angle) * speed,
-                  vy: Math.sin(angle) * speed,
-                  color: pColor,
-                  size: 3 + Math.random() * 5,
-                  alpha: 1.0,
-                  life: 0.6 + Math.random() * 0.7
-                });
-              }
-            }
 
             // Pitido agudo especial si voz activa
             if (voiceEnabledRef.current) {
