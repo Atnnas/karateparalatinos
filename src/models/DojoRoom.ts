@@ -24,11 +24,24 @@ export interface IDojoRoom extends Document {
     isAligned: boolean;
     mode: "superior" | "inferior";
   };
+  sessionCapture?: {
+    landmarks: Array<{
+      x: number;
+      y: number;
+      z?: number;
+      visibility?: number;
+    }>;
+    angles: {
+      left: number;
+      right: number;
+    };
+    mode: "superior" | "inferior";
+  } | null;
   control: {
     presetId?: string; // ID of the reference preset
     guidedMode: boolean;
     tolerance: number;
-    command: "save_pose" | "reset_pose" | "none";
+    command: "save_pose" | "reset_pose" | "session_capture" | "clear_session_capture" | "none";
     newPoseName?: string; // name to save the captured pose as
     timestamp: number; // to avoid repeating command
   };
@@ -53,11 +66,15 @@ const DojoRoomSchema: Schema = new Schema({
     isAligned: { type: Boolean, default: false },
     mode: { type: String, enum: ["superior", "inferior"], default: "superior" }
   },
+  sessionCapture: {
+    type: Schema.Types.Mixed,
+    default: null
+  },
   control: {
     presetId: { type: String, default: "" },
     guidedMode: { type: Boolean, default: true },
     tolerance: { type: Number, default: 15 },
-    command: { type: String, enum: ["save_pose", "reset_pose", "none"], default: "none" },
+    command: { type: String, enum: ["save_pose", "reset_pose", "session_capture", "clear_session_capture", "none"], default: "none" },
     newPoseName: { type: String, default: "" },
     timestamp: { type: Number, default: 0 }
   }

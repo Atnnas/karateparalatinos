@@ -23,7 +23,9 @@ import {
   SlidersHorizontal,
   Trash2,
   Pencil,
-  X
+  X,
+  Crosshair,
+  XCircle
 } from "lucide-react";
 
 interface PoseLandmark {
@@ -86,6 +88,17 @@ export default function DojoVirtual() {
   useEffect(() => {
     studentVideoStreamRef.current = studentVideoStream;
   }, [studentVideoStream]);
+
+  // Session-only captured pose (Sensei captures, both sides see ghost)
+  const [sessionCapture, setSessionCapture] = useState<{
+    landmarks: PoseLandmark[];
+    angles: { left: number; right: number };
+    mode: "superior" | "inferior";
+  } | null>(null);
+  const sessionCaptureRef = useRef<typeof sessionCapture>(null);
+  useEffect(() => {
+    sessionCaptureRef.current = sessionCapture;
+  }, [sessionCapture]);
 
   // Refs for tracking student alignment triggers (TTS audio beep)
   const hasTriggeredAlignRef = useRef(false);
@@ -894,10 +907,23 @@ export default function DojoVirtual() {
       }
     }
 
-    // 1. Draw reference ghost silhouette
+    // 1. Draw reference ghost silhouette (catalog preset)
     if (currentPresetRef.current) {
       const normalizedLms = normalizeReferenceLandmarks(landmarks, currentPresetRef.current.landmarks);
       drawGhostSkeleton(ctx, normalizedLms, width, height, "rgba(6, 182, 212, 0.35)", 5);
+    }
+
+    // 1b. Draw session capture ghost (gold/yellow, from Sensei live capture)
+    const sessionCap = sessionCaptureRef.current;
+    if (sessionCap && sessionCap.landmarks && sessionCap.landmarks.length > 0) {
+      const normalizedSession = normalizeReferenceLandmarks(landmarks, sessionCap.landmarks);
+      drawGhostSkeleton(ctx, normalizedSession, width, height, "rgba(250, 204, 21, 0.4)", 5);
+
+      // Override color evaluation against session capture
+      const capDiffL = Math.abs(currentAngles.left - sessionCap.angles.left);
+      const capDiffR = Math.abs(currentAngles.right - sessionCap.angles.right);
+      if (capDiffL <= tol) leftColor = "rgba(34, 197, 94, 0.85)";
+      if (capDiffR <= tol) rightColor = "rgba(34, 197, 94, 0.85)";
     }
 
     // 2. Draw active skeleton
@@ -1040,6 +1066,15 @@ export default function DojoVirtual() {
               speak("Posición de referencia reiniciada.");
             }
           }
+
+          // Handle session capture from Sensei (ghost overlay for this session)
+          if (data.sessionCapture !== undefined) {
+            if (data.sessionCapture && data.sessionCapture.landmarks && data.sessionCapture.landmarks.length > 0) {
+              setSessionCapture(data.sessionCapture);
+            } else {
+              setSessionCapture(null);
+            }
+          }
         }
       } catch (err) {
         console.error("Error syncing student loop:", err);
@@ -1134,23 +1169,8 @@ export default function DojoVirtual() {
           const w = canvas.width;
           const h = canvas.height;
 
-          // Clear & Draw Backdrop
+          // Clear canvas — always transparent so <video> element behind shows through
           ctx.clearRect(0, 0, w, h);
-          if (!studentVideoStreamRef.current) {
-            ctx.fillStyle = "#0c0f12";
-            ctx.fillRect(0, 0, w, h);
-
-            // Draw grid lines
-            ctx.strokeStyle = "rgba(255, 255, 255, 0.02)";
-            ctx.lineWidth = 1;
-            const gridSpacing = 40;
-            for (let x = 0; x < w; x += gridSpacing) {
-              ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
-            }
-            for (let y = 0; y < h; y += gridSpacing) {
-              ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
-            }
-          }
 
           const poseData = studentPoseDataRef.current;
           const targetLms = targetLandmarksRef.current;
@@ -1195,6 +1215,7 @@ export default function DojoVirtual() {
             let leftColor = "rgba(255, 0, 0, 0.8)";
             let rightColor = "rgba(255, 0, 0, 0.8)";
 
+            // Check catalog preset first
             const senseiActivePreset = presetsRef.current.find((p) => p._id === selectedPresetIdRef.current);
             if (senseiActivePreset) {
               const diffL = Math.abs(currentAngles.left - senseiActivePreset.angles.left);
@@ -1206,6 +1227,19 @@ export default function DojoVirtual() {
               // Draw reference silhouette in light cyan
               const normalizedLms = normalizeReferenceLandmarks(lms, senseiActivePreset.landmarks);
               drawGhostSkeleton(ctx, normalizedLms, w, h, "rgba(6, 182, 212, 0.25)", 4);
+            }
+
+            // Draw session capture ghost (takes priority visually, drawn on top)
+            const capture = sessionCaptureRef.current;
+            if (capture && capture.landmarks && capture.landmarks.length > 0) {
+              const normalizedCapture = normalizeReferenceLandmarks(lms, capture.landmarks);
+              drawGhostSkeleton(ctx, normalizedCapture, w, h, "rgba(250, 204, 21, 0.4)", 5);
+
+              // Evaluate against session capture for color feedback
+              const capDiffL = Math.abs(currentAngles.left - capture.angles.left);
+              const capDiffR = Math.abs(currentAngles.right - capture.angles.right);
+              if (capDiffL <= tol) leftColor = "rgba(34, 197, 94, 0.85)";
+              if (capDiffR <= tol) rightColor = "rgba(34, 197, 94, 0.85)";
             }
 
             // Draw active wireframe
@@ -1240,21 +1274,31 @@ export default function DojoVirtual() {
   // Push controller changes from Sensei to MongoDB
   const updateSenseiControls = async (updatedFields: any) => {
     try {
+      // Build the payload
+      const payload: any = {
+        roomCode,
+        role: "sensei",
+        meetLink: updatedFields.meetLink !== undefined ? updatedFields.meetLink : meetLink,
+        control: {
+          presetId: updatedFields.presetId !== undefined ? updatedFields.presetId : selectedPresetId,
+          guidedMode: updatedFields.guidedMode !== undefined ? updatedFields.guidedMode : guidedMode,
+          tolerance: updatedFields.tolerance !== undefined ? updatedFields.tolerance : tolerance,
+          command: updatedFields.command || "none",
+          newPoseName: updatedFields.newPoseName || ""
+        }
+      };
+
+      // Attach session capture data if present
+      if (updatedFields.command === "session_capture" && updatedFields.sessionCaptureLandmarks) {
+        payload.sessionCapture = JSON.parse(updatedFields.sessionCaptureLandmarks);
+      } else if (updatedFields.command === "clear_session_capture") {
+        payload.sessionCapture = null;
+      }
+
       const res = await fetch("/api/dojo/sync", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          roomCode,
-          role: "sensei",
-          meetLink: updatedFields.meetLink !== undefined ? updatedFields.meetLink : meetLink,
-          control: {
-            presetId: updatedFields.presetId !== undefined ? updatedFields.presetId : selectedPresetId,
-            guidedMode: updatedFields.guidedMode !== undefined ? updatedFields.guidedMode : guidedMode,
-            tolerance: updatedFields.tolerance !== undefined ? updatedFields.tolerance : tolerance,
-            command: updatedFields.command || "none",
-            newPoseName: updatedFields.newPoseName || ""
-          }
-        })
+        body: JSON.stringify(payload)
       });
       if (!res.ok) console.warn("Failed pushing Sensei controls to room.");
     } catch (err) {
@@ -1621,6 +1665,21 @@ export default function DojoVirtual() {
                           La silueta fantasma en pantalla indica la posición oficial asignada de forma remota por tu instructor.
                         </p>
                       </div>
+                    ) : sessionCapture ? (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <span className="w-3 h-0.5 bg-yellow-400 inline-block"></span>
+                          <p className="font-impact-condensed text-sm text-amber-700 tracking-wide">
+                            Captura de Sesión Activa
+                          </p>
+                        </div>
+                        <p className="font-body text-[11px] text-amber-600 font-light leading-relaxed">
+                          Tu Sensei capturó tu posición como referencia. Ajusta tu postura para alinearte con la silueta dorada.
+                        </p>
+                        <p className="font-body text-[10px] text-neutral-500">
+                          {sessionCapture.mode === "superior" ? "Codos" : "Rodillas"}: {sessionCapture.angles.left}°L / {sessionCapture.angles.right}°R
+                        </p>
+                      </div>
                     ) : (
                       <p className="font-body text-[11px] text-neutral-400 font-light italic">
                         Esperando que tu Sensei inyecte una postura de referencia...
@@ -1918,42 +1977,70 @@ export default function DojoVirtual() {
                     </div>
                   </div>
 
-                  {/* 3. CAPTURE & SAVE POSE FORM */}
+                  {/* 3. SESSION CAPTURE (live ghost overlay, not saved to DB) */}
                   <div className="bg-neutral-50 border border-neutral-200 p-4 sm:p-5 rounded-none space-y-4">
                     <h3 className="text-xs font-title-serif font-extrabold uppercase text-[#E52B34] tracking-wider flex items-center gap-1.5">
-                      <Save className="w-4 h-4" /> Capturar Postura Alumno
+                      <Crosshair className="w-4 h-4" /> Capturar Posición de Sesión
                     </h3>
                     
                     <p className="font-body text-[11px] text-neutral-500 font-light leading-relaxed">
-                      Si el alumno está posicionado correctamente, escribe un nombre abajo y captura sus coordenadas para agregarlo al catálogo.
+                      Captura la posición actual del alumno como silueta fantasma dorada. Ambos verán la referencia en tiempo real durante esta sesión.
                     </p>
 
-                    <form onSubmit={triggerRemoteSavePose} className="space-y-3">
-                      <input 
-                        type="text"
-                        required
-                        placeholder="Nombre de postura (ej: Zenkutsu Dachi)"
-                        value={newPoseName}
-                        onChange={(e) => setNewPoseName(e.target.value)}
-                        className="w-full px-3 py-2.5 border border-neutral-250 rounded-none bg-white font-body text-xs text-neutral-900 focus:outline-none"
-                      />
-
-                      {saveSuccessMessage && (
-                        <div className="bg-emerald-50 border border-emerald-100 text-emerald-700 px-3.5 py-2 rounded-none font-body text-[10px] flex gap-1.5 items-center">
-                          <CheckCircle className="w-4 h-4 shrink-0 text-emerald-600" />
-                          <span>{saveSuccessMessage}</span>
+                    {sessionCapture ? (
+                      <div className="space-y-3">
+                        <div className="bg-amber-50 border border-amber-200 px-3.5 py-2.5 rounded-none font-body text-[11px] text-amber-800 flex gap-2 items-center">
+                          <CheckCircle className="w-4 h-4 shrink-0 text-amber-600" />
+                          <div>
+                            <span className="font-bold block text-[10px] uppercase">Posición Capturada</span>
+                            <span className="text-[10px] text-amber-600">
+                              {sessionCapture.mode === "superior" ? "Codos" : "Rodillas"}: {sessionCapture.angles.left}°L / {sessionCapture.angles.right}°R
+                            </span>
+                          </div>
                         </div>
-                      )}
-
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSessionCapture(null);
+                            updateSenseiControls({ command: "clear_session_capture" });
+                          }}
+                          className="w-full bg-neutral-800 text-white rounded-none text-xs font-bold font-sans-condensed tracking-widest py-3 flex items-center justify-center gap-2 hover:bg-neutral-700 transition-colors"
+                        >
+                          <XCircle className="w-4 h-4" />
+                          LIMPIAR CAPTURA DE SESIÓN
+                        </button>
+                      </div>
+                    ) : (
                       <button
-                        type="submit"
-                        disabled={isSavingPose || !studentPoseData?.landmarks || studentPoseData.landmarks.length === 0}
-                        className="w-full bg-[#E52B34] text-white rounded-none text-xs font-bold font-sans-condensed tracking-widest py-3 flex items-center justify-center gap-2 hover:opacity-95 disabled:opacity-40 disabled:cursor-not-allowed"
+                        type="button"
+                        disabled={!studentPoseData?.landmarks || studentPoseData.landmarks.length === 0}
+                        onClick={() => {
+                          if (studentPoseData?.landmarks && studentPoseData.landmarks.length > 0) {
+                            const mode = studentPoseData.mode || "superior";
+                            const angles = studentPoseData.angles || { left: 0, right: 0 };
+                            const captured = {
+                              landmarks: [...studentPoseData.landmarks],
+                              angles: { ...angles },
+                              mode: mode as "superior" | "inferior"
+                            };
+                            setSessionCapture(captured);
+                            // Send to student via sync
+                            updateSenseiControls({ command: "session_capture", sessionCaptureLandmarks: JSON.stringify(captured) });
+                          }
+                        }}
+                        className="w-full bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 text-white rounded-none text-xs font-bold font-sans-condensed tracking-widest py-3 flex items-center justify-center gap-2 hover:opacity-95 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                       >
-                        {isSavingPose ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                        CAPTURAR Y GUARDAR EN CATALOGO
+                        <Crosshair className="w-4 h-4" />
+                        CAPTURAR POSICIÓN ACTUAL
                       </button>
-                    </form>
+                    )}
+
+                    {saveSuccessMessage && (
+                      <div className="bg-emerald-50 border border-emerald-100 text-emerald-700 px-3.5 py-2 rounded-none font-body text-[10px] flex gap-1.5 items-center">
+                        <CheckCircle className="w-4 h-4 shrink-0 text-emerald-600" />
+                        <span>{saveSuccessMessage}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 

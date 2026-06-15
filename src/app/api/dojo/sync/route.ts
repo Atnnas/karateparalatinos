@@ -39,11 +39,12 @@ export async function POST(request: NextRequest) {
 
       await room.save();
 
-      // Devolver control del Sensei al Alumno
+      // Devolver control del Sensei al Alumno (including session capture if any)
       return NextResponse.json({
         control: room.control,
         meetLink: room.meetLink || "",
         senseiPeerId: room.senseiPeerId || "",
+        sessionCapture: room.sessionCapture || null,
         success: true
       });
 
@@ -78,6 +79,12 @@ export async function POST(request: NextRequest) {
       // Si el Sensei actualizó su P2P Peer ID
       if (body.senseiPeerId !== undefined) {
         room.senseiPeerId = body.senseiPeerId;
+      }
+
+      // Handle session capture commands
+      if (body.sessionCapture !== undefined) {
+        room.sessionCapture = body.sessionCapture;
+        room.markModified("sessionCapture");
       }
 
       await room.save();
@@ -132,6 +139,22 @@ export async function POST(request: NextRequest) {
         }
       }
 
+      // Handle session_capture command: store in room and reset command
+      if (room.control.command === "session_capture") {
+        room.control.command = "none";
+        room.markModified("control");
+        await room.save();
+      }
+
+      // Handle clear_session_capture command: clear session capture and reset command
+      if (room.control.command === "clear_session_capture") {
+        room.sessionCapture = null;
+        room.control.command = "none";
+        room.markModified("sessionCapture");
+        room.markModified("control");
+        await room.save();
+      }
+
       // Devolver los datos del alumno al Sensei
       return NextResponse.json({
         studentPose: room.studentPose,
@@ -149,3 +172,4 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 });
   }
 }
+
