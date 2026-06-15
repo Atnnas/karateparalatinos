@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     }
 
     await dbConnect();
-    const room = await DojoRoom.findOne({ roomCode: code.toUpperCase(), active: true });
+    const room = await DojoRoom.findOne({ roomCode: code.trim().toUpperCase(), active: true });
 
     if (!room) {
       return NextResponse.json({ error: "Sala no encontrada o inactiva" }, { status: 404 });

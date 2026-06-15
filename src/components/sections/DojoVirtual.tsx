@@ -157,7 +157,7 @@ export default function DojoVirtual() {
     setConnectionError("");
 
     try {
-      const res = await fetch(`/api/dojo/room?code=${studentInputCode}`);
+      const res = await fetch(`/api/dojo/room?code=${studentInputCode.trim()}`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Código de sala no válido");
 
