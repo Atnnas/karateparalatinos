@@ -34,6 +34,7 @@ export async function POST(request: NextRequest) {
           isAligned: !!body.studentPose.isAligned,
           mode: body.studentPose.mode || "superior"
         };
+        room.markModified("studentPose");
       }
 
       await room.save();
@@ -65,6 +66,7 @@ export async function POST(request: NextRequest) {
           room.control.newPoseName = body.control.newPoseName || "";
           room.control.timestamp = Date.now();
         }
+        room.markModified("control");
       }
 
       // Si el Sensei actualizó el enlace de Meet
@@ -110,6 +112,7 @@ export async function POST(request: NextRequest) {
             // Resetear el comando para que no se ejecute de nuevo
             room.control.command = "none";
             room.control.newPoseName = "";
+            room.markModified("control");
             await room.save();
 
           } catch (err) {
@@ -118,6 +121,7 @@ export async function POST(request: NextRequest) {
         } else {
           // Si no hay landmarks válidos, reiniciamos el comando para evitar bucles
           room.control.command = "none";
+          room.markModified("control");
           await room.save();
         }
       }

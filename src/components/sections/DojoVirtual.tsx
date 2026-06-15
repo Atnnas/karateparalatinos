@@ -116,7 +116,8 @@ export default function DojoVirtual() {
       fetch("/api/presets")
         .then((res) => res.json())
         .then((data) => {
-          if (data.presets) setPresets(data.presets);
+          const list = Array.isArray(data) ? data : (data.presets || []);
+          setPresets(list);
         })
         .catch((err) => console.error("Error loading presets:", err));
     }
@@ -725,8 +726,9 @@ export default function DojoVirtual() {
               // Fetch preset details
               const presetRes = await fetch(`/api/presets`);
               const presetData = await presetRes.json();
-              if (presetRes.ok && presetData.presets) {
-                const found = presetData.presets.find((p: any) => p._id === data.control.presetId);
+              if (presetRes.ok) {
+                const list = Array.isArray(presetData) ? presetData : (presetData.presets || []);
+                const found = list.find((p: any) => p._id === data.control.presetId);
                 if (found) {
                   currentPresetRef.current = found;
                   setSelectedPresetId(found._id);
