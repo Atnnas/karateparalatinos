@@ -179,13 +179,13 @@ export default function Herramientas() {
           >
             CENTRO DIGITAL DE ENTRENAMIENTO
           </motion.span>
-          <motion.h2
+          <motion.h1
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             className="font-impact-condensed text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-wide text-neutral-900 leading-[1.08] mb-3"
           >
-            TABLERO DE <span className="text-[#E52B34] drop-shadow-[0_2px_8px_rgba(229,43,52,0.15)]">APLICACIONES</span>
-          </motion.h2>
+            TABLERO DE <span className="bg-gradient-to-r from-[#E52B34] via-[#FF4D55] to-[#B81B22] bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(229,43,52,0.12)]">APLICACIONES</span>
+          </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -217,13 +217,13 @@ export default function Herramientas() {
                     onClick={() => setActiveTab(tool.id)}
                     className={`snap-center flex items-center justify-between gap-3.5 text-left px-5 py-4 border rounded-none transition-all cursor-pointer min-w-[200px] md:min-w-0 ${
                       isSelected
-                        ? "bg-neutral-900 text-white border-neutral-900 shadow-md shadow-neutral-900/10 scale-[1.01]"
+                        ? "bg-gradient-to-r from-neutral-900 to-neutral-950 text-white border-l-4 border-l-[#E52B34] border-t-neutral-900 border-r-neutral-900 border-b-neutral-900 shadow-md shadow-neutral-900/10 scale-[1.01]"
                         : "bg-white/95 text-neutral-700 border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50"
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       <div className={`w-9 h-9 rounded-none flex items-center justify-center transition-all ${
-                        isSelected ? "bg-[#E52B34] text-white" : "bg-neutral-100 text-[#E52B34]"
+                        isSelected ? "bg-gradient-to-tr from-[#E52B34] to-[#FF4D55] text-white" : "bg-neutral-100 text-[#E52B34]"
                       }`}>
                         <TabIcon className="w-4.5 h-4.5" />
                       </div>
@@ -276,7 +276,7 @@ export default function Herramientas() {
               >
                 {/* Viewport Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-200 pb-5">
-                  <div className="space-y-1">
+                  <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <span className={`text-[9px] font-bold font-title-serif uppercase tracking-wider px-2.5 py-1 border rounded-none ${currentTool.statusColor}`}>
                         {currentTool.status}
@@ -285,10 +285,12 @@ export default function Herramientas() {
                         {currentTool.category}
                       </span>
                     </div>
-                    <h3 className="font-impact-condensed text-2xl sm:text-3xl text-neutral-900 tracking-wide flex items-baseline gap-2">
-                      {currentTool.name}
+                    <h2 className="font-impact-condensed text-2xl sm:text-3xl tracking-wide flex items-baseline gap-2">
+                      <span className="bg-gradient-to-r from-neutral-900 via-neutral-800 to-neutral-950 bg-clip-text text-transparent">
+                        {currentTool.name}
+                      </span>
                       <span className="font-serif text-xs text-neutral-400 block sm:inline">({currentTool.jpName})</span>
-                    </h3>
+                    </h2>
                   </div>
                   
                   <div className="w-12 h-12 rounded-none bg-neutral-900 text-white flex items-center justify-center shrink-0 shadow-md">
@@ -298,9 +300,9 @@ export default function Herramientas() {
 
                 {/* Main description */}
                 <div className="space-y-4">
-                  <h4 className="text-xs font-title-serif font-extrabold uppercase text-[#E52B34] tracking-wider">
+                  <h3 className="text-xs font-title-serif font-extrabold uppercase text-[#E52B34] tracking-wider">
                     Descripción del Módulo
-                  </h4>
+                  </h3>
                   <p className="font-body text-neutral-700 text-sm sm:text-base font-light leading-relaxed">
                     {currentTool.description}
                   </p>
@@ -309,9 +311,9 @@ export default function Herramientas() {
                 {/* Features & Specs Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-4">
                   <div className="space-y-4">
-                    <h4 className="text-xs font-title-serif font-extrabold uppercase text-[#E52B34] tracking-wider">
+                    <h3 className="text-xs font-title-serif font-extrabold uppercase text-[#E52B34] tracking-wider">
                       Características Principales
-                    </h4>
+                    </h3>
                     <div className="space-y-3 font-body text-xs text-neutral-600">
                       {currentTool.features.map((feat, index) => (
                         <div key={index} className="flex gap-2.5 items-start">
@@ -327,9 +329,9 @@ export default function Herramientas() {
 
                   {/* Requirements sidebar inside viewport */}
                   <div className="space-y-4 border-t sm:border-t-0 sm:border-l border-neutral-200 pt-5 sm:pt-0 sm:pl-6">
-                    <h4 className="text-xs font-title-serif font-extrabold uppercase text-[#E52B34] tracking-wider flex items-center gap-1.5">
+                    <h3 className="text-xs font-title-serif font-extrabold uppercase text-[#E52B34] tracking-wider flex items-center gap-1.5">
                       <ShieldAlert className="w-4 h-4 text-neutral-400" /> Requerimientos del Sistema
-                    </h4>
+                    </h3>
                     <div className="space-y-3 font-body text-xs text-neutral-700">
                       {currentTool.requirements.map((req, index) => (
                         <div key={index} className="flex items-center justify-between border-b border-neutral-100 pb-2">
@@ -360,7 +362,7 @@ export default function Herramientas() {
                   {currentTool.active ? (
                     <Link
                       href={currentTool.actionLink}
-                      className="btn-kpl-primary rounded-none text-xs tracking-widest px-8 py-3.5 shadow-md flex items-center justify-center gap-2 self-end"
+                      className="bg-gradient-to-r from-[#E52B34] via-[#FF4D55] to-[#B81B22] hover:from-[#c82028] hover:to-[#9f131a] text-white rounded-none text-xs tracking-widest px-8 py-3.5 shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 self-end font-sans-condensed font-bold"
                     >
                       {currentTool.actionText}
                     </Link>
