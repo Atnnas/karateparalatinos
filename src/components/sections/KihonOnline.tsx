@@ -152,6 +152,8 @@ export default function KihonOnline() {
   const voiceEnabledRef = useRef<boolean>(false);
   const toleranceRef = useRef<number>(15);
   const motionHistoryRef = useRef<{ left: {x: number, y: number, z: number}, right: {x: number, y: number, z: number}, time: number }[]>([]);
+  const kimeParticlesRef = useRef<{ x: number, y: number, vx: number, vy: number, color: string, size: number, alpha: number, life: number }[]>([]);
+  const kimeShockwavesRef = useRef<{ x: number, y: number, radius: number, maxRadius: number, color: string, alpha: number, speed: number }[]>([]);
   const peakSpeedRef = useRef<number>(0);
   const kimeAlertActiveRef = useRef<number>(0);
   const currentSpeedRef = useRef<number>(0);
@@ -595,12 +597,12 @@ export default function KihonOnline() {
     ctx.lineCap = "round";
 
     // Si el Kime está activo, hacemos vibrar visualmente el esqueleto
-    const isKimeActive = Date.now() - kimeAlertActiveRef.current < 500;
+    const isKimeActive = Date.now() - kimeAlertActiveRef.current < 1000;
 
     const getJointShake = () => {
       if (isKimeActive) {
-        const progress = (Date.now() - kimeAlertActiveRef.current) / 500;
-        const intensity = 15 * (1 - progress); // Desplazamiento de hasta 15px que decae a 0
+        const progress = (Date.now() - kimeAlertActiveRef.current) / 1000;
+        const intensity = 25 * (1 - progress); // Sacudida intensa en las uniones
         return {
           x: (Math.random() - 0.5) * intensity,
           y: (Math.random() - 0.5) * intensity
@@ -615,32 +617,69 @@ export default function KihonOnline() {
       if (ptA && ptB) {
         ctx.save();
         
-        let drawColor = color;
-        let drawThickness = thickness;
-
-        if (isKimeActive) {
-          drawThickness = thickness * 1.6;
-          // Si el Kime está activo, los vectores activos brillan con un rojo intenso e impactante,
-          // y los no activos se atenúan un poco
-          drawColor = color.includes("255, 255, 255") ? "rgba(255, 255, 255, 0.4)" : "rgba(229, 43, 52, 0.95)";
-          ctx.strokeStyle = drawColor;
-          ctx.shadowBlur = 25;
-          ctx.shadowColor = "rgba(229, 43, 52, 0.95)";
-        } else {
-          ctx.strokeStyle = color;
-          ctx.shadowBlur = color.includes("255, 255, 255") ? 2 : 12;
-          ctx.shadowColor = color;
-        }
-
-        ctx.lineWidth = drawThickness;
-
         const shakeA = getJointShake();
         const shakeB = getJointShake();
 
-        ctx.beginPath();
-        ctx.moveTo((1 - ptA.x) * w + shakeA.x, ptA.y * h + shakeA.y);
-        ctx.lineTo((1 - ptB.x) * w + shakeB.x, ptB.y * h + shakeB.y);
-        ctx.stroke();
+        const xA = (1 - ptA.x) * w + shakeA.x;
+        const yA = ptA.y * h + shakeA.y;
+        const xB = (1 - ptB.x) * w + shakeB.x;
+        const yB = ptB.y * h + shakeB.y;
+
+        if (isKimeActive) {
+          const progress = (Date.now() - kimeAlertActiveRef.current) / 1000;
+          const decay = 1 - progress;
+          
+          // 1. Aura de brillo de plasma ultra ancha (Capta toda la atención)
+          ctx.save();
+          ctx.strokeStyle = progress < 0.4 
+            ? "rgba(255, 230, 0, 0.18)" 
+            : progress < 0.7 
+              ? "rgba(255, 90, 0, 0.18)" 
+              : "rgba(229, 43, 52, 0.12)";
+          ctx.lineWidth = thickness * 6.0 * decay;
+          ctx.shadowBlur = 40 * decay;
+          ctx.shadowColor = progress < 0.5 ? "#FFD700" : "#E52B34";
+          ctx.beginPath();
+          ctx.moveTo(xA, yA);
+          ctx.lineTo(xB, yB);
+          ctx.stroke();
+          ctx.restore();
+
+          // 2. Vector intermedio ardiente
+          ctx.save();
+          ctx.strokeStyle = progress < 0.4 
+            ? "rgba(255, 215, 0, 0.9)" 
+            : progress < 0.7 
+              ? "rgba(255, 80, 0, 0.9)" 
+              : "rgba(229, 43, 52, 0.85)";
+          ctx.lineWidth = thickness * 3.0 * decay;
+          ctx.shadowBlur = 18 * decay;
+          ctx.shadowColor = progress < 0.5 ? "#FFA500" : "#E52B34";
+          ctx.beginPath();
+          ctx.moveTo(xA, yA);
+          ctx.lineTo(xB, yB);
+          ctx.stroke();
+          ctx.restore();
+
+          // 3. Núcleo blanco caliente
+          ctx.save();
+          ctx.strokeStyle = "rgba(255, 255, 255, 0.98)";
+          ctx.lineWidth = thickness * 0.95;
+          ctx.beginPath();
+          ctx.moveTo(xA, yA);
+          ctx.lineTo(xB, yB);
+          ctx.stroke();
+          ctx.restore();
+        } else {
+          ctx.strokeStyle = color;
+          ctx.lineWidth = thickness;
+          ctx.shadowBlur = color.includes("255, 255, 255") ? 2 : 12;
+          ctx.shadowColor = color;
+          ctx.beginPath();
+          ctx.moveTo(xA, yA);
+          ctx.lineTo(xB, yB);
+          ctx.stroke();
+        }
         ctx.restore();
       }
     };
@@ -650,42 +689,53 @@ export default function KihonOnline() {
       if (pt) {
         ctx.save();
 
-        let drawColor = color;
-        let drawRadius = radius;
-
-        if (isKimeActive) {
-          ctx.shadowBlur = 25;
-          ctx.shadowColor = "rgba(229, 43, 52, 0.95)";
-          drawColor = color.includes("255, 255, 255") ? "rgba(255, 255, 255, 0.4)" : "rgba(229, 43, 52, 0.95)";
-          drawRadius = radius * 1.4;
-        } else {
-          ctx.shadowBlur = color.includes("255, 255, 255") ? 2 : 12;
-          ctx.shadowColor = color;
-        }
-
         const shake = getJointShake();
         const px = (1 - pt.x) * w + shake.x;
         const py = pt.y * h + shake.y;
 
-        if (outerRing) {
-          // Dibujar anillo exterior brillante
-          ctx.fillStyle = drawColor;
+        if (isKimeActive) {
+          const progress = (Date.now() - kimeAlertActiveRef.current) / 1000;
+          const decay = 1 - progress;
+          const r = radius * 1.6;
+
+          // Capa exterior de energía del punto
+          ctx.fillStyle = progress < 0.5 ? "rgba(255, 215, 0, 0.95)" : "rgba(229, 43, 52, 0.95)";
+          ctx.shadowBlur = 35 * decay;
+          ctx.shadowColor = progress < 0.5 ? "#FFD700" : "#E52B34";
           ctx.beginPath();
-          ctx.arc(px, py, drawRadius + 4, 0, 2 * Math.PI);
+          ctx.arc(px, py, r + 7 * decay, 0, 2 * Math.PI);
           ctx.fill();
 
-          // Dibujar centro blanco sólido
+          // Núcleo caliente blanco
           ctx.fillStyle = "#ffffff";
-          ctx.shadowBlur = 0; // Sin sombra interna
+          ctx.shadowBlur = 0;
           ctx.beginPath();
-          ctx.arc(px, py, drawRadius - 2, 0, 2 * Math.PI);
+          ctx.arc(px, py, r - 1.5, 0, 2 * Math.PI);
           ctx.fill();
         } else {
-          // Punto normal
-          ctx.fillStyle = drawColor;
-          ctx.beginPath();
-          ctx.arc(px, py, drawRadius, 0, 2 * Math.PI);
-          ctx.fill();
+          let drawColor = color;
+          let drawRadius = radius;
+
+          ctx.shadowBlur = color.includes("255, 255, 255") ? 2 : 12;
+          ctx.shadowColor = color;
+
+          if (outerRing) {
+            ctx.fillStyle = drawColor;
+            ctx.beginPath();
+            ctx.arc(px, py, drawRadius + 4, 0, 2 * Math.PI);
+            ctx.fill();
+
+            ctx.fillStyle = "#ffffff";
+            ctx.shadowBlur = 0;
+            ctx.beginPath();
+            ctx.arc(px, py, drawRadius - 2, 0, 2 * Math.PI);
+            ctx.fill();
+          } else {
+            ctx.fillStyle = drawColor;
+            ctx.beginPath();
+            ctx.arc(px, py, drawRadius, 0, 2 * Math.PI);
+            ctx.fill();
+          }
         }
         ctx.restore();
       }
@@ -747,6 +797,19 @@ export default function KihonOnline() {
     // Limpiar canvas
     ctx.clearRect(0, 0, width, height);
 
+    // Si el Kime está activo, hacemos vibrar toda la pantalla (cámara + vectores)
+    const isKimeActive = Date.now() - kimeAlertActiveRef.current < 1000;
+    
+    ctx.save(); // Salvar para el shake global de pantalla
+    
+    if (isKimeActive) {
+      const progress = (Date.now() - kimeAlertActiveRef.current) / 1000;
+      const intensity = 15 * (1 - progress); // Sacudida global de hasta 15px que decae
+      const shakeX = (Math.random() - 0.5) * intensity;
+      const shakeY = (Math.random() - 0.5) * intensity;
+      ctx.translate(shakeX, shakeY);
+    }
+
     // 1. Dibujar cámara en Espejo (Eje X invertido)
     ctx.save();
     ctx.translate(width, 0);
@@ -759,6 +822,7 @@ export default function KihonOnline() {
     const landmarks = results.poseLandmarks;
     if (!landmarks) {
       latestPoseLandmarksRef.current = null;
+      ctx.restore(); // Restaurar el shake global de pantalla en caso de retorno temprano
       return;
     }
 
@@ -839,6 +903,60 @@ export default function KihonOnline() {
 
     // 3. Dibujar esqueleto real-time
     drawRealtimeSkeleton(ctx, landmarks, width, height, leftColor, rightColor, mode);
+
+    // Actualizar y dibujar partículas de Kime (chispas flotantes)
+    const particles = kimeParticlesRef.current;
+    if (particles.length > 0) {
+      ctx.save();
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy -= 0.15; // Flotan hacia arriba (efecto fuego)
+        p.life -= 0.02;
+        p.alpha = Math.max(0, p.life);
+        
+        if (p.life <= 0) {
+          particles.splice(i, 1);
+          continue;
+        }
+        
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.alpha;
+        ctx.shadowBlur = p.size * 2;
+        ctx.shadowColor = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, 2 * Math.PI);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    // Actualizar y dibujar ondas de choque de Kime (anillos expansivos)
+    const shockwaves = kimeShockwavesRef.current;
+    if (shockwaves.length > 0) {
+      ctx.save();
+      for (let i = shockwaves.length - 1; i >= 0; i--) {
+        const s = shockwaves[i];
+        s.radius += s.speed;
+        s.alpha = Math.max(0, 1 - (s.radius / s.maxRadius));
+        
+        if (s.radius >= s.maxRadius) {
+          shockwaves.splice(i, 1);
+          continue;
+        }
+        
+        ctx.strokeStyle = s.color;
+        ctx.globalAlpha = s.alpha;
+        ctx.lineWidth = 6 * s.alpha;
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = s.color;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.radius, 0, 2 * Math.PI);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
 
     // 3.5. Dibujar Centro de Gravedad y Balance
     const ankleL = landmarks[27];
@@ -1040,6 +1158,56 @@ export default function KihonOnline() {
             
             peakSpeedRef.current = 0; // Reset
 
+            // Generar onda de choque y partículas en la articulación más rápida
+            const fasterJoint = speedL > speedR ? activeL : activeR;
+            if (fasterJoint) {
+              const fx = (1 - fasterJoint.x) * width;
+              const fy = fasterJoint.y * height;
+              
+              // 1. Spawnea dos ondas de choque concéntricas expansivas
+              kimeShockwavesRef.current.push({
+                x: fx,
+                y: fy,
+                radius: 10,
+                maxRadius: 180,
+                color: "rgba(255, 230, 0, 0.95)", // Oro
+                alpha: 1.0,
+                speed: 12
+              });
+              kimeShockwavesRef.current.push({
+                x: fx,
+                y: fy,
+                radius: 20,
+                maxRadius: 240,
+                color: "rgba(229, 43, 52, 0.85)", // Carmesí
+                alpha: 0.8,
+                speed: 8
+              });
+
+              // 2. Spawnea 35 partículas de chispas de fuego
+              for (let pIdx = 0; pIdx < 35; pIdx++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 3 + Math.random() * 8;
+                const colorVal = Math.random();
+                const pColor = colorVal < 0.4 
+                  ? "rgba(255, 223, 0, 0.9)" 
+                  : colorVal < 0.8 
+                    ? "rgba(255, 110, 0, 0.9)" 
+                    : "rgba(229, 43, 52, 0.9)";
+                    
+                kimeParticlesRef.current.push({
+                  x: fx,
+                  y: fy,
+                  vx: Math.cos(angle) * speed,
+                  vy: Math.sin(angle) * speed,
+                  color: pColor,
+                  size: 3 + Math.random() * 5,
+                  alpha: 1.0,
+                  life: 0.6 + Math.random() * 0.7
+                });
+              }
+            }
+
             // Pitido agudo especial si voz activa
             if (voiceEnabledRef.current) {
               try {
@@ -1106,7 +1274,9 @@ export default function KihonOnline() {
       
       ctx.textAlign = "left";
     }
-    ctx.restore();
+    ctx.restore(); // Restore HUD save
+
+    ctx.restore(); // Restore global shake save
 
     ctx.shadowBlur = 0; // Reset sombra
   }
