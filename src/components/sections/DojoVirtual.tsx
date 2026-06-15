@@ -86,6 +86,26 @@ export default function DojoVirtual() {
   // Active sync presets for Student
   const currentPresetRef = useRef<PosePreset | null>(null);
 
+  // Sensei Smooth Rendering Refs
+  const targetLandmarksRef = useRef<PoseLandmark[] | null>(null);
+  const interpolatedLandmarksRef = useRef<PoseLandmark[] | null>(null);
+  const studentPoseDataRef = useRef<any>(null);
+  const toleranceRef = useRef(tolerance);
+  const selectedPresetIdRef = useRef(selectedPresetId);
+  const presetsRef = useRef(presets);
+
+  useEffect(() => {
+    toleranceRef.current = tolerance;
+  }, [tolerance]);
+
+  useEffect(() => {
+    selectedPresetIdRef.current = selectedPresetId;
+  }, [selectedPresetId]);
+
+  useEffect(() => {
+    presetsRef.current = presets;
+  }, [presets]);
+
   // Load presets list (Sensei only)
   useEffect(() => {
     if (role === "sensei") {
@@ -757,9 +777,10 @@ export default function DojoVirtual() {
         if (res.ok) {
           if (data.studentPose) {
             setStudentPoseData(data.studentPose);
-            
-            // Draw student wireframe skeleton on Sensei canvas
-            drawSenseiCanvas(data.studentPose);
+            studentPoseDataRef.current = data.studentPose;
+            if (data.studentPose.landmarks) {
+              targetLandmarksRef.current = data.studentPose.landmarks;
+            }
           }
 
           if (data.poseSaved) {
@@ -782,79 +803,113 @@ export default function DojoVirtual() {
     };
   }, [role, roomCode]);
 
-  // Sensei Canvas drawing logic
-  const drawSenseiCanvas = (studentPose: any) => {
-    const canvas = document.getElementById("sensei-canvas") as HTMLCanvasElement;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+  // SENSEI 60FPS SMOOTH RENDERING LOOP (with linear interpolation / LERP)
+  useEffect(() => {
+    if (role !== "sensei") return;
 
-    const w = canvas.width;
-    const h = canvas.height;
+    let animationFrameId: number;
 
-    // Draw dark cyber grid backdrop
-    ctx.fillStyle = "#0c0f12";
-    ctx.fillRect(0, 0, w, h);
+    const render = () => {
+      const canvas = document.getElementById("sensei-canvas") as HTMLCanvasElement;
+      if (canvas) {
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          const w = canvas.width;
+          const h = canvas.height;
 
-    // Draw grid lines
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.02)";
-    ctx.lineWidth = 1;
-    const gridSpacing = 40;
-    for (let x = 0; x < w; x += gridSpacing) {
-      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
-    }
-    for (let y = 0; y < h; y += gridSpacing) {
-      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
-    }
+          // Clear & Draw Backdrop
+          ctx.fillStyle = "#0c0f12";
+          ctx.fillRect(0, 0, w, h);
 
-    const lms = studentPose.landmarks;
-    if (!lms || lms.length === 0) {
-      // Show waiting indicator
-      ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
-      ctx.font = "12px monospace";
-      ctx.textAlign = "center";
-      ctx.fillText("Esperando que el alumno active su cámara...", w / 2, h / 2);
-      return;
-    }
+          // Draw grid lines
+          ctx.strokeStyle = "rgba(255, 255, 255, 0.02)";
+          ctx.lineWidth = 1;
+          const gridSpacing = 40;
+          for (let x = 0; x < w; x += gridSpacing) {
+            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+          }
+          for (let y = 0; y < h; y += gridSpacing) {
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+          }
 
-    const mode = studentPose.mode || "superior";
-    const tol = tolerance;
-    const currentAngles = studentPose.angles || { left: 0, right: 0 };
-    
-    // Evaluation colors
-    let leftColor = "rgba(255, 0, 0, 0.8)";
-    let rightColor = "rgba(255, 0, 0, 0.8)";
+          const poseData = studentPoseDataRef.current;
+          const targetLms = targetLandmarksRef.current;
 
-    // If Sensei has active preset selected, load it to draw alongside
-    const senseiActivePreset = presets.find((p) => p._id === selectedPresetId);
-    if (senseiActivePreset) {
-      const diffL = Math.abs(currentAngles.left - senseiActivePreset.angles.left);
-      const diffR = Math.abs(currentAngles.right - senseiActivePreset.angles.right);
+          if (!poseData || !targetLms || targetLms.length === 0) {
+            // Show waiting indicator
+            ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+            ctx.font = "12px monospace";
+            ctx.textAlign = "center";
+            ctx.fillText("Esperando que el alumno active su cámara...", w / 2, h / 2);
+          } else {
+            // Initialize or Interpolate landmarks
+            if (!interpolatedLandmarksRef.current || interpolatedLandmarksRef.current.length !== targetLms.length) {
+              interpolatedLandmarksRef.current = targetLms.map((pt) => ({ ...pt }));
+            } else {
+              const lerpFactor = 0.15; // Smooth transition coefficient
+              for (let i = 0; i < targetLms.length; i++) {
+                const targetPt = targetLms[i];
+                const interpPt = interpolatedLandmarksRef.current[i];
+                if (targetPt && interpPt) {
+                  interpPt.x += (targetPt.x - interpPt.x) * lerpFactor;
+                  interpPt.y += (targetPt.y - interpPt.y) * lerpFactor;
+                  if (targetPt.z !== undefined && interpPt.z !== undefined) {
+                    interpPt.z += (targetPt.z - interpPt.z) * lerpFactor;
+                  }
+                }
+              }
+            }
 
-      if (diffL <= tol) leftColor = "rgba(34, 197, 94, 0.85)";
-      if (diffR <= tol) rightColor = "rgba(34, 197, 94, 0.85)";
+            const lms = interpolatedLandmarksRef.current;
+            const mode = poseData.mode || "superior";
+            const tol = toleranceRef.current;
+            const currentAngles = poseData.angles || { left: 0, right: 0 };
+            
+            // Evaluation colors
+            let leftColor = "rgba(255, 0, 0, 0.8)";
+            let rightColor = "rgba(255, 0, 0, 0.8)";
 
-      // Draw reference silhouette in light cyan
-      const normalizedLms = normalizeReferenceLandmarks(lms, senseiActivePreset.landmarks);
-      drawGhostSkeleton(ctx, normalizedLms, w, h, "rgba(6, 182, 212, 0.25)", 4);
-    }
+            const senseiActivePreset = presetsRef.current.find((p) => p._id === selectedPresetIdRef.current);
+            if (senseiActivePreset) {
+              const diffL = Math.abs(currentAngles.left - senseiActivePreset.angles.left);
+              const diffR = Math.abs(currentAngles.right - senseiActivePreset.angles.right);
 
-    // Draw active wireframe
-    drawActiveSkeleton(ctx, lms, w, h, leftColor, rightColor, mode);
+              if (diffL <= tol) leftColor = "rgba(34, 197, 94, 0.85)";
+              if (diffR <= tol) rightColor = "rgba(34, 197, 94, 0.85)";
 
-    // Draw center of gravity
-    drawCenterOfGravity(ctx, lms, w, h);
+              // Draw reference silhouette in light cyan
+              const normalizedLms = normalizeReferenceLandmarks(lms, senseiActivePreset.landmarks);
+              drawGhostSkeleton(ctx, normalizedLms, w, h, "rgba(6, 182, 212, 0.25)", 4);
+            }
 
-    // Draw angle text labels
-    drawAnglesOnSkeleton(ctx, lms, w, h, currentAngles, mode);
+            // Draw active wireframe
+            drawActiveSkeleton(ctx, lms, w, h, leftColor, rightColor, mode);
 
-    // Draw details in overlay HUD
-    ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
-    ctx.font = "bold 9px monospace";
-    ctx.textAlign = "left";
-    ctx.fillText(`ALINEADO: ${studentPose.isAligned ? "SÍ" : "NO"}`, 15, 25);
-    ctx.fillText(`PRECISIÓN: ${studentPose.alignmentScore}%`, 15, 40);
-  };
+            // Draw center of gravity
+            drawCenterOfGravity(ctx, lms, w, h);
+
+            // Draw angle text labels
+            drawAnglesOnSkeleton(ctx, lms, w, h, currentAngles, mode);
+
+            // Draw details in overlay HUD
+            ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+            ctx.font = "bold 9px monospace";
+            ctx.textAlign = "left";
+            ctx.fillText(`ALINEADO: ${poseData.isAligned ? "SÍ" : "NO"}`, 15, 25);
+            ctx.fillText(`PRECISIÓN: ${poseData.alignmentScore}%`, 15, 40);
+          }
+        }
+      }
+
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [role]);
 
   // Push controller changes from Sensei to MongoDB
   const updateSenseiControls = async (updatedFields: any) => {
