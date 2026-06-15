@@ -81,6 +81,11 @@ export default function DojoVirtual() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [editingPresetId, setEditingPresetId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState("");
+  const [studentVideoStream, setStudentVideoStream] = useState<MediaStream | null>(null);
+  const studentVideoStreamRef = useRef<MediaStream | null>(null);
+  useEffect(() => {
+    studentVideoStreamRef.current = studentVideoStream;
+  }, [studentVideoStream]);
 
   // Refs for tracking student alignment triggers (TTS audio beep)
   const hasTriggeredAlignRef = useRef(false);
@@ -253,6 +258,33 @@ export default function DojoVirtual() {
     return () => clearInterval(reconnectInterval);
   }, [role]);
 
+  // STUDENT VIDEO STREAM P2P CALL: Send video stream to Sensei
+  useEffect(() => {
+    if (role !== "student" || !isP2PConnected || !cameraActive || !peerInstanceRef.current || !senseiPeerId) return;
+
+    let mediaCall: any = null;
+
+    const startWebStream = () => {
+      const localStream = videoRef.current?.srcObject as MediaStream;
+      if (localStream && peerInstanceRef.current) {
+        console.log("Student: Initiating video call to Sensei Peer:", senseiPeerId);
+        mediaCall = peerInstanceRef.current.call(senseiPeerId, localStream);
+      } else {
+        // If stream is not yet bound to video element, retry in 1 second
+        setTimeout(startWebStream, 1000);
+      }
+    };
+
+    const timer = setTimeout(startWebStream, 1500);
+
+    return () => {
+      clearTimeout(timer);
+      if (mediaCall) {
+        try { mediaCall.close(); } catch {}
+      }
+    };
+  }, [role, isP2PConnected, cameraActive, senseiPeerId]);
+
   // SENSEI P2P SETUP: Init PeerJS as Host with random ID to avoid conflict, and save it in MongoDB
   useEffect(() => {
     if (role !== "sensei" || !peerjsLoaded || !roomCode) return;
@@ -280,6 +312,21 @@ export default function DojoVirtual() {
       }).catch(err => console.error("Error saving senseiPeerId:", err));
     });
 
+    peer.on("call", (call: any) => {
+      console.log("Sensei: Incoming video call from student...");
+      call.answer(); // Answer without sending video back
+      call.on("stream", (remoteStream: any) => {
+        console.log("Sensei: Received student remote stream!");
+        setStudentVideoStream(remoteStream);
+      });
+      call.on("close", () => {
+        setStudentVideoStream(null);
+      });
+      call.on("error", () => {
+        setStudentVideoStream(null);
+      });
+    });
+
     peer.on("connection", (conn: any) => {
       peerConnRef.current = conn;
       setIsP2PConnected(true);
@@ -302,21 +349,25 @@ export default function DojoVirtual() {
 
       conn.on("close", () => {
         setIsP2PConnected(false);
+        setStudentVideoStream(null);
         console.log("Student disconnected from P2P.");
       });
 
       conn.on("error", (err: any) => {
         console.warn("Sensei P2P Connection error:", err);
         setIsP2PConnected(false);
+        setStudentVideoStream(null);
       });
     });
 
     peer.on("error", (err: any) => {
       console.warn("Sensei PeerJS host error:", err);
       setIsP2PConnected(false);
+      setStudentVideoStream(null);
     });
 
     return () => {
+      setStudentVideoStream(null);
       if (peerConnRef.current) {
         try { peerConnRef.current.close(); } catch {}
       }
@@ -1084,18 +1135,21 @@ export default function DojoVirtual() {
           const h = canvas.height;
 
           // Clear & Draw Backdrop
-          ctx.fillStyle = "#0c0f12";
-          ctx.fillRect(0, 0, w, h);
+          ctx.clearRect(0, 0, w, h);
+          if (!studentVideoStreamRef.current) {
+            ctx.fillStyle = "#0c0f12";
+            ctx.fillRect(0, 0, w, h);
 
-          // Draw grid lines
-          ctx.strokeStyle = "rgba(255, 255, 255, 0.02)";
-          ctx.lineWidth = 1;
-          const gridSpacing = 40;
-          for (let x = 0; x < w; x += gridSpacing) {
-            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
-          }
-          for (let y = 0; y < h; y += gridSpacing) {
-            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+            // Draw grid lines
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.02)";
+            ctx.lineWidth = 1;
+            const gridSpacing = 40;
+            for (let x = 0; x < w; x += gridSpacing) {
+              ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+            }
+            for (let y = 0; y < h; y += gridSpacing) {
+              ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+            }
           }
 
           const poseData = studentPoseDataRef.current;
@@ -1574,39 +1628,14 @@ export default function DojoVirtual() {
                     )}
                   </div>
 
-                  {/* Videocall integration card */}
-                  <div className="bg-red-50 border border-red-200/60 p-4 rounded-none space-y-2">
-                    <h3 className="text-[10px] font-bold font-title-serif uppercase text-[#E52B34] tracking-wider">
-                      Videollamada en Vivo
-                    </h3>
-                    {meetLink ? (
-                      <div className="space-y-2">
-                        <p className="font-body text-[11px] text-neutral-600 font-light leading-relaxed">
-                          Tu Sensei ha iniciado la transmisión de video. Únete a la llamada para que pueda verte.
-                        </p>
-                        <a 
-                          href={meetLink} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="w-full bg-[#E52B34] text-white text-[10px] font-bold tracking-widest text-center uppercase py-2 block hover:bg-neutral-900 transition-colors text-center"
-                        >
-                          UNIRSE A VIDEOLLAMADA
-                        </a>
-                      </div>
-                    ) : (
-                      <p className="font-body text-[11px] text-neutral-400 font-light italic">
-                        Esperando que tu Sensei inicie la videollamada de Google Meet/Jitsi...
-                      </p>
-                    )}
-                  </div>
                 </div>
-
+ 
                 <div className="space-y-4 pt-6 border-t border-neutral-100">
-                  <div className="bg-amber-50 border border-amber-200 p-3 rounded-none flex gap-2 items-start text-[10px] font-body text-amber-800 leading-relaxed">
+                  <div className="bg-amber-50 border border-amber-250 p-3 rounded-none flex gap-2 items-start text-[10px] font-body text-amber-800 leading-relaxed">
                     <AlertCircle className="w-4 h-4 shrink-0 text-amber-600 mt-0.5" />
                     <div>
                       <span className="font-bold block uppercase text-[9px] mb-0.5">Pantalla en Primer Plano:</span>
-                      Mantén esta pestaña **visible y activa** en tu pantalla (puedes usar pantalla dividida al lado de tu videollamada). Si minimizas esta ventana o cambias de pestaña, el navegador pausará la cámara y el Sensei no podrá recibir tu postura.
+                      Mantén esta pestaña **visible y activa** en tu pantalla. Si minimizas esta ventana o cambias de pestaña, el navegador pausará la cámara y el Sensei no podrá recibir tu postura ni tu transmisión de video.
                     </div>
                   </div>
 
@@ -1632,13 +1661,30 @@ export default function DojoVirtual() {
               {/* Left Panel: Real-Time Wireframe Canvas rendering student skeleton */}
               <div className="flex-1 flex flex-col items-center justify-center bg-[#0c0f12] border border-neutral-800 p-4 relative min-h-[480px]">
                 
-                {/* Cyber Grid Canvas */}
-                <canvas 
-                  id="sensei-canvas"
-                  width="640"
-                  height="480"
-                  className="w-full max-w-[640px] aspect-[4/3] bg-[#0c0f12] border border-neutral-800"
-                />
+                <div className="relative w-full max-w-[640px] aspect-[4/3] bg-[#0c0f12] border border-neutral-800 overflow-hidden">
+                  {/* Real-Time Student Video Stream */}
+                  {studentVideoStream && (
+                    <video
+                      ref={(el) => {
+                        if (el) {
+                          el.srcObject = studentVideoStream;
+                        }
+                      }}
+                      autoPlay
+                      playsInline
+                      muted
+                      className="absolute inset-0 w-full h-full object-cover scale-x-[-1]"
+                    />
+                  )}
+
+                  {/* Cyber Grid Canvas (drawn on top of video) */}
+                  <canvas 
+                    id="sensei-canvas"
+                    width="640"
+                    height="480"
+                    className="absolute inset-0 w-full h-full z-10 bg-transparent"
+                  />
+                </div>
 
                 {/* Accuracy HUD metrics */}
                 {studentPoseData && (
@@ -1697,72 +1743,18 @@ export default function DojoVirtual() {
                     </div>
                   </div>
 
-                  {/* Google Meet / Jitsi link settings */}
-                  <div className="space-y-3 bg-[#E52B34]/5 border border-[#E52B34]/15 p-4 rounded-none">
-                    <h3 className="text-xs font-title-serif font-extrabold uppercase text-[#E52B34] tracking-wider flex items-center gap-1.5">
-                      <Users className="w-4 h-4" /> Videollamada (Meet / Jitsi)
-                    </h3>
-                    <p className="font-body text-[11px] text-neutral-500 font-light leading-relaxed">
-                      Pega el enlace de tu Google Meet o Jitsi para que tu alumno se conecte y puedas verlo en vivo en otra ventana o monitor.
-                    </p>
-                    <div className="flex gap-2">
-                      <input 
-                        type="text"
-                        placeholder="Ej. https://meet.google.com/abc-defg-hij"
-                        value={meetLinkInput}
-                        onChange={(e) => setMeetLinkInput(e.target.value)}
-                        className="flex-1 px-3 py-2 border border-neutral-250 rounded-none bg-white font-body text-xs text-neutral-900 focus:outline-none"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setMeetLink(meetLinkInput.trim());
-                          updateSenseiControls({ meetLink: meetLinkInput.trim() });
-                        }}
-                        className="bg-neutral-900 hover:bg-neutral-950 text-white rounded-none px-3.5 text-xs font-bold uppercase tracking-wider transition-colors"
-                      >
-                        Enviar
-                      </button>
-                    </div>
-                    {meetLink && (
-                      <div className="text-[10px] font-body text-neutral-600 flex justify-between items-center bg-white px-2.5 py-1.5 border border-neutral-200">
-                        <span className="truncate max-w-[200px] font-light">Activo: {meetLink}</span>
-                        <button 
-                          type="button"
-                          onClick={() => {
-                            setMeetLink("");
-                            setMeetLinkInput("");
-                            updateSenseiControls({ meetLink: "" });
-                          }}
-                          className="text-[#E52B34] hover:underline uppercase text-[9px] font-bold"
-                        >
-                          Quitar
-                        </button>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Google Meet Instructional Guide for Sensei */}
+                  {/* Integrated WebRTC P2P Video Stream Status & Info */}
                   <div className="bg-neutral-900 border border-neutral-800 p-4 rounded-none text-xs text-neutral-300 space-y-3">
                     <h4 className="font-title-serif font-extrabold uppercase text-[#FF4D55] tracking-wider flex items-center gap-1.5">
-                      <HelpCircle className="w-4 h-4 text-[#FF4D55]" /> Guía de Conexión y Captura
+                      <HelpCircle className="w-4 h-4 text-[#FF4D55]" /> Guía de Conexión Integrada
                     </h4>
-                    <ol className="list-decimal pl-4 space-y-2.5 font-body text-[11px] text-neutral-400 font-light">
-                      <li>
-                        Abre <a href="https://meet.google.com" target="_blank" rel="noopener noreferrer" className="text-white underline hover:text-[#FF4D55] font-semibold">Google Meet</a> en otra ventana y genera una videollamada.
-                      </li>
-                      <li>
-                        Pega el enlace en el cuadro de arriba y haz clic en <strong>Enviar</strong>.
-                      </li>
-                      <li>
-                        Pídele a tu alumno que haga clic en <strong>"Unirse a Videollamada"</strong> en su pantalla.
-                      </li>
-                      <li>
-                        En Google Meet, indícale al alumno que haga clic en <strong>"Compartir Pantalla"</strong> y elija su pestaña de <em>Dojo Virtual</em>.
-                      </li>
-                      <li>
-                        <strong>¡Listo!</strong> En Google Meet verás su video real y su esqueleto neón encima. Cuando logre una postura correcta, escribe el nombre abajo y haz clic en <strong>"Capturar"</strong> para guardarla en el catálogo.
-                      </li>
+                    <p className="font-body text-[11px] text-neutral-400 font-light leading-relaxed">
+                      El video y los vectores del Alumno se transmiten de forma directa (P2P) y segura entre navegadores sin intermediarios.
+                    </p>
+                    <ol className="list-decimal pl-4 space-y-2 font-body text-[11px] text-neutral-400 font-light">
+                      <li>Comparte el código de la sala con tu alumno.</li>
+                      <li>Una vez que el alumno se conecte, la transmisión de video WebRTC comenzará automáticamente.</li>
+                      <li>Verás al alumno en la pantalla de la izquierda con su esqueleto vectorizado superpuesto en tiempo real.</li>
                     </ol>
                   </div>
 
