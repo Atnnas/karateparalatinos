@@ -9,8 +9,6 @@ import {
   Target, 
   Eye, 
   Video, 
-  Sparkles, 
-  Zap, 
   Lock, 
   Users, 
   ShieldAlert,
@@ -95,54 +93,6 @@ const tools: Tool[] = [
     actionLink: "#",
     active: false,
     badge: "Exclusivo Sensei"
-  },
-  {
-    id: "kata-ai",
-    name: "Kata AI Analyzer",
-    jpName: "型AIアナライザー",
-    status: "Planificado",
-    statusColor: "bg-neutral-500/10 border-neutral-500/30 text-neutral-600",
-    category: "Formas AI",
-    icon: Sparkles,
-    description: "Realiza formas completas (Katas como Heian Shodan) frente a la cámara. Nuestra red neuronal evaluará la secuencia exacta de movimientos, el ritmo, los giros, la postura del torso y la transición del centro de gravedad, otorgando una puntuación final de ejecución.",
-    features: [
-      { label: "Secuenciador de Movimientos", desc: "Valida que realices el orden correcto de las técnicas." },
-      { label: "Métricas de Ritmo", desc: "Mide las pausas y aceleraciones de la kata completa." },
-      { label: "Centro de Gravedad", desc: "Analiza el balance y la altura de la cadera en los giros." },
-      { label: "Calificación Oficial", desc: "Obtén retroalimentación y estrellas por tu nivel de ejecución." }
-    ],
-    requirements: [
-      { name: "Cámara Web", supported: true },
-      { name: "Espacio (3 metros)", supported: true },
-      { name: "Buena Iluminación", supported: true }
-    ],
-    actionText: "EN FASE DE DISEÑO",
-    actionLink: "#",
-    active: false
-  },
-  {
-    id: "kumite-speed",
-    name: "Kumite Speedometer",
-    jpName: "組手スピードメーター",
-    status: "Planificado",
-    statusColor: "bg-neutral-500/10 border-neutral-500/30 text-neutral-600",
-    category: "Velocidad de Combate",
-    icon: Zap,
-    description: "Mide y optimiza tu velocidad de ataque y tiempo de reacción. El sistema generará estímulos visuales en pantalla y registrará en milisegundos cuánto tardas en reaccionar con un golpe y la aceleración máxima de tu puño o patada.",
-    features: [
-      { label: "Tiempo de Reacción", desc: "Mide los milisegundos desde el estímulo hasta el inicio del golpe." },
-      { label: "Acelerómetro 2D", desc: "Cálculo matemático de la velocidad pico y aceleración del impacto." },
-      { label: "Tabla de Récords", desc: "Compite contra tus propios tiempos y los de otros practicantes." },
-      { label: "Temporizador Reactivo", desc: "Intervalos aleatorios diseñados para mejorar tus reflejos." }
-    ],
-    requirements: [
-      { name: "Cámara Web", supported: true },
-      { name: "Área de Guardia", supported: true },
-      { name: "Reflejos Rápidos", supported: true }
-    ],
-    actionText: "EN FASE DE DISEÑO",
-    actionLink: "#",
-    active: false
   }
 ];
 
