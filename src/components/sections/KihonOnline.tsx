@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { 
   Camera, 
   Mic, 
@@ -109,6 +110,13 @@ export default function KihonOnline() {
   const [cameraError, setCameraError] = useState(false);
   const [isCameraActive, setIsCameraActive] = useState(false);
   
+  // Integración de Base de Datos y Sesión
+  const { data: session } = useSession();
+  const [presets, setPresets] = useState<any[]>([]);
+  const [selectedPresetId, setSelectedPresetId] = useState<string>("");
+  const [newPresetName, setNewPresetName] = useState<string>("");
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+  
   // Modos y Entrenamientos
   const [trainingMode, setTrainingMode] = useState<"superior" | "inferior">("superior");
   const [isGuidedMode, setIsGuidedMode] = useState(true);
@@ -174,6 +182,23 @@ export default function KihonOnline() {
   useEffect(() => {
     savedPoseAnglesRef.current = savedPoseAngles;
   }, [savedPoseAngles]);
+
+  // Cargar presets de la Base de Datos
+  const fetchPresets = async () => {
+    try {
+      const res = await fetch("/api/presets");
+      if (res.ok) {
+        const data = await res.json();
+        setPresets(data);
+      }
+    } catch (err) {
+      console.error("Error fetching presets:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchPresets();
+  }, []);
 
   // Inicialización de Síntesis de Voz
   const speak = (text: string) => {
@@ -1287,6 +1312,64 @@ export default function KihonOnline() {
                 </button>
               </div>
             )}
+
+            {/* Admin Save Pose Section */}
+            {scriptsLoaded && isCameraActive && (session?.user as any)?.role === "admin" && (
+              <div className="w-full mt-4 border border-dashed border-[#8B6914]/40 bg-neutral-50 p-4 flex flex-col sm:flex-row gap-3 items-center justify-center shadow-sm">
+                <span className="text-xs font-bold font-title-serif uppercase tracking-wider text-neutral-700">Panel Admin:</span>
+                <input
+                  type="text"
+                  placeholder="Nombre de la postura (ej. Zenkutsu Dachi)"
+                  value={newPresetName}
+                  onChange={(e) => setNewPresetName(e.target.value)}
+                  className="text-xs border border-neutral-300 px-3 py-2.5 rounded-none bg-white font-sans text-neutral-800 focus:border-[#E52B34] focus:outline-none w-full sm:w-64"
+                />
+                <button
+                  onClick={async () => {
+                    const lms = latestPoseLandmarksRef.current;
+                    if (!lms) {
+                      speak("Asegúrate de estar visible frente a la cámara antes de guardar.");
+                      return;
+                    }
+                    if (!newPresetName.trim()) {
+                      speak("Ingresa un nombre para la postura.");
+                      return;
+                    }
+                    setIsSaving(true);
+                    try {
+                      const currentAngles = calculateCurrentAngles(lms, trainingModeRef.current);
+                      const res = await fetch("/api/presets", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          name: newPresetName.trim(),
+                          category: trainingModeRef.current,
+                          angles: currentAngles,
+                          landmarks: lms,
+                        }),
+                      });
+                      const data = await res.json();
+                      if (res.ok) {
+                        setNewPresetName("");
+                        speak("Postura guardada correctamente en el catálogo oficial.");
+                        fetchPresets(); // Recargar catálogo
+                      } else {
+                        speak(data.error || "Error al guardar la postura.");
+                      }
+                    } catch (err) {
+                      console.error("Error saving preset:", err);
+                      speak("Error de conexión.");
+                    } finally {
+                      setIsSaving(false);
+                    }
+                  }}
+                  disabled={isSaving}
+                  className="btn-kpl-primary text-xs px-4 py-2.5 rounded-none cursor-pointer disabled:opacity-50 w-full sm:w-auto flex items-center justify-center font-bold"
+                >
+                  {isSaving ? "Guardando..." : "Subir a Catálogo BD"}
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Right Block: Controls & Guides Panel */}
@@ -1314,6 +1397,88 @@ export default function KihonOnline() {
                   >
                     Tren Inferior
                   </button>
+                </div>
+              </div>
+
+              {/* Catálogo de Posturas oficiales en la base de datos */}
+              <div className="border-t border-neutral-200 pt-4">
+                <label className="block text-xs font-title-serif text-[#556358] uppercase tracking-wider mb-2 font-bold flex items-center justify-between">
+                  <span>Catálogo de Posturas BD</span>
+                  {presets.length > 0 && <span className="text-neutral-400 font-mono text-[10px]">{presets.length} posturas</span>}
+                </label>
+                <div className="flex gap-2">
+                  <select
+                    value={selectedPresetId}
+                    onChange={(e) => {
+                      const id = e.target.value;
+                      setSelectedPresetId(id);
+                      if (id === "") {
+                        triggerResetPose();
+                      } else {
+                        const preset = presets.find((p) => p._id === id);
+                        if (preset) {
+                          // Cambiar segmento corporal si es diferente
+                          if (preset.category !== trainingMode) {
+                            changeTrainingMode(preset.category);
+                          }
+                          // Cargar landmarks y ángulos
+                          setSavedPoseLandmarks(preset.landmarks);
+                          setSavedPoseAngles(preset.angles);
+                          hasTriggeredAlignRef.current = false;
+                          speak(`Postura ${preset.name} cargada de la base de datos.`);
+                        }
+                      }
+                    }}
+                    className="flex-1 text-xs border border-neutral-300 px-2.5 py-2.5 rounded-none bg-white font-sans text-neutral-800 focus:border-[#E52B34] focus:outline-none cursor-pointer"
+                  >
+                    <option value="">-- Replicar Postura Libre --</option>
+                    {presets.map((preset) => (
+                      <option key={preset._id} value={preset._id}>
+                        {preset.name} ({preset.category === "superior" ? "Tren Superior" : "Tren Inferior"})
+                      </option>
+                    ))}
+                  </select>
+                  {selectedPresetId && (
+                    <button
+                      onClick={() => {
+                        setSelectedPresetId("");
+                        triggerResetPose();
+                      }}
+                      className="px-2.5 border border-neutral-300 hover:border-[#E52B34] hover:text-[#E52B34] transition-all bg-white text-neutral-600 rounded-none cursor-pointer flex items-center justify-center"
+                      title="Dejar de replicar"
+                    >
+                      <RefreshCw className="w-4 h-4" />
+                    </button>
+                  )}
+                  {selectedPresetId && (session?.user as any)?.role === "admin" && (
+                    <button
+                      onClick={async () => {
+                        if (confirm("¿Estás seguro de que deseas eliminar esta postura del catálogo oficial de la BD?")) {
+                          try {
+                            const res = await fetch(`/api/presets?presetId=${selectedPresetId}`, {
+                              method: "DELETE",
+                            });
+                            const data = await res.json();
+                            if (res.ok) {
+                              setSelectedPresetId("");
+                              triggerResetPose();
+                              speak("Postura eliminada correctamente.");
+                              fetchPresets();
+                            } else {
+                              speak(data.error || "Error al eliminar.");
+                            }
+                          } catch (err) {
+                            console.error("Error deleting preset:", err);
+                            speak("Error de conexión.");
+                          }
+                        }
+                      }}
+                      className="px-2.5 border border-red-300 hover:border-red-600 hover:bg-red-50 text-red-600 rounded-none cursor-pointer flex items-center justify-center"
+                      title="Eliminar postura de la base de datos"
+                    >
+                      <span className="text-xs font-bold font-mono">X</span>
+                    </button>
+                  )}
                 </div>
               </div>
 
