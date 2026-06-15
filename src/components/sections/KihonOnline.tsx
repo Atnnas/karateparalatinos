@@ -306,27 +306,27 @@ export default function KihonOnline() {
 
     let triggered = false;
 
-    // Listas amplias de palabras clave y fonéticas para entrenar a distancia (con eco y menor volumen)
+    // Listas depuradas de palabras clave (evitamos palabras muy cortas como "ya", "ok", "pie", "mano" 
+    // que causan falsos positivos constantes con el ruido de fondo o respiración).
     const saveKeywords = [
-      "guardar", "guarda", "grabar", "graba", "fijar", "fija", "capturar", "captura", 
-      "salvar", "salva", "cuadrar", "cuadra", "gualdar", "wardar", "listo", "hecho", 
-      "ya", "toma", "save", "ok"
+      "guardar postura", "guardar posición", "guardar posicion", "guardar", 
+      "grabar postura", "grabar", "capturar postura", "capturar", "fijar postura", "fijar"
     ];
     const resetKeywords = [
-      "reiniciar", "reinicia", "borrar", "borra", "limpiar", "limpia", "reset", 
-      "resetear", "quitar", "quita", "eliminar", "elimina", "clear"
+      "reiniciar postura", "limpiar postura", "borrar postura", "reiniciar", "limpiar", 
+      "borrar", "reset", "resetear", "eliminar postura", "eliminar"
     ];
     const upperKeywords = [
-      "superior", "arriba", "brazo", "brazos", "mano", "manos", "pecho", "hombro", "hombros"
+      "tren superior", "entrenamiento superior", "modo superior", "superior", "hombros"
     ];
     const lowerKeywords = [
-      "inferior", "abajo", "pierna", "piernas", "pie", "pies", "rodilla", "rodillas"
+      "tren inferior", "entrenamiento inferior", "modo inferior", "inferior", "rodillas"
     ];
     const guidedKeywords = [
-      "guiado", "guía", "guia", "ayuda", "ayudas", "indicaciones"
+      "modo guiado", "guiado", "indicaciones"
     ];
     const expertKeywords = [
-      "experto", "libre", "solos", "solo", "silencio"
+      "modo experto", "experto", "silencio"
     ];
 
     const matches = (keywords: string[]) => {
@@ -410,16 +410,21 @@ export default function KihonOnline() {
     };
 
     rec.onresult = (event: ISpeechRecognitionEvent) => {
-      const lastIndex = event.results.length - 1;
-      const result = event.results[lastIndex];
+      const lastIndex = event.results ? event.results.length - 1 : -1;
+      const result = lastIndex >= 0 ? event.results[lastIndex] : null;
+      if (!result) return;
       
-      // Recorrer las alternativas de reconocimiento (útil a distancia o con eco)
-      for (let i = 0; i < result.length; i++) {
-        const text = result[i].transcript.trim().toLowerCase();
-        console.log(`Comando escuchado (alt ${i}):`, text);
-        const matched = handleSpeechCommandRef.current(text);
-        if (matched) {
-          break; // Detener si alguna alternativa coincidió con un comando válido
+      // Recorrer las alternativas de reconocimiento de forma segura
+      const len = typeof result.length === "number" ? result.length : 0;
+      for (let i = 0; i < len; i++) {
+        const alt = result[i];
+        if (alt && typeof alt.transcript === "string") {
+          const text = alt.transcript.trim().toLowerCase();
+          console.log(`Comando escuchado (alt ${i}):`, text);
+          const matched = handleSpeechCommandRef.current(text);
+          if (matched) {
+            break; // Detener si alguna alternativa coincidió con un comando válido
+          }
         }
       }
     };
