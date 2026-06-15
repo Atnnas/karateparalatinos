@@ -88,6 +88,8 @@ export default function DojoVirtual() {
 
   // Sensei Smooth Rendering Refs
   const targetLandmarksRef = useRef<PoseLandmark[] | null>(null);
+  const previousLandmarksRef = useRef<PoseLandmark[] | null>(null);
+  const lastUpdateTimestampRef = useRef<number>(0);
   const interpolatedLandmarksRef = useRef<PoseLandmark[] | null>(null);
   const studentPoseDataRef = useRef<any>(null);
   const toleranceRef = useRef(tolerance);
@@ -779,7 +781,14 @@ export default function DojoVirtual() {
             setStudentPoseData(data.studentPose);
             studentPoseDataRef.current = data.studentPose;
             if (data.studentPose.landmarks) {
+              // Store old target as previous to interpolate from
+              if (targetLandmarksRef.current) {
+                previousLandmarksRef.current = targetLandmarksRef.current;
+              } else {
+                previousLandmarksRef.current = data.studentPose.landmarks;
+              }
               targetLandmarksRef.current = data.studentPose.landmarks;
+              lastUpdateTimestampRef.current = Date.now();
             }
           }
 
@@ -803,7 +812,7 @@ export default function DojoVirtual() {
     };
   }, [role, roomCode]);
 
-  // SENSEI 60FPS SMOOTH RENDERING LOOP (with linear interpolation / LERP)
+  // SENSEI 60FPS SMOOTH RENDERING LOOP (with linear interpolation / LERP based on time)
   useEffect(() => {
     if (role !== "sensei") return;
 
@@ -834,6 +843,7 @@ export default function DojoVirtual() {
 
           const poseData = studentPoseDataRef.current;
           const targetLms = targetLandmarksRef.current;
+          const prevLms = previousLandmarksRef.current;
 
           if (!poseData || !targetLms || targetLms.length === 0) {
             // Show waiting indicator
@@ -842,19 +852,23 @@ export default function DojoVirtual() {
             ctx.textAlign = "center";
             ctx.fillText("Esperando que el alumno active su cámara...", w / 2, h / 2);
           } else {
+            // Calculate progress (0 to 1) based on time elapsed since the last 800ms update
+            const elapsed = Date.now() - lastUpdateTimestampRef.current;
+            const progress = Math.min(1, elapsed / 800);
+
             // Initialize or Interpolate landmarks
             if (!interpolatedLandmarksRef.current || interpolatedLandmarksRef.current.length !== targetLms.length) {
               interpolatedLandmarksRef.current = targetLms.map((pt) => ({ ...pt }));
             } else {
-              const lerpFactor = 0.15; // Smooth transition coefficient
               for (let i = 0; i < targetLms.length; i++) {
                 const targetPt = targetLms[i];
+                const prevPt = prevLms && prevLms[i] ? prevLms[i] : targetPt;
                 const interpPt = interpolatedLandmarksRef.current[i];
-                if (targetPt && interpPt) {
-                  interpPt.x += (targetPt.x - interpPt.x) * lerpFactor;
-                  interpPt.y += (targetPt.y - interpPt.y) * lerpFactor;
-                  if (targetPt.z !== undefined && interpPt.z !== undefined) {
-                    interpPt.z += (targetPt.z - interpPt.z) * lerpFactor;
+                if (targetPt && prevPt && interpPt) {
+                  interpPt.x = prevPt.x + (targetPt.x - prevPt.x) * progress;
+                  interpPt.y = prevPt.y + (targetPt.y - prevPt.y) * progress;
+                  if (targetPt.z !== undefined && prevPt.z !== undefined && interpPt.z !== undefined) {
+                    interpPt.z = prevPt.z + (targetPt.z - prevPt.z) * progress;
                   }
                 }
               }
