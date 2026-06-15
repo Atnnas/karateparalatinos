@@ -41,6 +41,7 @@ export interface IDojoRoom extends Document {
     presetId?: string; // ID of the reference preset
     guidedMode: boolean;
     tolerance: number;
+    analysisMode: "superior" | "inferior" | "completo"; // Body region to analyze
     command: "save_pose" | "reset_pose" | "session_capture" | "clear_session_capture" | "none";
     newPoseName?: string; // name to save the captured pose as
     timestamp: number; // to avoid repeating command
@@ -74,6 +75,7 @@ const DojoRoomSchema: Schema = new Schema({
     presetId: { type: String, default: "" },
     guidedMode: { type: Boolean, default: true },
     tolerance: { type: Number, default: 15 },
+    analysisMode: { type: String, enum: ["superior", "inferior", "completo"], default: "completo" },
     command: { type: String, enum: ["save_pose", "reset_pose", "session_capture", "clear_session_capture", "none"], default: "none" },
     newPoseName: { type: String, default: "" },
     timestamp: { type: Number, default: 0 }

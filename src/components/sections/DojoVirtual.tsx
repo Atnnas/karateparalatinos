@@ -25,7 +25,8 @@ import {
   Pencil,
   X,
   Crosshair,
-  XCircle
+  XCircle,
+  Maximize2
 } from "lucide-react";
 
 interface PoseLandmark {
@@ -71,6 +72,7 @@ export default function DojoVirtual() {
   const [selectedPresetId, setSelectedPresetId] = useState<string>("");
   const [guidedMode, setGuidedMode] = useState(true);
   const [tolerance, setTolerance] = useState(15);
+  const [analysisMode, setAnalysisMode] = useState<"superior" | "inferior" | "completo">("completo");
   const [newPoseName, setNewPoseName] = useState("");
   const [isSavingPose, setIsSavingPose] = useState(false);
   const [saveSuccessMessage, setSaveSuccessMessage] = useState("");
@@ -103,8 +105,8 @@ export default function DojoVirtual() {
   // Session-only captured pose (Sensei captures, both sides see ghost)
   const [sessionCapture, setSessionCapture] = useState<{
     landmarks: PoseLandmark[];
-    angles: { left: number; right: number };
-    mode: "superior" | "inferior";
+    angles: { left: number; right: number; leftKnee?: number; rightKnee?: number };
+    mode: "superior" | "inferior" | "completo";
   } | null>(null);
   const sessionCaptureRef = useRef<typeof sessionCapture>(null);
   useEffect(() => {
@@ -136,6 +138,7 @@ export default function DojoVirtual() {
   const toleranceRef = useRef(tolerance);
   const selectedPresetIdRef = useRef(selectedPresetId);
   const presetsRef = useRef(presets);
+  const analysisModeRef = useRef(analysisMode);
 
   // PeerJS Refs
   const peerInstanceRef = useRef<any>(null);
@@ -411,6 +414,10 @@ export default function DojoVirtual() {
     presetsRef.current = presets;
   }, [presets]);
 
+  useEffect(() => {
+    analysisModeRef.current = analysisMode;
+  }, [analysisMode]);
+
   // Load presets list (Sensei only)
   useEffect(() => {
     if (role === "sensei") {
@@ -556,8 +563,14 @@ export default function DojoVirtual() {
     return Math.round(angle);
   };
 
-  const calculateCurrentAngles = (landmarks: PoseLandmark[], mode: "superior" | "inferior") => {
-    if (mode === "superior") {
+  const calculateCurrentAngles = (landmarks: PoseLandmark[], mode: "superior" | "inferior" | "completo") => {
+    if (mode === "completo") {
+      const leftElbow = calculateAngle(landmarks[11], landmarks[13], landmarks[15]);
+      const rightElbow = calculateAngle(landmarks[12], landmarks[14], landmarks[16]);
+      const leftKnee = calculateAngle(landmarks[23], landmarks[25], landmarks[27]);
+      const rightKnee = calculateAngle(landmarks[24], landmarks[26], landmarks[28]);
+      return { left: leftElbow, right: rightElbow, leftKnee, rightKnee };
+    } else if (mode === "superior") {
       const leftElbow = calculateAngle(landmarks[11], landmarks[13], landmarks[15]);
       const rightElbow = calculateAngle(landmarks[12], landmarks[14], landmarks[16]);
       return { left: leftElbow, right: rightElbow };
@@ -657,7 +670,9 @@ export default function DojoVirtual() {
     h: number,
     leftJointColor: string,
     rightJointColor: string,
-    mode: "superior" | "inferior"
+    mode: "superior" | "inferior" | "completo",
+    leftKneeColor?: string,
+    rightKneeColor?: string
   ) => {
     ctx.save();
     ctx.lineCap = "round";
@@ -713,7 +728,26 @@ export default function DojoVirtual() {
     drawJointLine(12, 24, "rgba(255, 255, 255, 0.8)", 3);
     drawJointLine(23, 24, "rgba(255, 255, 255, 0.85)", 3);
 
-    if (mode === "superior") {
+    if (mode === "completo") {
+      // All limbs get color
+      drawJointLine(11, 13, leftJointColor, 4);
+      drawJointLine(13, 15, leftJointColor, 4);
+      drawJointLine(12, 14, rightJointColor, 4);
+      drawJointLine(14, 16, rightJointColor, 4);
+
+      const lkColor = leftKneeColor || leftJointColor;
+      const rkColor = rightKneeColor || rightJointColor;
+      drawJointLine(23, 25, lkColor, 4);
+      drawJointLine(25, 27, lkColor, 4);
+      drawJointLine(24, 26, rkColor, 4);
+      drawJointLine(26, 28, rkColor, 4);
+
+      // Highlight all key joints
+      drawPoint(13, leftJointColor, 7, true);
+      drawPoint(14, rightJointColor, 7, true);
+      drawPoint(25, lkColor, 7, true);
+      drawPoint(26, rkColor, 7, true);
+    } else if (mode === "superior") {
       // Brazos color dinámico
       drawJointLine(11, 13, leftJointColor, 4);
       drawJointLine(13, 15, leftJointColor, 4);
@@ -821,16 +855,19 @@ export default function DojoVirtual() {
     ctx.shadowBlur = 4;
     ctx.shadowColor = "#000000";
 
-    if (mode === "superior") {
+    if (mode === "completo" || mode === "superior") {
       const elbowL = lms[13];
       const elbowR = lms[14];
       if (elbowL) ctx.fillText(`${currentAngles.left}°`, (1 - elbowL.x) * w + 10, elbowL.y * h);
       if (elbowR) ctx.fillText(`${currentAngles.right}°`, (1 - elbowR.x) * w - 35, elbowR.y * h);
-    } else {
+    }
+    if (mode === "completo" || mode === "inferior") {
       const kneeL = lms[25];
       const kneeR = lms[26];
-      if (kneeL) ctx.fillText(`${currentAngles.left}°`, (1 - kneeL.x) * w + 10, kneeL.y * h);
-      if (kneeR) ctx.fillText(`${currentAngles.right}°`, (1 - kneeR.x) * w - 35, kneeR.y * h);
+      const leftVal = mode === "completo" ? currentAngles.leftKnee : currentAngles.left;
+      const rightVal = mode === "completo" ? currentAngles.rightKnee : currentAngles.right;
+      if (kneeL) ctx.fillText(`${leftVal}°`, (1 - kneeL.x) * w + 10, kneeL.y * h);
+      if (kneeR) ctx.fillText(`${rightVal}°`, (1 - kneeR.x) * w - 35, kneeR.y * h);
     }
   };
 
@@ -864,8 +901,8 @@ export default function DojoVirtual() {
 
     latestPoseLandmarksRef.current = landmarks;
 
-    // Read current mode from preset or fallback to superior
-    const mode = currentPresetRef.current?.category || "superior";
+    // Read current analysis mode from state (controlled by Sensei)
+    const mode = analysisModeRef.current || "completo";
     const currentAngles = calculateCurrentAngles(landmarks, mode);
 
     // Setup Target Alignment variables
@@ -1044,6 +1081,9 @@ export default function DojoVirtual() {
           if (data.control) {
             setGuidedMode(data.control.guidedMode);
             setTolerance(data.control.tolerance);
+            if (data.control.analysisMode) {
+              setAnalysisMode(data.control.analysisMode);
+            }
             if (data.meetLink !== undefined) {
               setMeetLink(data.meetLink);
             }
@@ -1217,13 +1257,15 @@ export default function DojoVirtual() {
             }
 
             const lms = interpolatedLandmarksRef.current;
-            const mode = poseData.mode || "superior";
+            const mode = analysisModeRef.current || "completo";
             const tol = toleranceRef.current;
-            const currentAngles = poseData.angles || { left: 0, right: 0 };
+            const currentAngles = calculateCurrentAngles(lms, mode);
             
-            // Evaluation colors
+            // Evaluation colors (left/right for arms, leftKnee/rightKnee for legs)
             let leftColor = "rgba(255, 0, 0, 0.8)";
             let rightColor = "rgba(255, 0, 0, 0.8)";
+            let leftKneeColor = "rgba(255, 0, 0, 0.8)";
+            let rightKneeColor = "rgba(255, 0, 0, 0.8)";
 
             // Check catalog preset first
             const senseiActivePreset = presetsRef.current.find((p) => p._id === selectedPresetIdRef.current);
@@ -1250,10 +1292,19 @@ export default function DojoVirtual() {
               const capDiffR = Math.abs(currentAngles.right - capture.angles.right);
               if (capDiffL <= tol) leftColor = "rgba(34, 197, 94, 0.85)";
               if (capDiffR <= tol) rightColor = "rgba(34, 197, 94, 0.85)";
+
+              // Knee evaluation for completo mode
+              if (mode === "completo" && (currentAngles as any).leftKnee !== undefined && capture.angles) {
+                const capAngles = calculateCurrentAngles(capture.landmarks, "completo");
+                const capDiffLK = Math.abs((currentAngles as any).leftKnee - (capAngles as any).leftKnee);
+                const capDiffRK = Math.abs((currentAngles as any).rightKnee - (capAngles as any).rightKnee);
+                if (capDiffLK <= tol) leftKneeColor = "rgba(34, 197, 94, 0.85)";
+                if (capDiffRK <= tol) rightKneeColor = "rgba(34, 197, 94, 0.85)";
+              }
             }
 
             // Draw active wireframe
-            drawActiveSkeleton(ctx, lms, w, h, leftColor, rightColor, mode);
+            drawActiveSkeleton(ctx, lms, w, h, leftColor, rightColor, mode, leftKneeColor, rightKneeColor);
 
             // Draw center of gravity
             drawCenterOfGravity(ctx, lms, w, h);
@@ -1293,6 +1344,7 @@ export default function DojoVirtual() {
           presetId: updatedFields.presetId !== undefined ? updatedFields.presetId : selectedPresetId,
           guidedMode: updatedFields.guidedMode !== undefined ? updatedFields.guidedMode : guidedMode,
           tolerance: updatedFields.tolerance !== undefined ? updatedFields.tolerance : tolerance,
+          analysisMode: updatedFields.analysisMode !== undefined ? updatedFields.analysisMode : analysisMode,
           command: updatedFields.command || "none",
           newPoseName: updatedFields.newPoseName || ""
         }
@@ -1659,6 +1711,12 @@ export default function DojoVirtual() {
                       <span className="font-medium text-neutral-400">Tolerancia:</span>
                       <span className="font-bold text-[#E52B34]">{tolerance}°</span>
                     </div>
+                    <div className="flex justify-between border-b border-neutral-100 pb-2">
+                      <span className="font-medium text-neutral-400">Zona:</span>
+                      <span className="font-bold text-neutral-800">
+                        {analysisMode === "superior" ? "Tren Superior" : analysisMode === "inferior" ? "Tren Inferior" : "Cuerpo Completo"}
+                      </span>
+                    </div>
                   </div>
 
                   {/* Silhouette reference panel */}
@@ -1822,6 +1880,47 @@ export default function DojoVirtual() {
                     </ol>
                   </div>
 
+                  {/* 1. ANALYSIS MODE SELECTOR */}
+                  <div className="space-y-3">
+                    <h3 className="text-xs font-title-serif font-extrabold uppercase text-[#E52B34] tracking-wider flex items-center gap-1.5">
+                      <Maximize2 className="w-4 h-4" /> Zona de Análisis
+                    </h3>
+                    <div className="flex border border-neutral-200 divide-x divide-neutral-200 bg-white">
+                      {([
+                        { value: "superior" as const, label: "Tren Superior", desc: "Codos" },
+                        { value: "inferior" as const, label: "Tren Inferior", desc: "Rodillas" },
+                        { value: "completo" as const, label: "Cuerpo Completo", desc: "Todo" }
+                      ]).map((opt) => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => {
+                            setAnalysisMode(opt.value);
+                            updateSenseiControls({ analysisMode: opt.value });
+                          }}
+                          className={`flex-1 px-2 py-2.5 text-center transition-all cursor-pointer ${
+                            analysisMode === opt.value
+                              ? "bg-[#E52B34] text-white"
+                              : "bg-white text-neutral-600 hover:bg-neutral-50"
+                          }`}
+                        >
+                          <span className="block text-[10px] font-bold font-title-serif uppercase tracking-wider">
+                            {opt.label}
+                          </span>
+                          <span className={`block text-[9px] mt-0.5 ${
+                            analysisMode === opt.value ? "text-white/70" : "text-neutral-400"
+                          }`}>
+                            {opt.desc}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-[10px] font-body text-neutral-400 font-light leading-relaxed">
+                      {analysisMode === "superior" && "Se miden ángulos de codos. Los brazos se iluminan con colores dinámicos."}
+                      {analysisMode === "inferior" && "Se miden ángulos de rodillas. Las piernas se iluminan con colores dinámicos."}
+                      {analysisMode === "completo" && "Se miden los 4 ángulos: codos y rodillas. Todo el cuerpo se ilumina con retroalimentación."}
+                    </p>
+                  </div>
 
                   {/* 2. LIVE TOLERANCE CONTROLLER */}
                   <div className="space-y-3">
@@ -1862,9 +1961,11 @@ export default function DojoVirtual() {
                         <div className="bg-amber-50 border border-amber-200 px-3.5 py-2.5 rounded-none font-body text-[11px] text-amber-800 flex gap-2 items-center">
                           <CheckCircle className="w-4 h-4 shrink-0 text-amber-600" />
                           <div>
-                            <span className="font-bold block text-[10px] uppercase">Posición Capturada</span>
+                            <span className="font-bold block text-[10px] uppercase">Posición Capturada ({analysisMode === "superior" ? "Tren Superior" : analysisMode === "inferior" ? "Tren Inferior" : "Cuerpo Completo"})</span>
                             <span className="text-[10px] text-amber-600">
-                              {sessionCapture.mode === "superior" ? "Codos" : "Rodillas"}: {sessionCapture.angles.left}°L / {sessionCapture.angles.right}°R
+                              {(analysisMode === "superior" || analysisMode === "completo") && `Codos: ${sessionCapture.angles.left}°L / ${sessionCapture.angles.right}°R`}
+                              {analysisMode === "completo" && (sessionCapture as any).angles?.leftKnee !== undefined && ` • Rodillas: ${(sessionCapture as any).angles.leftKnee}°L / ${(sessionCapture as any).angles.rightKnee}°R`}
+                              {analysisMode === "inferior" && `Rodillas: ${sessionCapture.angles.left}°L / ${sessionCapture.angles.right}°R`}
                             </span>
                           </div>
                         </div>
@@ -1886,12 +1987,12 @@ export default function DojoVirtual() {
                         disabled={!studentPoseData?.landmarks || studentPoseData.landmarks.length === 0}
                         onClick={() => {
                           if (studentPoseData?.landmarks && studentPoseData.landmarks.length > 0) {
-                            const mode = studentPoseData.mode || "superior";
-                            const angles = studentPoseData.angles || { left: 0, right: 0 };
+                            const mode = analysisMode;
+                            const angles = calculateCurrentAngles(studentPoseData.landmarks, mode);
                             const captured = {
                               landmarks: [...studentPoseData.landmarks],
                               angles: { ...angles },
-                              mode: mode as "superior" | "inferior"
+                              mode: mode
                             };
                             setSessionCapture(captured);
                             // Send to student via sync

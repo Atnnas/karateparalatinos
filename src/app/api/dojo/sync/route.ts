@@ -61,6 +61,7 @@ export async function POST(request: NextRequest) {
         room.control.guidedMode = body.control.guidedMode !== undefined ? body.control.guidedMode : room.control.guidedMode;
         room.control.tolerance = body.control.tolerance !== undefined ? body.control.tolerance : room.control.tolerance;
         room.control.presetId = body.control.presetId !== undefined ? body.control.presetId : room.control.presetId;
+        room.control.analysisMode = body.control.analysisMode !== undefined ? body.control.analysisMode : (room.control.analysisMode || "completo");
         
         // Si hay un comando nuevo
         if (body.control.command && body.control.command !== "none") {
