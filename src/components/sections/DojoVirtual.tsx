@@ -85,8 +85,19 @@ export default function DojoVirtual() {
   const [editingName, setEditingName] = useState("");
   const [studentVideoStream, setStudentVideoStream] = useState<MediaStream | null>(null);
   const studentVideoStreamRef = useRef<MediaStream | null>(null);
+  const senseiVideoElRef = useRef<HTMLVideoElement | null>(null);
   useEffect(() => {
     studentVideoStreamRef.current = studentVideoStream;
+    // Bind stream to video element imperatively (avoids React re-mounting)
+    if (senseiVideoElRef.current) {
+      if (studentVideoStream) {
+        senseiVideoElRef.current.srcObject = studentVideoStream;
+        senseiVideoElRef.current.style.opacity = "1";
+      } else {
+        // Don't clear srcObject immediately — let last frame persist to avoid black flash
+        senseiVideoElRef.current.style.opacity = "0";
+      }
+    }
   }, [studentVideoStream]);
 
   // Session-only captured pose (Sensei captures, both sides see ghost)
@@ -332,11 +343,12 @@ export default function DojoVirtual() {
         console.log("Sensei: Received student remote stream!");
         setStudentVideoStream(remoteStream);
       });
+      // Don't null the stream on transient call close/error — keeps last video frame visible
       call.on("close", () => {
-        setStudentVideoStream(null);
+        console.log("P2P media call closed.");
       });
-      call.on("error", () => {
-        setStudentVideoStream(null);
+      call.on("error", (err: any) => {
+        console.warn("P2P media call error:", err);
       });
     });
 
@@ -362,21 +374,18 @@ export default function DojoVirtual() {
 
       conn.on("close", () => {
         setIsP2PConnected(false);
-        setStudentVideoStream(null);
         console.log("Student disconnected from P2P.");
       });
 
       conn.on("error", (err: any) => {
         console.warn("Sensei P2P Connection error:", err);
         setIsP2PConnected(false);
-        setStudentVideoStream(null);
       });
     });
 
     peer.on("error", (err: any) => {
       console.warn("Sensei PeerJS host error:", err);
       setIsP2PConnected(false);
-      setStudentVideoStream(null);
     });
 
     return () => {
@@ -1721,20 +1730,15 @@ export default function DojoVirtual() {
               <div className="flex-1 flex flex-col items-center justify-center bg-[#0c0f12] border border-neutral-800 p-4 relative min-h-[480px]">
                 
                 <div className="relative w-full max-w-[640px] aspect-[4/3] bg-[#0c0f12] border border-neutral-800 overflow-hidden">
-                  {/* Real-Time Student Video Stream */}
-                  {studentVideoStream && (
-                    <video
-                      ref={(el) => {
-                        if (el) {
-                          el.srcObject = studentVideoStream;
-                        }
-                      }}
-                      autoPlay
-                      playsInline
-                      muted
-                      className="absolute inset-0 w-full h-full object-cover scale-x-[-1]"
-                    />
-                  )}
+                  {/* Real-Time Student Video Stream — ALWAYS mounted to prevent DOM flicker */}
+                  <video
+                    ref={senseiVideoElRef}
+                    autoPlay
+                    playsInline
+                    muted
+                    style={{ opacity: studentVideoStream ? 1 : 0, transition: "opacity 0.15s ease" }}
+                    className="absolute inset-0 w-full h-full object-cover scale-x-[-1]"
+                  />
 
                   {/* Cyber Grid Canvas (drawn on top of video) */}
                   <canvas 
