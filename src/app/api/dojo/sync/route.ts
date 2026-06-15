@@ -41,6 +41,7 @@ export async function POST(request: NextRequest) {
       // Devolver control del Sensei al Alumno
       return NextResponse.json({
         control: room.control,
+        meetLink: room.meetLink || "",
         success: true
       });
 
@@ -64,6 +65,11 @@ export async function POST(request: NextRequest) {
           room.control.newPoseName = body.control.newPoseName || "";
           room.control.timestamp = Date.now();
         }
+      }
+
+      // Si el Sensei actualizó el enlace de Meet
+      if (body.meetLink !== undefined) {
+        room.meetLink = body.meetLink;
       }
 
       await room.save();
@@ -119,6 +125,7 @@ export async function POST(request: NextRequest) {
       // Devolver los datos del alumno al Sensei
       return NextResponse.json({
         studentPose: room.studentPose,
+        meetLink: room.meetLink || "",
         poseSaved,
         success: true
       });

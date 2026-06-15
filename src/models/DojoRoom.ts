@@ -7,6 +7,7 @@ export interface IDojoRoom extends Document {
   studentName?: string;
   active: boolean;
   lastActive: Date;
+  meetLink?: string; // Link to Google Meet / Jitsi
   studentPose?: {
     landmarks: Array<{
       x: number;
@@ -39,6 +40,7 @@ const DojoRoomSchema: Schema = new Schema({
   studentName: { type: String },
   active: { type: Boolean, default: true },
   lastActive: { type: Date, default: Date.now },
+  meetLink: { type: String, default: "" },
   studentPose: {
     landmarks: { type: Array, default: [] },
     angles: {

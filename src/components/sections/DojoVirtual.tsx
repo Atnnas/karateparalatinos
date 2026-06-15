@@ -69,6 +69,8 @@ export default function DojoVirtual() {
   const [newPoseName, setNewPoseName] = useState("");
   const [isSavingPose, setIsSavingPose] = useState(false);
   const [saveSuccessMessage, setSaveSuccessMessage] = useState("");
+  const [meetLink, setMeetLink] = useState("");
+  const [meetLinkInput, setMeetLinkInput] = useState("");
 
   // Refs for tracking student alignment triggers (TTS audio beep)
   const hasTriggeredAlignRef = useRef(false);
@@ -713,6 +715,9 @@ export default function DojoVirtual() {
         if (res.ok && data.control) {
           setGuidedMode(data.control.guidedMode);
           setTolerance(data.control.tolerance);
+          if (data.meetLink !== undefined) {
+            setMeetLink(data.meetLink);
+          }
 
           // If Sensei has changed the reference Preset ID
           if (data.control.presetId) {
@@ -790,6 +795,11 @@ export default function DojoVirtual() {
               targetLandmarksRef.current = data.studentPose.landmarks;
               lastUpdateTimestampRef.current = Date.now();
             }
+          }
+
+          if (data.meetLink !== undefined) {
+            setMeetLink(data.meetLink);
+            setMeetLinkInput(data.meetLink);
           }
 
           if (data.poseSaved) {
@@ -934,6 +944,7 @@ export default function DojoVirtual() {
         body: JSON.stringify({
           roomCode,
           role: "sensei",
+          meetLink: updatedFields.meetLink !== undefined ? updatedFields.meetLink : meetLink,
           control: {
             presetId: updatedFields.presetId !== undefined ? updatedFields.presetId : selectedPresetId,
             guidedMode: updatedFields.guidedMode !== undefined ? updatedFields.guidedMode : guidedMode,
@@ -1239,11 +1250,47 @@ export default function DojoVirtual() {
                       </p>
                     )}
                   </div>
+
+                  {/* Videocall integration card */}
+                  <div className="bg-red-50 border border-red-200/60 p-4 rounded-none space-y-2">
+                    <h3 className="text-[10px] font-bold font-title-serif uppercase text-[#E52B34] tracking-wider">
+                      Videollamada en Vivo
+                    </h3>
+                    {meetLink ? (
+                      <div className="space-y-2">
+                        <p className="font-body text-[11px] text-neutral-600 font-light leading-relaxed">
+                          Tu Sensei ha iniciado la transmisión de video. Únete a la llamada para que pueda verte.
+                        </p>
+                        <a 
+                          href={meetLink} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="w-full bg-[#E52B34] text-white text-[10px] font-bold tracking-widest text-center uppercase py-2 block hover:bg-neutral-900 transition-colors text-center"
+                        >
+                          UNIRSE A VIDEOLLAMADA
+                        </a>
+                      </div>
+                    ) : (
+                      <p className="font-body text-[11px] text-neutral-400 font-light italic">
+                        Esperando que tu Sensei inicie la videollamada de Google Meet/Jitsi...
+                      </p>
+                    )}
+                  </div>
                 </div>
 
-                <div className="pt-6 border-t border-neutral-100 text-[10px] font-body text-neutral-400 leading-normal flex gap-2 items-start">
-                  <HelpCircle className="w-3.5 h-3.5 shrink-0 text-neutral-300 mt-0.5" />
-                  <span>Colócate a 2 metros de distancia para que MediaPipe logre identificar tu cuerpo completo.</span>
+                <div className="space-y-4 pt-6 border-t border-neutral-100">
+                  <div className="bg-amber-50 border border-amber-200 p-3 rounded-none flex gap-2 items-start text-[10px] font-body text-amber-800 leading-relaxed">
+                    <AlertCircle className="w-4 h-4 shrink-0 text-amber-600 mt-0.5" />
+                    <div>
+                      <span className="font-bold block uppercase text-[9px] mb-0.5">Pantalla en Primer Plano:</span>
+                      Mantén esta pestaña **visible y activa** en tu pantalla (puedes usar pantalla dividida al lado de tu videollamada). Si minimizas esta ventana o cambias de pestaña, el navegador pausará la cámara y el Sensei no podrá recibir tu postura.
+                    </div>
+                  </div>
+
+                  <div className="text-[10px] font-body text-neutral-400 leading-normal flex gap-2 items-start">
+                    <HelpCircle className="w-3.5 h-3.5 shrink-0 text-neutral-300 mt-0.5" />
+                    <span>Colócate a 2 metros de distancia para que MediaPipe logre identificar tu cuerpo completo.</span>
+                  </div>
                 </div>
 
               </div>
@@ -1314,6 +1361,51 @@ export default function DojoVirtual() {
                       <span className="text-neutral-400">Alumno en Línea:</span>
                       <span className="font-bold text-neutral-900">{roomInfo?.studentName || "Buscando..."}</span>
                     </div>
+                  </div>
+
+                  {/* Google Meet / Jitsi link settings */}
+                  <div className="space-y-3 bg-[#E52B34]/5 border border-[#E52B34]/15 p-4 rounded-none">
+                    <h3 className="text-xs font-title-serif font-extrabold uppercase text-[#E52B34] tracking-wider flex items-center gap-1.5">
+                      <Users className="w-4 h-4" /> Videollamada (Meet / Jitsi)
+                    </h3>
+                    <p className="font-body text-[11px] text-neutral-500 font-light leading-relaxed">
+                      Pega el enlace de tu Google Meet o Jitsi para que tu alumno se conecte y puedas verlo en vivo en otra ventana o monitor.
+                    </p>
+                    <div className="flex gap-2">
+                      <input 
+                        type="text"
+                        placeholder="Ej. https://meet.google.com/abc-defg-hij"
+                        value={meetLinkInput}
+                        onChange={(e) => setMeetLinkInput(e.target.value)}
+                        className="flex-1 px-3 py-2 border border-neutral-250 rounded-none bg-white font-body text-xs text-neutral-900 focus:outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMeetLink(meetLinkInput.trim());
+                          updateSenseiControls({ meetLink: meetLinkInput.trim() });
+                        }}
+                        className="bg-neutral-900 hover:bg-neutral-950 text-white rounded-none px-3.5 text-xs font-bold uppercase tracking-wider transition-colors"
+                      >
+                        Enviar
+                      </button>
+                    </div>
+                    {meetLink && (
+                      <div className="text-[10px] font-body text-neutral-600 flex justify-between items-center bg-white px-2.5 py-1.5 border border-neutral-200">
+                        <span className="truncate max-w-[200px] font-light">Activo: {meetLink}</span>
+                        <button 
+                          type="button"
+                          onClick={() => {
+                            setMeetLink("");
+                            setMeetLinkInput("");
+                            updateSenseiControls({ meetLink: "" });
+                          }}
+                          className="text-[#E52B34] hover:underline uppercase text-[9px] font-bold"
+                        >
+                          Quitar
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   {/* 1. PRESET INJECTION CONTROL */}
@@ -1401,9 +1493,19 @@ export default function DojoVirtual() {
                   </div>
                 </div>
 
-                <div className="pt-6 border-t border-neutral-100 text-[10px] font-body text-neutral-400 leading-normal flex gap-2 items-start">
-                  <ShieldAlert className="w-3.5 h-3.5 shrink-0 text-neutral-300 mt-0.5" />
-                  <span>Tu sesión de instructor es 100% segura. Los cambios en el selector se aplican al alumno al instante.</span>
+                <div className="space-y-4 pt-6 border-t border-neutral-100">
+                  <div className="bg-amber-50 border border-amber-250 p-3 rounded-none flex gap-2 items-start text-[10px] font-body text-amber-800 leading-relaxed">
+                    <AlertCircle className="w-4 h-4 shrink-0 text-amber-600 mt-0.5" />
+                    <div>
+                      <span className="font-bold block uppercase text-[9px] mb-0.5">Nota sobre Congelamientos:</span>
+                      Si ves que el esqueleto del alumno se congela, pídele que mantenga la pestaña de Dojo Virtual **en primer plano y activa** en su pantalla. Los navegadores suspenden la cámara web de las pestañas que se quedan en segundo plano.
+                    </div>
+                  </div>
+
+                  <div className="text-[10px] font-body text-neutral-400 leading-normal flex gap-2 items-start">
+                    <ShieldAlert className="w-3.5 h-3.5 shrink-0 text-neutral-300 mt-0.5" />
+                    <span>Tu sesión de instructor es 100% segura. Los cambios en el selector se aplican al alumno al instante.</span>
+                  </div>
                 </div>
 
               </div>
