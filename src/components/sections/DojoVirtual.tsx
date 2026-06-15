@@ -1877,7 +1877,7 @@ export default function DojoVirtual() {
                                       <button
                                         type="button"
                                         onClick={() => handleStartEditPreset(preset)}
-                                        className="p-1.5 text-neutral-400 hover:text-neutral-800 hover:bg-neutral-100 rounded-none transition-all cursor-pointer"
+                                        className="p-1.5 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 rounded-none transition-all cursor-pointer"
                                         title="Editar nombre"
                                       >
                                         <Pencil className="w-3.5 h-3.5" />
@@ -1885,7 +1885,7 @@ export default function DojoVirtual() {
                                       <button
                                         type="button"
                                         onClick={() => handleDeletePresetById(preset._id)}
-                                        className="p-1.5 text-neutral-400 hover:text-red-600 hover:bg-red-50 rounded-none transition-all cursor-pointer"
+                                        className="p-1.5 text-[#E52B34] hover:text-[#B81B22] hover:bg-red-50 rounded-none transition-all cursor-pointer"
                                         title="Eliminar postura"
                                       >
                                         <Trash2 className="w-3.5 h-3.5" />
