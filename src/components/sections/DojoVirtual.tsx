@@ -975,10 +975,11 @@ export default function DojoVirtual() {
     });
 
     pose.setOptions({
-      modelComplexity: 1,
+      modelComplexity: 2,
       smoothLandmarks: true,
-      minDetectionConfidence: 0.5,
-      minTrackingConfidence: 0.5
+      enableSegmentation: false,
+      minDetectionConfidence: 0.6,
+      minTrackingConfidence: 0.4
     });
 
     pose.onResults(handlePoseResults);
