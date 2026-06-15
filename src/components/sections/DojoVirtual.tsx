@@ -20,7 +20,10 @@ import {
   ChevronRight,
   Eye,
   LogOut,
-  SlidersHorizontal
+  SlidersHorizontal,
+  Trash2,
+  Pencil,
+  X
 } from "lucide-react";
 
 interface PoseLandmark {
@@ -71,6 +74,13 @@ export default function DojoVirtual() {
   const [saveSuccessMessage, setSaveSuccessMessage] = useState("");
   const [meetLink, setMeetLink] = useState("");
   const [meetLinkInput, setMeetLinkInput] = useState("");
+  // PeerJS P2P Connection States
+  const [peerjsLoaded, setPeerjsLoaded] = useState(false);
+  const [isP2PConnected, setIsP2PConnected] = useState(false);
+  const [senseiPeerId, setSenseiPeerId] = useState<string>("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [editingPresetId, setEditingPresetId] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState("");
 
   // Refs for tracking student alignment triggers (TTS audio beep)
   const hasTriggeredAlignRef = useRef(false);
@@ -97,6 +107,224 @@ export default function DojoVirtual() {
   const toleranceRef = useRef(tolerance);
   const selectedPresetIdRef = useRef(selectedPresetId);
   const presetsRef = useRef(presets);
+
+  // PeerJS Refs
+  const peerInstanceRef = useRef<any>(null);
+  const peerConnRef = useRef<any>(null);
+  const isP2PConnectedRef = useRef(isP2PConnected);
+  const senseiPeerIdRef = useRef<string>("");
+
+  useEffect(() => {
+    isP2PConnectedRef.current = isP2PConnected;
+  }, [isP2PConnected]);
+
+  useEffect(() => {
+    senseiPeerIdRef.current = senseiPeerId;
+  }, [senseiPeerId]);
+
+  // Load PeerJS CDN script dynamically
+  useEffect(() => {
+    if (!role) return;
+    
+    // Check if script already exists
+    if (document.querySelector('script[src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"]')) {
+      setPeerjsLoaded(true);
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js";
+    script.async = true;
+    script.onload = () => {
+      setPeerjsLoaded(true);
+    };
+    script.onerror = () => {
+      console.warn("Failed loading PeerJS CDN. Falling back to HTTP polling.");
+    };
+    document.body.appendChild(script);
+
+    return () => {
+      // Avoid removing if other instances need it
+    };
+  }, [role]);
+
+  // STUDENT P2P SETUP: Init PeerJS client instance
+  useEffect(() => {
+    if (role !== "student" || !peerjsLoaded) return;
+
+    const PeerClass = (window as any).Peer;
+    if (!PeerClass) return;
+
+    console.log("Student: Initializing PeerJS P2P Client...");
+    const peer = new PeerClass();
+    peerInstanceRef.current = peer;
+
+    peer.on("open", (id: string) => {
+      console.log("Student PeerJS opened with client ID:", id);
+    });
+
+    peer.on("error", (err: any) => {
+      console.warn("Student PeerJS instance error:", err);
+      setIsP2PConnected(false);
+    });
+
+    return () => {
+      if (peerConnRef.current) {
+        try { peerConnRef.current.close(); } catch {}
+      }
+      if (peerInstanceRef.current) {
+        try { peerInstanceRef.current.destroy(); } catch {}
+      }
+    };
+  }, [role, peerjsLoaded]);
+
+  // STUDENT P2P CONNECTION: Connect when senseiPeerId changes
+  useEffect(() => {
+    if (role !== "student" || !peerInstanceRef.current || !senseiPeerId) return;
+
+    const connectToSensei = (targetId: string) => {
+      if (peerConnRef.current && peerConnRef.current.peer === targetId && peerConnRef.current.open) {
+        return; // Already connected
+      }
+
+      if (peerConnRef.current) {
+        try { peerConnRef.current.close(); } catch {}
+      }
+
+      console.log("Student: Connecting to Sensei Peer ID:", targetId);
+      const conn = peerInstanceRef.current.connect(targetId, {
+        serialization: "json"
+      });
+      peerConnRef.current = conn;
+
+      conn.on("open", () => {
+        setIsP2PConnected(true);
+        console.log("P2P connected directly to Sensei!");
+      });
+
+      conn.on("close", () => {
+        setIsP2PConnected(false);
+        console.log("P2P connection closed.");
+      });
+
+      conn.on("error", (err: any) => {
+        console.warn("P2P Connection error:", err);
+        setIsP2PConnected(false);
+      });
+    };
+
+    connectToSensei(senseiPeerId);
+  }, [role, senseiPeerId]);
+
+  // STUDENT P2P RECONNECTION LOOP: Check and retry every 5s if disconnected
+  useEffect(() => {
+    if (role !== "student") return;
+
+    const reconnectInterval = setInterval(() => {
+      if (!isP2PConnectedRef.current && senseiPeerIdRef.current && peerInstanceRef.current && !peerInstanceRef.current.destroyed) {
+        console.log("Student: P2P disconnected. Retrying connection to Sensei Peer ID:", senseiPeerIdRef.current);
+        
+        if (peerConnRef.current) {
+          try { peerConnRef.current.close(); } catch {}
+        }
+
+        const conn = peerInstanceRef.current.connect(senseiPeerIdRef.current, {
+          serialization: "json"
+        });
+        peerConnRef.current = conn;
+
+        conn.on("open", () => {
+          setIsP2PConnected(true);
+          console.log("P2P reconnected directly to Sensei!");
+        });
+
+        conn.on("close", () => {
+          setIsP2PConnected(false);
+          console.log("P2P connection closed.");
+        });
+
+        conn.on("error", (err: any) => {
+          console.warn("P2P Connection error during retry:", err);
+          setIsP2PConnected(false);
+        });
+      }
+    }, 5000);
+
+    return () => clearInterval(reconnectInterval);
+  }, [role]);
+
+  // SENSEI P2P SETUP: Init PeerJS as Host with random ID to avoid conflict, and save it in MongoDB
+  useEffect(() => {
+    if (role !== "sensei" || !peerjsLoaded || !roomCode) return;
+
+    const PeerClass = (window as any).Peer;
+    if (!PeerClass) return;
+
+    console.log("Sensei: Initializing PeerJS P2P Host with dynamic ID...");
+    const peer = new PeerClass();
+    peerInstanceRef.current = peer;
+
+    peer.on("open", (id: string) => {
+      console.log("Sensei PeerJS is listening for student. Peer ID:", id);
+      setSenseiPeerId(id);
+      
+      // Update room in database with the dynamic Peer ID
+      fetch("/api/dojo/sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          roomCode,
+          role: "sensei",
+          senseiPeerId: id
+        })
+      }).catch(err => console.error("Error saving senseiPeerId:", err));
+    });
+
+    peer.on("connection", (conn: any) => {
+      peerConnRef.current = conn;
+      setIsP2PConnected(true);
+      console.log("Student connected to Sensei via P2P!");
+
+      conn.on("data", (data: any) => {
+        // Update both the state and the ref for smooth rendering
+        setStudentPoseData(data);
+        studentPoseDataRef.current = data;
+        if (data && data.landmarks) {
+          if (targetLandmarksRef.current) {
+            previousLandmarksRef.current = targetLandmarksRef.current;
+          } else {
+            previousLandmarksRef.current = data.landmarks;
+          }
+          targetLandmarksRef.current = data.landmarks;
+          lastUpdateTimestampRef.current = Date.now();
+        }
+      });
+
+      conn.on("close", () => {
+        setIsP2PConnected(false);
+        console.log("Student disconnected from P2P.");
+      });
+
+      conn.on("error", (err: any) => {
+        console.warn("Sensei P2P Connection error:", err);
+        setIsP2PConnected(false);
+      });
+    });
+
+    peer.on("error", (err: any) => {
+      console.warn("Sensei PeerJS host error:", err);
+      setIsP2PConnected(false);
+    });
+
+    return () => {
+      if (peerConnRef.current) {
+        try { peerConnRef.current.close(); } catch {}
+      }
+      if (peerInstanceRef.current) {
+        try { peerInstanceRef.current.destroy(); } catch {}
+      }
+    };
+  }, [role, peerjsLoaded, roomCode]);
 
   useEffect(() => {
     toleranceRef.current = tolerance;
@@ -188,6 +416,9 @@ export default function DojoVirtual() {
 
       setRoomCode(data.roomCode);
       setRoomInfo(data);
+      if (data.senseiPeerId) {
+        setSenseiPeerId(data.senseiPeerId);
+      }
       setRole("student");
       
       // Save student custom name if given
@@ -628,13 +859,19 @@ export default function DojoVirtual() {
     drawAnglesOnSkeleton(ctx, landmarks, width, height, currentAngles, mode);
 
     // Save calculation metrics locally so sync loop can read them
-    (window as any).lastStudentPose = {
+    const poseObj = {
       landmarks: landmarks,
       angles: currentAngles,
       alignmentScore: score,
       isAligned: aligned,
       mode: mode
     };
+    (window as any).lastStudentPose = poseObj;
+
+    // Send real-time pose via PeerJS P2P DataChannel if active
+    if (peerConnRef.current && peerConnRef.current.open) {
+      peerConnRef.current.send(poseObj);
+    }
   };
 
   // Student MediaPipe Initialization Effect
@@ -684,7 +921,7 @@ export default function DojoVirtual() {
     };
   }, [scriptsLoaded, role, cameraActive]);
 
-  // STUDENT SYNC POLLING LOOP (polls every 800ms)
+  // STUDENT SYNC POLLING LOOP (polls dynamically based on connection status)
   useEffect(() => {
     if (role !== "student") return;
 
@@ -713,47 +950,53 @@ export default function DojoVirtual() {
         });
 
         const data = await res.json();
-        if (res.ok && data.control) {
-          setGuidedMode(data.control.guidedMode);
-          setTolerance(data.control.tolerance);
-          if (data.meetLink !== undefined) {
-            setMeetLink(data.meetLink);
+        if (res.ok) {
+          if (data.senseiPeerId) {
+            setSenseiPeerId(data.senseiPeerId);
           }
+          if (data.control) {
+            setGuidedMode(data.control.guidedMode);
+            setTolerance(data.control.tolerance);
+            if (data.meetLink !== undefined) {
+              setMeetLink(data.meetLink);
+            }
 
-          // If Sensei has changed the reference Preset ID
-          if (data.control.presetId) {
-            if (!currentPresetRef.current || currentPresetRef.current._id !== data.control.presetId) {
-              // Fetch preset details
-              const presetRes = await fetch(`/api/presets`);
-              const presetData = await presetRes.json();
-              if (presetRes.ok) {
-                const list = Array.isArray(presetData) ? presetData : (presetData.presets || []);
-                const found = list.find((p: any) => p._id === data.control.presetId);
-                if (found) {
-                  currentPresetRef.current = found;
-                  setSelectedPresetId(found._id);
-                  speak(`Tu Sensei ha colocado la postura de referencia: ${found.name}`);
+            // If Sensei has changed the reference Preset ID
+            if (data.control.presetId) {
+              if (!currentPresetRef.current || currentPresetRef.current._id !== data.control.presetId) {
+                // Fetch preset details
+                const presetRes = await fetch(`/api/presets`);
+                const presetData = await presetRes.json();
+                if (presetRes.ok) {
+                  const list = Array.isArray(presetData) ? presetData : (presetData.presets || []);
+                  const found = list.find((p: any) => p._id === data.control.presetId);
+                  if (found) {
+                    currentPresetRef.current = found;
+                    setSelectedPresetId(found._id);
+                    speak(`Tu Sensei ha colocado la postura de referencia: ${found.name}`);
+                  }
                 }
               }
+            } else {
+              currentPresetRef.current = null;
+              setSelectedPresetId("");
             }
-          } else {
-            currentPresetRef.current = null;
-            setSelectedPresetId("");
-          }
 
-          // Handle reset pose remotely
-          if (data.control.command === "reset_pose") {
-            currentPresetRef.current = null;
-            setSelectedPresetId("");
-            speak("Posición de referencia reiniciada.");
+            // Handle reset pose remotely
+            if (data.control.command === "reset_pose") {
+              currentPresetRef.current = null;
+              setSelectedPresetId("");
+              speak("Posición de referencia reiniciada.");
+            }
           }
         }
       } catch (err) {
         console.error("Error syncing student loop:", err);
       }
 
-      // Poll again in 800ms
-      setTimeout(syncLoop, 800);
+      // Poll again: 3000ms if P2P is connected (saves bandwidth), 200ms fallback for real-time
+      const delay = isP2PConnectedRef.current ? 3000 : 200;
+      setTimeout(syncLoop, delay);
     };
 
     syncLoop();
@@ -763,7 +1006,7 @@ export default function DojoVirtual() {
     };
   }, [role, roomCode]);
 
-  // SENSEI SYNC POLLING LOOP (polls every 800ms)
+  // SENSEI SYNC POLLING LOOP (polls dynamically based on connection status)
   useEffect(() => {
     if (role !== "sensei") return;
 
@@ -814,7 +1057,9 @@ export default function DojoVirtual() {
         console.error("Error syncing sensei loop:", err);
       }
 
-      setTimeout(syncLoop, 800);
+      // Poll again: 3000ms if P2P is connected, 200ms fallback for real-time
+      const delay = isP2PConnectedRef.current ? 3000 : 200;
+      setTimeout(syncLoop, delay);
     };
 
     syncLoop();
@@ -864,9 +1109,10 @@ export default function DojoVirtual() {
             ctx.textAlign = "center";
             ctx.fillText("Esperando que el alumno active su cámara...", w / 2, h / 2);
           } else {
-            // Calculate progress (0 to 1) based on time elapsed since the last 800ms update
+            // Calculate progress (0 to 1) based on time elapsed since the last update
             const elapsed = Date.now() - lastUpdateTimestampRef.current;
-            const progress = Math.min(1, elapsed / 800);
+            const interpolationWindow = isP2PConnectedRef.current ? 40 : 200; // 40ms for real-time P2P stream, 200ms for polling fallback
+            const progress = Math.min(1, elapsed / interpolationWindow);
 
             // Initialize or Interpolate landmarks
             if (!interpolatedLandmarksRef.current || interpolatedLandmarksRef.current.length !== targetLms.length) {
@@ -989,6 +1235,70 @@ export default function DojoVirtual() {
     setStudentPoseData(null);
     setCameraActive(false);
     router.push("/herramientas/dojo-virtual");
+  };
+
+  // Delete preset by ID from database (Sensei only)
+  const handleDeletePresetById = async (presetId: string) => {
+    if (!presetId) return;
+    const presetToDelete = presets.find((p) => p._id === presetId);
+    if (!presetToDelete) return;
+
+    if (!confirm(`¿Estás seguro de que deseas eliminar la postura "${presetToDelete.name}" del catálogo oficial?`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/presets?presetId=${presetId}`, {
+        method: "DELETE"
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Error al eliminar la postura");
+
+      // Reset locally
+      setPresets((prev) => prev.filter((p) => p._id !== presetId));
+      if (selectedPresetId === presetId) {
+        setSelectedPresetId("");
+        updateSenseiControls({ presetId: "" });
+      }
+
+      setSaveSuccessMessage(`Postura "${presetToDelete.name}" eliminada correctamente.`);
+      setTimeout(() => setSaveSuccessMessage(""), 5000);
+    } catch (err: any) {
+      alert(err.message || "Error al eliminar la postura");
+    }
+  };
+
+  // Start editing a preset name
+  const handleStartEditPreset = (preset: PosePreset) => {
+    setEditingPresetId(preset._id);
+    setEditingName(preset.name);
+  };
+
+  // Save the updated preset name
+  const handleSaveEditPreset = async (presetId: string) => {
+    if (!editingName.trim()) return;
+
+    try {
+      const res = await fetch("/api/presets", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ presetId, name: editingName.trim() })
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Error al actualizar la postura");
+
+      // Update state locally
+      setPresets((prev) => prev.map((p) => p._id === presetId ? { ...p, name: editingName.trim() } : p));
+      setEditingPresetId(null);
+      setEditingName("");
+
+      setSaveSuccessMessage("Postura renombrada correctamente.");
+      setTimeout(() => setSaveSuccessMessage(""), 5000);
+    } catch (err: any) {
+      alert(err.message || "Error al renombrar la postura");
+    }
   };
 
   return (
@@ -1195,9 +1505,20 @@ export default function DojoVirtual() {
                   {/* Status header */}
                   <div className="border-b border-neutral-100 pb-4 flex items-center justify-between">
                     <div>
-                      <span className="text-[9px] font-bold font-title-serif uppercase px-2 py-0.5 border border-emerald-500/30 text-emerald-600 bg-emerald-50">
-                        CONECTADO
-                      </span>
+                      <div className="flex gap-1.5 items-center">
+                        <span className="text-[9px] font-bold font-title-serif uppercase px-2 py-0.5 border border-emerald-500/30 text-emerald-600 bg-emerald-50">
+                          CONECTADO
+                        </span>
+                        {isP2PConnected ? (
+                          <span className="text-[9px] font-bold font-title-serif uppercase px-2 py-0.5 border border-cyan-500/30 text-cyan-600 bg-cyan-50 flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse"></span> EN VIVO P2P
+                          </span>
+                        ) : (
+                          <span className="text-[9px] font-bold font-title-serif uppercase px-2 py-0.5 border border-amber-500/30 text-amber-600 bg-amber-50">
+                            SONDEO HTTP
+                          </span>
+                        )}
+                      </div>
                       <h2 className="font-impact-condensed text-xl text-neutral-900 tracking-wide mt-1">
                         SALA: {roomCode}
                       </h2>
@@ -1340,9 +1661,20 @@ export default function DojoVirtual() {
                   {/* Status header */}
                   <div className="border-b border-neutral-100 pb-4 flex items-center justify-between">
                     <div>
-                      <span className="text-[9px] font-bold font-title-serif uppercase px-2 py-0.5 border border-amber-500/30 text-amber-600 bg-amber-50">
-                        MONITOR ACTIVADO
-                      </span>
+                      <div className="flex gap-1.5 items-center">
+                        <span className="text-[9px] font-bold font-title-serif uppercase px-2 py-0.5 border border-amber-500/30 text-amber-600 bg-amber-50">
+                          MONITOR ACTIVADO
+                        </span>
+                        {isP2PConnected ? (
+                          <span className="text-[9px] font-bold font-title-serif uppercase px-2 py-0.5 border border-cyan-500/30 text-cyan-600 bg-cyan-50 flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse"></span> EN VIVO P2P
+                          </span>
+                        ) : (
+                          <span className="text-[9px] font-bold font-title-serif uppercase px-2 py-0.5 border border-amber-500/30 text-amber-600 bg-amber-50">
+                            SONDEO HTTP
+                          </span>
+                        )}
+                      </div>
                       <h2 className="font-impact-condensed text-xl text-neutral-900 tracking-wide mt-1">
                         SALA: {roomCode}
                       </h2>
@@ -1434,26 +1766,140 @@ export default function DojoVirtual() {
                     </ol>
                   </div>
 
-                  {/* 1. PRESET INJECTION CONTROL */}
-                  <div className="space-y-3">
+                  {/* 1. PRESET INJECTION CONTROL (CUSTOM DROPDOWN WITH INLINE ACTIONS) */}
+                  <div className="space-y-3 relative">
                     <h3 className="text-xs font-title-serif font-extrabold uppercase text-[#E52B34] tracking-wider flex items-center gap-1.5">
                       <Eye className="w-4 h-4" /> Inyectar Postura Oficial
                     </h3>
-                    <select
-                      value={selectedPresetId}
-                      onChange={(e) => {
-                        setSelectedPresetId(e.target.value);
-                        updateSenseiControls({ presetId: e.target.value });
-                      }}
-                      className="w-full px-4 py-3 border border-neutral-250 rounded-none bg-white font-body text-sm text-neutral-900 focus:outline-none focus:border-neutral-900"
-                    >
-                      <option value="">-- Sin Silueta Guía --</option>
-                      {presets.map((preset) => (
-                        <option key={preset._id} value={preset._id}>
-                          {preset.name} ({preset.category === "superior" ? "Codos" : "Rodillas"})
-                        </option>
-                      ))}
-                    </select>
+                    
+                    <div className="relative w-full">
+                      {/* Dropdown Header Trigger */}
+                      <button
+                        type="button"
+                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                        className="w-full px-4 py-3 border border-neutral-250 bg-white font-body text-sm text-left text-neutral-900 flex justify-between items-center focus:outline-none focus:border-neutral-900 rounded-none cursor-pointer"
+                      >
+                        <span className="truncate">
+                          {selectedPresetId 
+                            ? (presets.find((p) => p._id === selectedPresetId)?.name || "Postura Seleccionada")
+                            : "-- Sin Silueta Guía --"}
+                        </span>
+                        <ChevronRight className={`w-4 h-4 text-neutral-400 transition-transform shrink-0 ml-2 ${isDropdownOpen ? "rotate-90" : ""}`} />
+                      </button>
+
+                      {/* Dropdown Options List */}
+                      {isDropdownOpen && (
+                        <div className="absolute left-0 right-0 mt-1 bg-white border border-neutral-250 shadow-xl max-h-[260px] overflow-y-auto z-50 divide-y divide-neutral-100 rounded-none">
+                          
+                          {/* Option: No Guideline */}
+                          <div 
+                            onClick={() => {
+                              setSelectedPresetId("");
+                              updateSenseiControls({ presetId: "" });
+                              setIsDropdownOpen(false);
+                            }}
+                            className="p-3 text-xs text-neutral-500 hover:bg-neutral-50 cursor-pointer italic font-body transition-colors"
+                          >
+                            -- Sin Silueta Guía --
+                          </div>
+
+                          {presets.length === 0 ? (
+                            <div className="p-3 text-xs text-neutral-400 italic text-center font-body">
+                              No hay posturas en el catálogo.
+                            </div>
+                          ) : (
+                            presets.map((preset) => (
+                              <div 
+                                key={preset._id} 
+                                className={`flex items-center justify-between p-2.5 text-xs hover:bg-neutral-50 cursor-pointer transition-colors ${
+                                  selectedPresetId === preset._id ? "bg-red-50/40" : ""
+                                }`}
+                                onClick={() => {
+                                  setSelectedPresetId(preset._id);
+                                  updateSenseiControls({ presetId: preset._id });
+                                  setIsDropdownOpen(false);
+                                }}
+                              >
+                                {editingPresetId === preset._id ? (
+                                  /* Inline Edit Mode */
+                                  <div 
+                                    className="flex-1 flex gap-1.5 items-center mr-1"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    <input
+                                      type="text"
+                                      value={editingName}
+                                      onChange={(e) => setEditingName(e.target.value)}
+                                      className="flex-1 px-2 py-1 border border-neutral-300 font-body text-xs text-neutral-900 bg-white focus:outline-none rounded-none"
+                                      autoFocus
+                                      onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                          handleSaveEditPreset(preset._id);
+                                        } else if (e.key === "Escape") {
+                                          setEditingPresetId(null);
+                                        }
+                                      }}
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={() => handleSaveEditPreset(preset._id)}
+                                      className="p-1 bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 rounded-none transition-colors cursor-pointer"
+                                      title="Guardar nombre"
+                                    >
+                                      <CheckCircle className="w-3.5 h-3.5" />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => setEditingPresetId(null)}
+                                      className="p-1 bg-neutral-50 text-neutral-600 border border-neutral-200 hover:bg-neutral-100 rounded-none transition-colors cursor-pointer"
+                                      title="Cancelar"
+                                    >
+                                      <X className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                ) : (
+                                  /* Normal Option Display */
+                                  <>
+                                    <div className="flex-1 truncate pr-2">
+                                      <span className={`font-body block truncate ${selectedPresetId === preset._id ? "text-[#E52B34] font-bold" : "text-neutral-800"}`}>
+                                        {preset.name}
+                                      </span>
+                                      <span className="text-[10px] text-neutral-400 font-light block">
+                                        {preset.category === "superior" ? "Codos" : "Rodillas"} • {preset.angles.left}°L / {preset.angles.right}°R
+                                      </span>
+                                    </div>
+
+                                    {/* Action Buttons */}
+                                    <div 
+                                      className="flex items-center gap-1 shrink-0"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      <button
+                                        type="button"
+                                        onClick={() => handleStartEditPreset(preset)}
+                                        className="p-1.5 text-neutral-400 hover:text-neutral-800 hover:bg-neutral-100 rounded-none transition-all cursor-pointer"
+                                        title="Editar nombre"
+                                      >
+                                        <Pencil className="w-3.5 h-3.5" />
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleDeletePresetById(preset._id)}
+                                        className="p-1.5 text-neutral-400 hover:text-red-600 hover:bg-red-50 rounded-none transition-all cursor-pointer"
+                                        title="Eliminar postura"
+                                      >
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                      </button>
+                                    </div>
+                                  </>
+                                )}
+                              </div>
+                            ))
+                          )}
+
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {/* 2. LIVE TOLERANCE CONTROLLER */}

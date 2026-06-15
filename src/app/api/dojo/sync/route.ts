@@ -43,6 +43,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         control: room.control,
         meetLink: room.meetLink || "",
+        senseiPeerId: room.senseiPeerId || "",
         success: true
       });
 
@@ -72,6 +73,11 @@ export async function POST(request: NextRequest) {
       // Si el Sensei actualizó el enlace de Meet
       if (body.meetLink !== undefined) {
         room.meetLink = body.meetLink;
+      }
+
+      // Si el Sensei actualizó su P2P Peer ID
+      if (body.senseiPeerId !== undefined) {
+        room.senseiPeerId = body.senseiPeerId;
       }
 
       await room.save();

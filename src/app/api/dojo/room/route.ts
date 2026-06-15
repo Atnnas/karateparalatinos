@@ -30,7 +30,8 @@ export async function GET(request: NextRequest) {
       senseiName: room.senseiName,
       studentName: room.studentName,
       active: room.active,
-      meetLink: room.meetLink || ""
+      meetLink: room.meetLink || "",
+      senseiPeerId: room.senseiPeerId || ""
     });
   } catch (error) {
     console.error("Error checking dojo room:", error);

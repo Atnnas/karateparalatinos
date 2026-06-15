@@ -8,6 +8,7 @@ export interface IDojoRoom extends Document {
   active: boolean;
   lastActive: Date;
   meetLink?: string; // Link to Google Meet / Jitsi
+  senseiPeerId?: string; // Dynamic PeerJS WebRTC ID of the Sensei
   studentPose?: {
     landmarks: Array<{
       x: number;
@@ -41,6 +42,7 @@ const DojoRoomSchema: Schema = new Schema({
   active: { type: Boolean, default: true },
   lastActive: { type: Date, default: Date.now },
   meetLink: { type: String, default: "" },
+  senseiPeerId: { type: String, default: "" },
   studentPose: {
     landmarks: { type: Array, default: [] },
     angles: {

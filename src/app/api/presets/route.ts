@@ -105,3 +105,46 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
+// PUT: Actualizar el nombre de una postura (solo Admin)
+export async function PUT(req: NextRequest) {
+  try {
+    const session: any = await getServerSession(authOptions);
+
+    if (!session || session.user?.role !== "admin") {
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    }
+
+    const { presetId, name } = await req.json();
+
+    if (!presetId || !name || !name.trim()) {
+      return NextResponse.json({ error: "Faltan parámetros requeridos" }, { status: 400 });
+    }
+
+    await dbConnect();
+
+    // Verificar si ya existe otro preset con ese nombre
+    const conflict = await PosePreset.findOne({ name: name.trim(), _id: { $ne: presetId } });
+    if (conflict) {
+      return NextResponse.json({ error: "Ya existe otra postura con ese nombre" }, { status: 400 });
+    }
+
+    const updated = await PosePreset.findByIdAndUpdate(
+      presetId,
+      { name: name.trim() },
+      { new: true }
+    );
+
+    if (!updated) {
+      return NextResponse.json({ error: "Postura no encontrada" }, { status: 404 });
+    }
+
+    return NextResponse.json({
+      message: "Postura actualizada correctamente",
+      preset: updated
+    });
+  } catch (error: any) {
+    console.error("Error updating pose preset:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
