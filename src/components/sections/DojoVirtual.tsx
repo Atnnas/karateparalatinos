@@ -1408,6 +1408,30 @@ export default function DojoVirtual() {
                     )}
                   </div>
 
+                  {/* Google Meet Instructional Guide for Sensei */}
+                  <div className="bg-neutral-900 border border-neutral-800 p-4 rounded-none text-xs text-neutral-300 space-y-3">
+                    <h4 className="font-title-serif font-extrabold uppercase text-[#FF4D55] tracking-wider flex items-center gap-1.5">
+                      <HelpCircle className="w-4 h-4 text-[#FF4D55]" /> Guía de Conexión y Captura
+                    </h4>
+                    <ol className="list-decimal pl-4 space-y-2.5 font-body text-[11px] text-neutral-400 font-light">
+                      <li>
+                        Abre <a href="https://meet.google.com" target="_blank" rel="noopener noreferrer" className="text-white underline hover:text-[#FF4D55] font-semibold">Google Meet</a> en otra ventana y genera una videollamada.
+                      </li>
+                      <li>
+                        Pega el enlace en el cuadro de arriba y haz clic en <strong>Enviar</strong>.
+                      </li>
+                      <li>
+                        Pídele a tu alumno que haga clic en <strong>"Unirse a Videollamada"</strong> en su pantalla.
+                      </li>
+                      <li>
+                        En Google Meet, indícale al alumno que haga clic en <strong>"Compartir Pantalla"</strong> y elija su pestaña de <em>Dojo Virtual</em>.
+                      </li>
+                      <li>
+                        <strong>¡Listo!</strong> En Google Meet verás su video real y su esqueleto neón encima. Cuando logre una postura correcta, escribe el nombre abajo y haz clic en <strong>"Capturar"</strong> para guardarla en el catálogo.
+                      </li>
+                    </ol>
+                  </div>
+
                   {/* 1. PRESET INJECTION CONTROL */}
                   <div className="space-y-3">
                     <h3 className="text-xs font-title-serif font-extrabold uppercase text-[#E52B34] tracking-wider flex items-center gap-1.5">
