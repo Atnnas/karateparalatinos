@@ -93,6 +93,31 @@ const tools: Tool[] = [
     actionLink: "/herramientas/dojo-virtual",
     active: true,
     badge: "Colaborativo"
+  },
+  {
+    id: "revisor-ai",
+    name: "Revisor AI",
+    jpName: "AI レビュアー",
+    status: "Disponible",
+    statusColor: "bg-emerald-500/10 border-emerald-500/30 text-emerald-600",
+    category: "Evaluación por Cámara",
+    icon: Eye,
+    description: "Analiza tu postura en tiempo real con visión artificial inteligente. Activa tu cámara web para evaluar tu ejecución en tiempo real de curl de bíceps, patada de tríceps, flexiones, sentadillas, press militar y burpees con correcciones inmediatas.",
+    features: [
+      { label: "Múltiples Ejercicios", desc: "Evalúa Bíceps, Tríceps, Sentadillas, Flexiones, Press Militar y Burpees." },
+      { label: "Visión Artificial", desc: "Cálculo biomecánico de ángulos corporales en tiempo real." },
+      { label: "Corrección por Voz", desc: "Alerta sonora y mensajes hablados sobre errores de postura." },
+      { label: "Sin Instalación", desc: "Funciona directamente en tu navegador mediante tu cámara web." }
+    ],
+    requirements: [
+      { name: "Cámara Web", supported: true },
+      { name: "Espacio (2 metros)", supported: true },
+      { name: "Buena Iluminación", supported: true }
+    ],
+    actionText: "ENTRAR AL REVISOR AI",
+    actionLink: "/herramientas/revisor-ai",
+    active: true,
+    badge: "Inteligencia Artificial"
   }
 ];
 
