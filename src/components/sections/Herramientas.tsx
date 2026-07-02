@@ -5,12 +5,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { 
   Camera, 
-  Mic, 
-  Target, 
-  Eye, 
-  Video, 
   Lock, 
   Users, 
+  Eye,
   ShieldAlert,
   CheckCircle,
   HelpCircle,
@@ -146,7 +143,7 @@ export default function Herramientas() {
       <div className="relative z-20 w-full max-w-[99vw] mx-auto px-2 sm:px-4 md:px-6 lg:px-8 flex flex-col justify-start items-center pt-0">
         
         {/* Encabezado */}
-        <div className="text-center max-w-3xl mx-auto mb-10">
+        <div className="text-center max-w-3xl mx-auto mb-12">
           <motion.span
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -165,23 +162,23 @@ export default function Herramientas() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="font-body text-neutral-600 mt-2 font-light leading-relaxed text-sm sm:text-base max-w-2xl mx-auto"
+            className="font-body text-neutral-600 mt-3 font-light leading-relaxed text-sm sm:text-base max-w-2xl mx-auto"
           >
             Conéctate con tu dojo. Controla y navega por el ecosistema de herramientas de visión artificial y aprendizaje interactivo diseñadas para tu Karate en casa.
           </motion.p>
         </div>
 
         {/* Dashboard Layout Container */}
-        <div className="w-full flex flex-col md:flex-row gap-8 bg-white/65 border border-neutral-200/90 shadow-lg rounded-none overflow-hidden p-6 sm:p-8 md:p-10 min-h-[580px] backdrop-blur-md">
+        <div className="w-full flex flex-col md:flex-row gap-10 lg:gap-12 bg-white/65 border border-neutral-200/90 shadow-lg rounded-none p-6 sm:p-8 md:p-10 min-h-[600px] backdrop-blur-md">
           
           {/* LEFT: Sidebar Tabs (Responsive menu) */}
-          <div className="w-full md:w-[280px] xl:w-[320px] shrink-0 flex flex-col gap-2.5">
+          <div className="w-full md:w-[280px] xl:w-[320px] shrink-0 flex flex-col gap-4">
             <span className="text-[10px] font-title-serif font-extrabold uppercase text-neutral-400 tracking-widest pl-2 hidden md:block">
               Módulos de Entrenamiento
             </span>
             
             {/* Horizontal scroll on mobile, Vertical stack on desktop */}
-            <div className="flex md:flex-col gap-2 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 scrollbar-none snap-x snap-mandatory">
+            <div className="flex md:flex-col gap-3 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 scrollbar-none snap-x snap-mandatory">
               {tools.map((tool) => {
                 const TabIcon = tool.icon;
                 const isSelected = activeTab === tool.id;
@@ -190,20 +187,28 @@ export default function Herramientas() {
                   <button
                     key={tool.id}
                     onClick={() => setActiveTab(tool.id)}
-                    className={`snap-center flex items-center justify-between gap-3.5 text-left px-5 py-4 border rounded-none transition-all cursor-pointer min-w-[200px] md:min-w-0 ${
+                    className={`group snap-center flex items-center justify-between gap-3.5 text-left px-5 py-4.5 border rounded-none transition-all duration-300 cursor-pointer min-w-[210px] md:min-w-0 active:scale-[0.98] hover:scale-[1.02] relative ${
                       isSelected
-                        ? "bg-gradient-to-r from-neutral-900 to-neutral-950 text-white border-l-4 border-l-[#E52B34] border-t-neutral-900 border-r-neutral-900 border-b-neutral-900 shadow-md shadow-neutral-900/10 scale-[1.01]"
-                        : "bg-white/95 text-neutral-700 border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50"
+                        ? "bg-gradient-to-r from-neutral-900 to-neutral-950 text-white border-l-4 border-l-[#E52B34] border-t-neutral-900 border-r-neutral-900 border-b-neutral-900 shadow-md shadow-neutral-900/15"
+                        : "bg-white/95 text-neutral-700 border-neutral-200 hover:border-[#E52B34]/40 hover:bg-neutral-50/50 hover:shadow-[0_4px_12px_rgba(0,0,0,0.03)] border-l-2 hover:border-l-[#E52B34]/30"
                     }`}
                   >
-                    <div className="flex items-center gap-3">
-                      <div className={`w-9 h-9 rounded-none flex items-center justify-center transition-all ${
-                        isSelected ? "bg-gradient-to-tr from-[#E52B34] to-[#FF4D55] text-white" : "bg-neutral-100 text-[#E52B34]"
+                    {/* Live indicator dot in top right */}
+                    {tool.status === "Disponible" && (
+                      <span className="absolute top-2 right-2 flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                      </span>
+                    )}
+
+                    <div className="flex items-center gap-3.5">
+                      <div className={`w-9.5 h-9.5 rounded-none flex items-center justify-center transition-all ${
+                        isSelected ? "bg-gradient-to-tr from-[#E52B34] to-[#FF4D55] text-white shadow-md shadow-[#E52B34]/20" : "bg-neutral-100 text-[#E52B34]"
                       }`}>
-                        <TabIcon className="w-4.5 h-4.5" />
+                        <TabIcon className="w-5 h-5" />
                       </div>
                       <div>
-                        <span className="font-impact-condensed tracking-wider text-sm block">
+                        <span className="font-impact-condensed tracking-widest text-sm block">
                           {tool.name}
                         </span>
                         <span className={`font-mono text-[9px] block ${
@@ -224,10 +229,10 @@ export default function Herramientas() {
                         </span>
                       )}
                       {!tool.active ? (
-                        <Lock className={`w-3.5 h-3.5 ${isSelected ? "text-neutral-400" : "text-neutral-400"}`} />
+                        <Lock className="w-3.5 h-3.5 text-neutral-400" />
                       ) : (
                         <ChevronRight className={`w-4 h-4 transition-transform hidden md:block ${
-                          isSelected ? "translate-x-1 text-white" : "text-neutral-300"
+                          isSelected ? "translate-x-1 text-[#E52B34]" : "text-neutral-300 group-hover:text-[#E52B34] group-hover:translate-x-0.5"
                         }`} />
                       )}
                     </div>
@@ -238,7 +243,7 @@ export default function Herramientas() {
           </div>
 
           {/* RIGHT: Main Viewport (App details) */}
-          <div className="flex-1 border border-neutral-200 bg-white/95 rounded-none p-8 sm:p-10 md:p-12 flex flex-col justify-between relative min-w-0">
+          <div className="flex-1 border border-neutral-200 bg-white/95 rounded-none p-8 sm:p-10 md:p-12 flex flex-col justify-between relative min-w-0 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)]">
             
             <AnimatePresence mode="wait">
               <motion.div
@@ -247,10 +252,10 @@ export default function Herramientas() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -15 }}
                 transition={{ duration: 0.25 }}
-                className="space-y-6 flex-1"
+                className="space-y-10 lg:space-y-12 flex-1"
               >
                 {/* Viewport Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-200 pb-5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-200 pb-6">
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <span className={`text-[9px] font-bold font-title-serif uppercase tracking-wider px-2.5 py-1 border rounded-none ${currentTool.statusColor}`}>
@@ -260,7 +265,7 @@ export default function Herramientas() {
                         {currentTool.category}
                       </span>
                     </div>
-                    <h2 className="font-impact-condensed text-2xl sm:text-3xl tracking-wide flex items-baseline gap-2">
+                    <h2 className="font-impact-condensed text-3xl sm:text-4xl tracking-wide flex items-baseline gap-2">
                       <span className="bg-gradient-to-r from-neutral-900 via-neutral-800 to-neutral-950 bg-clip-text text-transparent">
                         {currentTool.name}
                       </span>
@@ -268,34 +273,34 @@ export default function Herramientas() {
                     </h2>
                   </div>
                   
-                  <div className="w-12 h-12 rounded-none bg-neutral-900 text-white flex items-center justify-center shrink-0 shadow-md">
-                    <ToolIcon className="w-6 h-6 text-[#E52B34]" />
+                  <div className="w-14 h-14 rounded-none bg-neutral-900 text-white flex items-center justify-center shrink-0 shadow-md">
+                    <ToolIcon className="w-7 h-7 text-[#E52B34]" />
                   </div>
                 </div>
 
                 {/* Main description */}
-                <div className="space-y-4">
-                  <h3 className="text-xs font-title-serif font-extrabold uppercase text-[#E52B34] tracking-wider">
+                <div className="space-y-3">
+                  <h3 className="text-[10px] font-title-serif font-extrabold uppercase text-[#E52B34] tracking-[0.2em] block">
                     Descripción del Módulo
                   </h3>
-                  <p className="font-body text-neutral-700 text-sm sm:text-base font-light leading-relaxed">
+                  <p className="font-body text-neutral-700 text-sm sm:text-base font-light leading-relaxed max-w-2xl">
                     {currentTool.description}
                   </p>
                 </div>
 
                 {/* Features & Specs Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-4">
-                  <div className="space-y-4">
-                    <h3 className="text-xs font-title-serif font-extrabold uppercase text-[#E52B34] tracking-wider">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12 pt-2">
+                  <div className="space-y-5">
+                    <h3 className="text-xs font-title-serif font-extrabold uppercase text-[#E52B34] tracking-[0.15em] border-b border-neutral-100 pb-2">
                       Características Principales
                     </h3>
-                    <div className="space-y-3 font-body text-xs text-neutral-600">
+                    <div className="grid grid-cols-1 gap-4 font-body text-xs text-neutral-600">
                       {currentTool.features.map((feat, index) => (
-                        <div key={index} className="flex gap-2.5 items-start">
+                        <div key={index} className="flex gap-3.5 items-start p-4 bg-neutral-50/60 border border-neutral-100 hover:bg-white hover:border-[#E52B34]/15 hover:shadow-md transition-all duration-200">
                           <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
                           <div>
-                            <strong className="text-neutral-900 font-semibold block">{feat.label}</strong>
-                            <span className="text-neutral-500 font-light block leading-tight mt-0.5">{feat.desc}</span>
+                            <strong className="text-neutral-900 font-semibold block text-xs tracking-wide uppercase font-sans-condensed">{feat.label}</strong>
+                            <span className="text-neutral-500 font-light block leading-relaxed mt-1 text-[11px]">{feat.desc}</span>
                           </div>
                         </div>
                       ))}
@@ -303,15 +308,15 @@ export default function Herramientas() {
                   </div>
 
                   {/* Requirements sidebar inside viewport */}
-                  <div className="space-y-4 border-t sm:border-t-0 sm:border-l border-neutral-200 pt-5 sm:pt-0 sm:pl-6">
-                    <h3 className="text-xs font-title-serif font-extrabold uppercase text-[#E52B34] tracking-wider flex items-center gap-1.5">
+                  <div className="space-y-5 lg:border-l lg:border-neutral-200 lg:pl-8">
+                    <h3 className="text-xs font-title-serif font-extrabold uppercase text-[#E52B34] tracking-[0.15em] border-b border-neutral-100 pb-2 flex items-center gap-1.5">
                       <ShieldAlert className="w-4 h-4 text-neutral-400" /> Requerimientos del Sistema
                     </h3>
-                    <div className="space-y-3 font-body text-xs text-neutral-700">
+                    <div className="space-y-4 font-body text-xs text-neutral-700">
                       {currentTool.requirements.map((req, index) => (
-                        <div key={index} className="flex items-center justify-between border-b border-neutral-100 pb-2">
-                          <span className="font-medium">{req.name}</span>
-                          <span className="text-[10px] font-bold font-title-serif uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-0.5 border border-emerald-100">
+                        <div key={index} className="flex items-center justify-between border-b border-neutral-100/60 pb-3">
+                          <span className="font-semibold text-neutral-800 tracking-wide text-xs">{req.name}</span>
+                          <span className="text-[9px] font-bold font-title-serif uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2.5 py-1 border border-emerald-100/70">
                             Requerido
                           </span>
                         </div>
@@ -328,7 +333,7 @@ export default function Herramientas() {
                 </div>
 
                 {/* Viewport Footer Trigger */}
-                <div className="pt-8 border-t border-neutral-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="pt-8 border-t border-neutral-200 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                   <div className="flex items-center gap-2 text-neutral-400 text-[11px] font-body font-light">
                     <HelpCircle className="w-3.5 h-3.5" />
                     <span>¿Tienes dudas? Consulta con el Sensei.</span>
@@ -337,14 +342,15 @@ export default function Herramientas() {
                   {currentTool.active ? (
                     <Link
                       href={currentTool.actionLink}
-                      className="bg-gradient-to-r from-[#E52B34] via-[#FF4D55] to-[#B81B22] hover:from-[#c82028] hover:to-[#9f131a] text-white rounded-none text-xs tracking-widest px-8 py-3.5 shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 self-end font-sans-condensed font-bold"
+                      className="relative overflow-hidden bg-gradient-to-r from-[#E52B34] via-[#FF4D55] to-[#B81B22] hover:from-[#c82028] hover:to-[#9f131a] text-white rounded-none text-xs tracking-widest px-10 py-4.5 shadow-[0_4px_20px_rgba(229,43,52,0.3)] hover:shadow-[0_8px_30px_rgba(229,43,52,0.5)] transition-all duration-300 flex items-center justify-center gap-2 self-end font-sans-condensed font-bold hover:scale-[1.04] active:scale-95 group/btn cursor-pointer shine-sweep"
                     >
-                      {currentTool.actionText}
+                      <span>{currentTool.actionText}</span>
+                      <ChevronRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
                     </Link>
                   ) : (
                     <button
                       disabled
-                      className="btn-kpl-secondary rounded-none text-xs tracking-widest px-8 py-3.5 opacity-40 cursor-not-allowed flex items-center justify-center gap-2 self-end border-neutral-300 text-neutral-500 bg-neutral-100 font-bold"
+                      className="btn-kpl-secondary rounded-none text-xs tracking-widest px-10 py-4.5 opacity-40 cursor-not-allowed flex items-center justify-center gap-2 self-end border-neutral-300 text-neutral-500 bg-neutral-100 font-bold"
                     >
                       <Lock className="w-3.5 h-3.5" /> {currentTool.actionText}
                     </button>
