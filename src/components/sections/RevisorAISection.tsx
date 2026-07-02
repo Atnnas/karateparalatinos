@@ -143,7 +143,7 @@ export default function RevisorAISection() {
   } : null;
 
   return (
-    <section className={`relative w-full transition-colors duration-300 flex flex-col justify-start items-center overflow-x-hidden ${selectedExercise ? 'bg-zinc-950 min-h-screen pt-2 pb-2 md:pt-4 md:pb-4' : 'min-h-[calc(100vh-80px)] bg-[var(--background)] preguntas-section pb-20'}`}>
+    <section className={`relative w-full transition-colors duration-300 flex flex-col justify-start items-center overflow-x-hidden ${selectedExercise ? 'bg-zinc-950 min-h-screen pt-[100px] pb-4 md:pt-[110px] md:pb-6' : 'min-h-[calc(100vh-80px)] bg-[var(--background)] preguntas-section pb-20'}`}>
       {/* ===== Background Watermark Kanji (Traditional Vibe) ===== */}
       {!selectedExercise && (
         <div className="absolute right-10 md:right-20 lg:right-32 top-[12%] text-[24vw] md:text-[14vw] font-black text-neutral-900/[0.012] select-none pointer-events-none leading-none z-0 font-serif">
