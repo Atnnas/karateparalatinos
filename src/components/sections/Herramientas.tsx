@@ -342,17 +342,18 @@ export default function Herramientas() {
                   {currentTool.active ? (
                     <Link
                       href={currentTool.actionLink}
-                      className="relative overflow-hidden bg-gradient-to-r from-[#E52B34] via-[#FF4D55] to-[#B81B22] hover:from-[#c82028] hover:to-[#9f131a] text-white rounded-full text-base tracking-[0.2em] px-12 py-4 shadow-[0_10px_30px_rgba(229,43,52,0.4),_inset_0_1px_2px_rgba(255,255,255,0.5),_inset_0_-3px_4px_rgba(0,0,0,0.2)] border-b-2 border-b-[#8c1a1f] transition-all duration-300 flex items-center justify-center gap-3.5 self-end font-impact-condensed uppercase hover:scale-[1.05] active:scale-[0.98] group/btn cursor-pointer shine-sweep min-h-[58px] w-full sm:w-auto"
+                      className="relative overflow-hidden bg-gradient-to-r from-[#E52B34] via-[#FF4D55] to-[#B81B22] hover:from-[#c82028] hover:to-[#9f131a] text-white rounded-full text-base tracking-[0.2em] pl-12 pr-14 py-4 shadow-[0_10px_30px_rgba(229,43,52,0.4),_inset_0_1px_2px_rgba(255,255,255,0.5),_inset_0_-3px_4px_rgba(0,0,0,0.2)] border-b-2 border-b-[#8c1a1f] transition-all duration-300 flex items-center justify-center self-end font-impact-condensed uppercase hover:scale-[1.05] active:scale-[0.98] group/btn cursor-pointer shine-sweep min-h-[58px] w-full sm:w-auto"
                     >
-                      <span>{currentTool.actionText}</span>
-                      <ChevronRight className="w-5 h-5 transition-transform group-hover/btn:translate-x-1.5" />
+                      <span className="mr-[-0.2em]">{currentTool.actionText}</span>
+                      <ChevronRight className="w-5 h-5 absolute right-6 transition-transform group-hover/btn:translate-x-1" />
                     </Link>
                   ) : (
                     <button
                       disabled
-                      className="rounded-full text-base tracking-[0.2em] px-12 py-4 opacity-40 cursor-not-allowed flex items-center justify-center gap-3.5 self-end border border-neutral-300 text-neutral-500 bg-neutral-100 font-impact-condensed uppercase min-h-[58px] w-full sm:w-auto"
+                      className="rounded-full text-base tracking-[0.2em] pl-12 pr-14 py-4 opacity-40 cursor-not-allowed flex items-center justify-center self-end border border-neutral-300 text-neutral-500 bg-neutral-100 font-impact-condensed uppercase min-h-[58px] w-full sm:w-auto relative"
                     >
-                      <Lock className="w-4 h-4" /> {currentTool.actionText}
+                      <span className="mr-[-0.2em]">{currentTool.actionText}</span>
+                      <Lock className="w-4 h-4 absolute right-6" />
                     </button>
                   )}
                 </div>
