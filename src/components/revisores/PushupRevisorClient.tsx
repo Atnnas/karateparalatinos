@@ -21,10 +21,16 @@ interface PushupRevisorClientProps {
     estimated_duration: number;
     difficulty: string;
   };
+  onClose?: () => void;
 }
 
-export function PushupRevisorClient({ user, routine }: PushupRevisorClientProps) {
+export function PushupRevisorClient({ user, routine, onClose }: PushupRevisorClientProps) {
   const router = useRouter();
+
+  // Auto-load scripts on mount to skip duplicate intro screen
+  useEffect(() => {
+    loadScripts();
+  }, []);
 
   // Statuses: 'intro' | 'loading' | 'active' | 'completed'
   const [status, setStatus] = useState<"intro" | "loading" | "active" | "completed">("intro");
@@ -716,14 +722,20 @@ export function PushupRevisorClient({ user, routine }: PushupRevisorClientProps)
               <Play className="w-4 h-4 fill-black" /> Activar Cámara
             </button>
 
-            <Link href="/routines" className="w-full lg:w-64">
+            {onClose ? (
               <button
-                type="button"
-                className="w-full h-12 bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white rounded-2xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all border border-white/5"
+                onClick={onClose}
+                className="w-full h-14 bg-zinc-800 hover:bg-zinc-700 text-white rounded-none font-impact-condensed uppercase tracking-widest text-sm transition-colors cursor-pointer"
               >
-                <ArrowLeft className="w-4 h-4" /> Volver a Ejercicios
+                Volver al Dojo
               </button>
-            </Link>
+            ) : (
+              <Link href="/routines" className="block w-full">
+                <button className="w-full h-14 bg-zinc-800 hover:bg-zinc-700 text-white rounded-2xl font-black text-sm uppercase tracking-widest transition-colors">
+                  Volver al Dojo
+                </button>
+              </Link>
+            )}
           </div>
         </div>
 
@@ -808,11 +820,20 @@ export function PushupRevisorClient({ user, routine }: PushupRevisorClientProps)
               <RefreshCw className="w-4 h-4" /> Repetir Entrenamiento ({targetReps} reps)
             </button>
 
-            <Link href="/routines" className="block w-full">
-              <button className="w-full h-14 bg-zinc-800 hover:bg-zinc-700 text-white rounded-2xl font-black text-sm uppercase tracking-widest transition-colors">
+            {onClose ? (
+              <button
+                onClick={onClose}
+                className="w-full h-14 bg-zinc-800 hover:bg-zinc-700 text-white rounded-none font-impact-condensed uppercase tracking-widest text-sm transition-colors cursor-pointer"
+              >
                 Volver al Dojo
               </button>
-            </Link>
+            ) : (
+              <Link href="/routines" className="block w-full">
+                <button className="w-full h-14 bg-zinc-800 hover:bg-zinc-700 text-white rounded-2xl font-black text-sm uppercase tracking-widest transition-colors">
+                  Volver al Dojo
+                </button>
+              </Link>
+            )}
           </div>
         </motion.div>
       </div>
@@ -849,7 +870,7 @@ export function PushupRevisorClient({ user, routine }: PushupRevisorClientProps)
       <div className="flex flex-col xl:flex-row gap-6 w-full items-stretch">
         
         {/* Left Side: Camera & AI */}
-        <div className="w-full h-[55vh] min-h-[450px] lg:h-[70vh] lg:min-h-[600px] relative flex flex-col items-center justify-center bg-black/95 rounded-[2rem] border border-white/5 overflow-hidden p-3 md:p-5 shadow-2xl">
+        <div className="w-full h-[50vh] min-h-[320px] lg:h-[62vh] lg:min-h-[440px] relative flex flex-col items-center justify-center bg-zinc-950 rounded-none border border-neutral-800 overflow-hidden p-2 md:p-3 shadow-2xl">
           
           <video
             ref={videoRef}
@@ -926,7 +947,7 @@ export function PushupRevisorClient({ user, routine }: PushupRevisorClientProps)
         {/* Stats and guide panel */}
         <div className="w-full xl:w-[320px] flex flex-col justify-between gap-6">
           
-          <div className="bg-zinc-900/40 border border-white/10 rounded-[2rem] p-6 backdrop-blur-md shadow-2xl flex-1 flex flex-col justify-between space-y-6">
+          <div className="bg-zinc-950 border border-neutral-800 rounded-none p-6 backdrop-blur-md shadow-2xl flex-1 flex flex-col justify-between space-y-6">
             
 
             {/* Live Feedback box */}
@@ -959,7 +980,7 @@ export function PushupRevisorClient({ user, routine }: PushupRevisorClientProps)
                 type="button"
                 onClick={completeWorkout}
                 disabled={isFinishing}
-                className="w-full h-14 bg-white hover:bg-emerald-500 hover:text-white text-black font-black uppercase tracking-widest text-xs rounded-2xl transition-all flex items-center justify-center gap-2 active:scale-95 shadow-md shadow-white/5 disabled:opacity-50"
+                className="w-full h-14 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-impact-condensed uppercase tracking-[0.15em] text-sm rounded-none transition-all flex items-center justify-center gap-2 active:scale-95 shadow-lg shadow-emerald-500/20 cursor-pointer disabled:opacity-50"
               >
                 {isFinishing ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -972,7 +993,7 @@ export function PushupRevisorClient({ user, routine }: PushupRevisorClientProps)
               <button
                 type="button"
                 onClick={handleCancelWorkout}
-                className="w-full h-12 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-2xl font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all border border-rose-500/20 active:scale-95"
+                className="w-full h-12 bg-rose-950/40 hover:bg-rose-900/50 text-rose-400 rounded-none font-sans-condensed font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all border border-rose-900/40 active:scale-95 cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4" /> Cancelar y Volver
               </button>
@@ -995,7 +1016,7 @@ export function PushupRevisorClient({ user, routine }: PushupRevisorClientProps)
               initial={{ scale: 0.95, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 20 }}
-              className="w-full max-w-sm bg-zinc-900 border border-white/10 rounded-[2rem] p-6 text-center space-y-6 shadow-2xl"
+              className="w-full max-w-sm bg-zinc-900 border border-neutral-800 rounded-none p-6 text-center space-y-6 shadow-2xl"
             >
               <div className="w-16 h-16 bg-rose-500/10 border border-rose-500/20 text-rose-500 rounded-full flex items-center justify-center mx-auto">
                 <AlertCircle className="w-8 h-8" />
@@ -1012,7 +1033,7 @@ export function PushupRevisorClient({ user, routine }: PushupRevisorClientProps)
                 <button
                   type="button"
                   onClick={() => setShowConfirmCancel(false)}
-                  className="flex-1 h-12 bg-white/5 hover:bg-white/10 text-zinc-300 font-bold rounded-xl text-xs uppercase tracking-wider border border-white/5 transition-colors cursor-pointer"
+                  className="flex-1 h-12 bg-white/5 hover:bg-white/10 text-zinc-300 font-bold rounded-none text-xs uppercase tracking-wider border border-white/5 transition-colors cursor-pointer"
                 >
                   Volver
                 </button>
@@ -1023,9 +1044,9 @@ export function PushupRevisorClient({ user, routine }: PushupRevisorClientProps)
                     if (logIdRef.current) {
                       await Promise.resolve();
                     }
-                    window.location.reload();
+                    if (onClose) { onClose(); } else { window.location.reload(); }
                   }}
-                  className="flex-1 h-12 bg-rose-600 hover:bg-rose-500 text-white font-black rounded-xl text-xs uppercase tracking-widest transition-colors cursor-pointer"
+                  className="flex-1 h-12 bg-rose-600 hover:bg-rose-500 text-white font-black rounded-none text-xs uppercase tracking-widest transition-colors cursor-pointer"
                 >
                   Abandonar
                 </button>
