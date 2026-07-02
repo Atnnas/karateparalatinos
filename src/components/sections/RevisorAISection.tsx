@@ -255,7 +255,7 @@ export default function RevisorAISection() {
                 return (
                   <div
                     key={exercise.id}
-                    className="flex flex-col justify-between border border-neutral-200/90 bg-white/65 hover:bg-white/90 hover:border-[#E52B34]/30 shadow-md hover:shadow-lg transition-all duration-300 p-6 min-h-[280px] relative group backdrop-blur-md rounded-none"
+                    className="flex flex-col justify-between border border-neutral-200/90 bg-white/65 hover:bg-white/95 hover:border-[#E52B34]/30 shadow-md hover:shadow-xl transition-all duration-300 p-8 min-h-[420px] relative group backdrop-blur-md rounded-none"
                   >
                     {/* Top corner red accent line on hover */}
                     <div className="absolute top-0 left-0 w-0 h-1 bg-[#E52B34] transition-all duration-300 group-hover:w-full" />
@@ -266,24 +266,25 @@ export default function RevisorAISection() {
                         <div className="w-10 h-10 bg-neutral-900 text-white flex items-center justify-center shadow-md">
                           <ExerciseIcon className="w-5 h-5 text-[#E52B34]" />
                         </div>
-                        <span className="font-mono text-[9px] text-[#556358] text-right leading-tight">
+                        <span className="font-mono text-[9px] text-[#556358] text-right leading-tight max-w-[120px]">
                           {exercise.jpName}
                         </span>
                       </div>
                       
                       {/* Title & Stats */}
-                      <div className="space-y-1">
-                        <h3 className="font-impact-condensed text-xl text-neutral-900 tracking-wide">
-                          {exercise.name}
-                        </h3>
-                        <div className="flex items-center gap-2 pt-1">
-                          <span className={`text-[9px] font-bold font-title-serif uppercase tracking-wider px-2 py-0.5 border ${exercise.difficultyColor}`}>
+                      <div className="space-y-1.5">
+                        <div className="flex items-center gap-1.5 pt-1">
+                          <span className={`text-[8px] font-bold font-title-serif uppercase tracking-wider px-2 py-0.5 border ${exercise.difficultyColor}`}>
                             {exercise.difficulty}
                           </span>
-                          <span className="text-[10px] font-body text-neutral-400 font-semibold uppercase tracking-wider">
+                          <span className="text-[8px] font-bold font-title-serif uppercase tracking-wider px-2 py-0.5 bg-neutral-100 text-neutral-500 border border-neutral-200/50">
                             {exercise.duration}
                           </span>
                         </div>
+                        
+                        <h3 className="font-impact-condensed text-xl text-neutral-900 tracking-wide uppercase pt-1">
+                          {exercise.name}
+                        </h3>
                       </div>
                       
                       {/* Description */}
@@ -292,15 +293,17 @@ export default function RevisorAISection() {
                       </p>
                     </div>
 
-                    <div className="pt-6 mt-4 border-t border-neutral-100/60 flex items-center justify-between">
-                      <span className="text-[10px] text-neutral-400 font-body">
-                        Enfoque: <strong className="text-neutral-700 font-medium">{exercise.target}</strong>
-                      </span>
+                    <div className="pt-4 mt-auto border-t border-neutral-100/60 space-y-4">
+                      <div className="flex items-center justify-between text-[10px] text-neutral-400 font-body">
+                        <span>Enfoque</span>
+                        <strong className="text-neutral-700 font-medium uppercase tracking-wider">{exercise.target}</strong>
+                      </div>
+                      
                       <button
                         onClick={() => setSelectedExercise(exercise)}
-                        className="bg-neutral-900 hover:bg-[#E52B34] text-white transition-colors duration-300 px-4 py-2 text-[10px] tracking-widest font-sans-condensed font-bold flex items-center gap-1.5 cursor-pointer rounded-none"
+                        className="relative overflow-hidden bg-gradient-to-r from-[#E52B34] via-[#FF4D55] to-[#B81B22] hover:from-[#c82028] hover:to-[#9f131a] text-white rounded-none text-sm tracking-[0.15em] py-3.5 shadow-[0_6px_20px_rgba(229,43,52,0.3),_inset_0_1px_1px_rgba(255,255,255,0.45),_inset_0_-2px_3px_rgba(0,0,0,0.15)] border-b-2 border-b-[#8c1a1f] transition-all duration-300 flex items-center justify-center font-impact-condensed uppercase hover:scale-[1.03] active:scale-[0.98] cursor-pointer shine-sweep w-full whitespace-nowrap"
                       >
-                        <Play className="w-3 h-3 fill-white" /> EVALUAR
+                        <span className="mr-[-0.15em]">EVALUAR</span>
                       </button>
                     </div>
                   </div>
