@@ -169,7 +169,7 @@ export default function Herramientas() {
         </div>
 
         {/* Dashboard Layout Container */}
-        <div className="w-full flex flex-col md:flex-row gap-10 lg:gap-12 bg-white/65 border border-neutral-200/90 shadow-lg rounded-none p-6 sm:p-8 md:p-10 min-h-[600px] backdrop-blur-md">
+        <div className="w-full flex flex-col md:flex-row gap-6 lg:gap-10 bg-white/65 border border-neutral-200/90 shadow-lg rounded-none p-4 sm:p-6 md:p-8 min-h-[600px] backdrop-blur-md">
           
           {/* LEFT: Sidebar Tabs (Responsive menu) */}
           <div className="w-full md:w-[280px] xl:w-[320px] shrink-0 flex flex-col gap-4">
@@ -243,7 +243,7 @@ export default function Herramientas() {
           </div>
 
           {/* RIGHT: Main Viewport (App details) */}
-          <div className="flex-1 border border-neutral-200 bg-white/95 rounded-none p-8 sm:p-10 md:p-12 flex flex-col justify-between relative min-w-0 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)]">
+          <div className="flex-1 border border-neutral-200 bg-white/95 rounded-none p-5 sm:p-8 lg:p-10 flex flex-col justify-between relative min-w-0 w-full shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)]">
             
             <AnimatePresence mode="wait">
               <motion.div
@@ -252,7 +252,7 @@ export default function Herramientas() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -15 }}
                 transition={{ duration: 0.25 }}
-                className="space-y-10 lg:space-y-12 flex-1"
+                className="space-y-10 lg:space-y-12 flex-1 w-full"
               >
                 {/* Viewport Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-200 pb-6">
@@ -289,7 +289,7 @@ export default function Herramientas() {
                 </div>
 
                 {/* Features & Specs Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12 pt-2">
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 xl:gap-12 pt-2">
                   <div className="space-y-5">
                     <h3 className="text-xs font-title-serif font-extrabold uppercase text-[#E52B34] tracking-[0.15em] border-b border-neutral-100 pb-2">
                       Características Principales
@@ -308,7 +308,7 @@ export default function Herramientas() {
                   </div>
 
                   {/* Requirements sidebar inside viewport */}
-                  <div className="space-y-5 lg:border-l lg:border-neutral-200 lg:pl-8">
+                  <div className="space-y-5 xl:border-l xl:border-neutral-200 xl:pl-8">
                     <h3 className="text-xs font-title-serif font-extrabold uppercase text-[#E52B34] tracking-[0.15em] border-b border-neutral-100 pb-2 flex items-center gap-1.5">
                       <ShieldAlert className="w-4 h-4 text-neutral-400" /> Requerimientos del Sistema
                     </h3>
