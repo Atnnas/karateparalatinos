@@ -1,6 +1,15 @@
 "use client";
 
+import { usePathname } from "next/navigation";
+
 export default function FloatingWhatsApp() {
+  const pathname = usePathname();
+
+  // Ocultar el botón en la herramienta del Revisor AI
+  if (pathname?.includes("/revisor-ai")) {
+    return null;
+  }
+
   return (
     <a
       href="https://wa.me/529211205618?text=Hola!%20Me%20interesa%20obtener%20la%20gu%C3%ADa%20de%20estudio%20de%20Karate%20Shitoryu."

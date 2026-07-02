@@ -719,7 +719,7 @@ export function BicepCurlRevisorClient({ user, routine, onClose }: BicepCurlRevi
             </p>
           </div>
 
-          <div className="bg-zinc-900/40 backdrop-blur-xl border border-white/5 rounded-2xl p-6 space-y-6">
+          <div className="bg-zinc-900/40 backdrop-blur-xl border border-white/5 rounded-none p-6 space-y-6">
             <div className="flex flex-col items-center justify-center space-y-4">
               <span className="text-xs text-zinc-400 uppercase font-black tracking-widest text-center">
                 Objetivo de Repeticiones
@@ -917,10 +917,10 @@ export function BicepCurlRevisorClient({ user, routine, onClose }: BicepCurlRevi
         </button>
       </div>
 
-      <div className="flex flex-col xl:flex-row gap-6 w-full items-stretch">
+      <div className="flex flex-col xl:flex-row gap-6 w-full items-stretch justify-center">
         
         {/* Left Side: Camera & AI */}
-        <div className="w-full h-[50vh] min-h-[320px] lg:h-[62vh] lg:min-h-[440px] relative flex flex-col items-center justify-center bg-zinc-950 rounded-none border border-neutral-800 overflow-hidden p-2 md:p-3 shadow-2xl">
+        <div className="w-full aspect-[4/3] lg:max-h-[68vh] relative flex flex-col items-center justify-center bg-zinc-950 rounded-none border border-neutral-800 overflow-hidden p-2 md:p-3 shadow-2xl">
           
           <video
             ref={videoRef}
@@ -993,7 +993,7 @@ export function BicepCurlRevisorClient({ user, routine, onClose }: BicepCurlRevi
         </div>
 
         {/* Right Side: Training Stats & HUD Controls */}
-        <div className="w-full xl:w-[320px] flex flex-col justify-between gap-6">
+        <div className="w-full xl:w-[340px] flex flex-col justify-between gap-6">
           
           <div className="bg-zinc-950 border border-neutral-800 rounded-none p-6 backdrop-blur-md shadow-2xl flex-1 flex flex-col justify-between space-y-6">
             
