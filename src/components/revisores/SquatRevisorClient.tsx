@@ -936,7 +936,7 @@ export function SquatRevisorClient({ user, routine, onClose }: SquatRevisorClien
       <div className="flex flex-col xl:flex-row gap-6 w-full items-stretch justify-center">
         
         {/* Left Side: Camera & AI */}
-        <div className="w-full aspect-[4/3] lg:max-h-[68vh] relative flex flex-col items-center justify-center bg-zinc-950 rounded-none border border-neutral-800 overflow-hidden p-2 md:p-3 shadow-2xl">
+        <div className="w-full aspect-[4/3] lg:max-h-[55vh] relative flex flex-col items-center justify-center bg-zinc-950 rounded-none border border-neutral-800 overflow-hidden p-2 md:p-3 shadow-2xl">
           
           {/* Flipped hidden video feed */}
           <video
