@@ -62,7 +62,7 @@ const tools: Tool[] = [
       { name: "Micrófono", supported: true },
       { name: "Espacio (2 metros)", supported: true }
     ],
-    actionText: "ENTRAR AL DOJO DIGITAL",
+    actionText: "ENTRAR",
     actionLink: "/herramientas/kihon-online",
     active: true
   },
@@ -86,7 +86,7 @@ const tools: Tool[] = [
       { name: "Conexión Estable", supported: true },
       { name: "Código de Sala", supported: true }
     ],
-    actionText: "ENTRAR AL DOJO VIRTUAL",
+    actionText: "ENTRAR",
     actionLink: "/herramientas/dojo-virtual",
     active: true,
     badge: "Colaborativo"
@@ -111,7 +111,7 @@ const tools: Tool[] = [
       { name: "Espacio (2 metros)", supported: true },
       { name: "Buena Iluminación", supported: true }
     ],
-    actionText: "ENTRAR AL REVISOR AI",
+    actionText: "ENTRAR",
     actionLink: "/herramientas/revisor-ai",
     active: true,
     badge: "Inteligencia Artificial"
