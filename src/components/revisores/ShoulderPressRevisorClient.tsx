@@ -22,9 +22,10 @@ interface ShoulderPressRevisorClientProps {
     difficulty: string;
   };
   onClose?: () => void;
+  initialTargetReps?: number;
 }
 
-export function ShoulderPressRevisorClient({ user, routine, onClose }: ShoulderPressRevisorClientProps) {
+export function ShoulderPressRevisorClient({ user, routine, onClose, initialTargetReps }: ShoulderPressRevisorClientProps) {
   const router = useRouter();
 
   // Auto-load scripts on mount to skip duplicate intro screen
@@ -42,7 +43,7 @@ export function ShoulderPressRevisorClient({ user, routine, onClose }: ShoulderP
 
   // Stats
   const [repsCount, setRepsCount] = useState(0);
-  const [targetReps, setTargetReps] = useState(10);
+  const [targetReps, setTargetReps] = useState(initialTargetReps || 10);
   const targetRepsRef = useRef(10);
 
   useEffect(() => {

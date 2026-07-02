@@ -22,9 +22,10 @@ interface PushupRevisorClientProps {
     difficulty: string;
   };
   onClose?: () => void;
+  initialTargetReps?: number;
 }
 
-export function PushupRevisorClient({ user, routine, onClose }: PushupRevisorClientProps) {
+export function PushupRevisorClient({ user, routine, onClose, initialTargetReps }: PushupRevisorClientProps) {
   const router = useRouter();
 
   // Auto-load scripts on mount to skip duplicate intro screen
@@ -41,7 +42,7 @@ export function PushupRevisorClient({ user, routine, onClose }: PushupRevisorCli
 
   // Stats
   const [repsCount, setRepsCount] = useState(0);
-  const [targetReps, setTargetReps] = useState(10);
+  const [targetReps, setTargetReps] = useState(initialTargetReps || 10);
   const targetRepsRef = useRef(10);
 
   useEffect(() => {

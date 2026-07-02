@@ -22,9 +22,10 @@ interface BurpeeRevisorClientProps {
     difficulty: string;
   };
   onClose?: () => void;
+  initialTargetReps?: number;
 }
 
-export function BurpeeRevisorClient({ user, routine, onClose }: BurpeeRevisorClientProps) {
+export function BurpeeRevisorClient({ user, routine, onClose, initialTargetReps }: BurpeeRevisorClientProps) {
   const router = useRouter();
 
   // Auto-load scripts on mount to skip duplicate intro screen
@@ -41,7 +42,7 @@ export function BurpeeRevisorClient({ user, routine, onClose }: BurpeeRevisorCli
 
   // Stats
   const [repsCount, setRepsCount] = useState(0);
-  const [targetReps, setTargetReps] = useState(10);
+  const [targetReps, setTargetReps] = useState(initialTargetReps || 10);
   const targetRepsRef = useRef(10);
 
   useEffect(() => {

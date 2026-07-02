@@ -22,9 +22,10 @@ interface BicepCurlRevisorClientProps {
     difficulty: string;
   };
   onClose?: () => void;
+  initialTargetReps?: number;
 }
 
-export function BicepCurlRevisorClient({ user, routine, onClose }: BicepCurlRevisorClientProps) {
+export function BicepCurlRevisorClient({ user, routine, onClose, initialTargetReps }: BicepCurlRevisorClientProps) {
   const router = useRouter();
 
   // Auto-load scripts on mount to skip duplicate intro screen
@@ -42,7 +43,7 @@ export function BicepCurlRevisorClient({ user, routine, onClose }: BicepCurlRevi
 
   // Stats
   const [repsCount, setRepsCount] = useState(0);
-  const [targetReps, setTargetReps] = useState(10);
+  const [targetReps, setTargetReps] = useState(initialTargetReps || 10);
   const targetRepsRef = useRef(10);
 
   useEffect(() => {

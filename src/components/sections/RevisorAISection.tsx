@@ -130,6 +130,8 @@ const EXERCISES: ExerciseOption[] = [
 
 export default function RevisorAISection() {
   const [selectedExercise, setSelectedExercise] = useState<ExerciseOption | null>(null);
+  const [setupActive, setSetupActive] = useState(false);
+  const [selectedReps, setSelectedReps] = useState(10);
 
   const guestUser = { name: "Invitado", email: "invitado@karateparalatinos.com" };
 
@@ -142,35 +144,37 @@ export default function RevisorAISection() {
     difficulty: selectedExercise.difficulty
   } : null;
 
+  const isCameraActive = selectedExercise && !setupActive;
+
   return (
-    <section className={`relative w-full transition-colors duration-300 flex flex-col justify-start items-center overflow-x-hidden preguntas-section ${selectedExercise ? 'bg-zinc-950 min-h-screen pb-4 md:pb-6' : 'min-h-[calc(100vh-80px)] bg-[var(--background)] pb-20'}`}>
+    <section className={`relative w-full transition-colors duration-300 flex flex-col justify-start items-center overflow-x-hidden preguntas-section ${isCameraActive ? 'bg-zinc-950 min-h-screen pb-4 md:pb-6' : 'min-h-[calc(100vh-80px)] bg-[var(--background)] pb-20'}`}>
       {/* ===== Background Watermark Kanji (Traditional Vibe) ===== */}
-      {!selectedExercise && (
+      {(!selectedExercise || setupActive) && (
         <div className="absolute right-10 md:right-20 lg:right-32 top-[12%] text-[24vw] md:text-[14vw] font-black text-neutral-900/[0.012] select-none pointer-events-none leading-none z-0 font-serif">
           評価
         </div>
       )}
 
       {/* ===== Stylized Rising Sun (Hinomaru) ===== */}
-      {!selectedExercise && (
+      {(!selectedExercise || setupActive) && (
         <div className="absolute right-[-100px] md:right-[4%] lg:right-[8%] bottom-[8%] w-[280px] h-[280px] sm:w-[380px] sm:h-[380px] md:w-[460px] md:h-[460px] lg:w-[520px] lg:h-[520px] z-0 pointer-events-none flex items-center justify-center">
           <div className="w-full h-full bg-gradient-to-tr from-[#E52B34] via-[#FF4D55] to-[#B81B22] opacity-[0.06] rounded-full blur-[3px] shadow-[0_0_100px_rgba(229,43,52,0.2)] animate-pulse duration-[8000ms]" />
           <div className="absolute w-[80%] h-[80%] border border-dashed border-[#E52B34]/10 rounded-full animate-[spin_120s_linear_infinite] z-0" />
         </div>
       )}
 
-      <div className={`relative z-20 w-full mx-auto flex flex-col justify-start items-center transition-all ${selectedExercise ? 'max-w-[98vw] xl:max-w-[1600px] px-1 md:px-2' : 'max-w-[95vw] sm:max-w-6xl px-4'}`}>
+      <div className={`relative z-20 w-full mx-auto flex flex-col justify-start items-center transition-all ${isCameraActive ? 'max-w-[98vw] xl:max-w-[1600px] px-1 md:px-2' : 'max-w-[95vw] sm:max-w-6xl px-4'}`}>
         
         {/* Navigation & Header */}
-        {!selectedExercise && (
+        {(!selectedExercise || setupActive) && (
           <div className="w-full flex flex-col items-start mb-10">
-            <Link
-              href="/herramientas"
-              className="flex items-center gap-2 text-xs font-title-serif font-extrabold text-[#556358] hover:text-[#E52B34] transition-colors mb-6 group uppercase tracking-widest"
+            <button
+              onClick={() => setSelectedExercise(null)}
+              className="flex items-center gap-2 text-xs font-title-serif font-extrabold text-[#556358] hover:text-[#E52B34] transition-colors mb-6 group uppercase tracking-widest cursor-pointer"
             >
               <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-              Volver a Herramientas
-            </Link>
+              Volver a Ejercicios
+            </button>
             
             <div className="text-center md:text-left w-full border-b border-neutral-200/80 pb-6 flex flex-col md:flex-row justify-between items-center md:items-end gap-4">
               <div>
@@ -182,37 +186,130 @@ export default function RevisorAISection() {
                 </h1>
               </div>
               <p className="font-body text-neutral-600 text-sm max-w-md font-light text-center md:text-right">
-                Selecciona una rutina para iniciar el espejo interactivo con visión artificial y evaluar tu técnica en tiempo real.
+                {selectedExercise 
+                  ? `Estás configurando los detalles del entrenamiento para iniciar la rutina.`
+                  : "Selecciona una rutina para iniciar el espejo interactivo con visión artificial y evaluar tu técnica en tiempo real."
+                }
               </p>
             </div>
           </div>
         )}
 
         {selectedExercise && routineObj ? (
-          /* ===== CAMERA INTERFACE (NATIVE ACTIVE RUNNER) ===== */
-          <div className="w-full animate-in fade-in zoom-in-95 duration-300">
-            {/* Native Component Mount */}
-            <div className="w-full rounded-none border border-neutral-800 bg-zinc-950 shadow-2xl relative overflow-hidden">
-              {selectedExercise.slug === "bicepcurl-revisor" && (
-                <BicepCurlRevisorClient user={guestUser} routine={routineObj} onClose={() => setSelectedExercise(null)} />
-              )}
-              {selectedExercise.slug === "tricepkickback-revisor" && (
-                <TricepKickbackRevisorClient user={guestUser} routine={routineObj} onClose={() => setSelectedExercise(null)} />
-              )}
-              {selectedExercise.slug === "pushup-revisor" && (
-                <PushupRevisorClient user={guestUser} routine={routineObj} onClose={() => setSelectedExercise(null)} />
-              )}
-              {selectedExercise.slug === "squat-revisor" && (
-                <SquatRevisorClient user={guestUser} routine={routineObj} onClose={() => setSelectedExercise(null)} />
-              )}
-              {selectedExercise.slug === "shoulderpress-revisor" && (
-                <ShoulderPressRevisorClient user={guestUser} routine={routineObj} onClose={() => setSelectedExercise(null)} />
-              )}
-              {selectedExercise.slug === "burpee-revisor" && (
-                <BurpeeRevisorClient user={guestUser} routine={routineObj} onClose={() => setSelectedExercise(null)} />
-              )}
+          setupActive ? (
+            /* ===== PRE-WORKOUT SETUP CARD (KUMA DOJO STYLE) ===== */
+            <div className="w-full max-w-xl mx-auto bg-white border-2 border-neutral-200 shadow-2xl p-8 md:p-10 space-y-8 animate-in fade-in zoom-in-95 duration-300 rounded-none relative">
+              {/* Kanji Watermark */}
+              <div className="absolute right-6 top-4 text-7xl font-black text-neutral-900/[0.03] select-none pointer-events-none font-serif">
+                準備
+              </div>
+
+              {/* Title & Badge */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <span className={`text-[9px] font-bold font-title-serif uppercase tracking-wider px-2.5 py-0.5 border ${selectedExercise.difficultyColor}`}>
+                    {selectedExercise.difficulty}
+                  </span>
+                  <span className="text-[9px] font-bold font-title-serif uppercase tracking-wider px-2.5 py-0.5 bg-neutral-100 text-neutral-500 border border-neutral-200/50">
+                    {selectedExercise.duration}
+                  </span>
+                </div>
+                
+                <h2 className="font-impact-condensed text-3xl text-neutral-900 tracking-wide uppercase">
+                  {selectedExercise.name}
+                </h2>
+                <p className="font-body text-neutral-600 text-xs font-light leading-relaxed">
+                  {selectedExercise.description}
+                </p>
+              </div>
+
+              {/* Repetitions Selector */}
+              <div className="border-t border-b border-neutral-100 py-8 flex flex-col items-center justify-center space-y-4">
+                <span className="text-xs text-[#556358] font-bold uppercase tracking-widest text-center">
+                  Objetivo de Repeticiones
+                </span>
+                
+                <div className="flex items-center justify-center gap-6 w-full">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedReps(prev => Math.max(1, prev - 1))}
+                    className="w-14 h-14 flex items-center justify-center text-neutral-700 hover:text-white bg-neutral-50 hover:bg-[#E52B34] border border-neutral-200 hover:border-[#E52B34] transition-all rounded-none text-2xl font-bold cursor-pointer select-none active:scale-95"
+                  >
+                    -
+                  </button>
+                  
+                  <div className="flex flex-col items-center justify-center min-w-[120px]">
+                    <span className="text-5xl font-black text-neutral-950 font-mono tracking-tight">
+                      {selectedReps}
+                    </span>
+                    <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider mt-1">
+                      repeticiones
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedReps(prev => Math.min(99, prev + 1))}
+                    className="w-14 h-14 flex items-center justify-center text-neutral-700 hover:text-white bg-neutral-50 hover:bg-neutral-900 border border-neutral-200 hover:border-neutral-900 transition-all rounded-none text-2xl font-bold cursor-pointer select-none active:scale-95"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              {/* Focus point */}
+              <div className="bg-neutral-50 border border-neutral-200/60 p-4 space-y-2">
+                <span className="text-[9px] text-[#556358] font-bold uppercase tracking-wider block">
+                  Enfoque Técnico
+                </span>
+                <p className="font-body text-xs text-neutral-600 font-light">
+                  Se evaluará la postura del cuerpo enfocando el trabajo en: <strong className="text-neutral-950 font-medium">{selectedExercise.target}</strong>.
+                </p>
+              </div>
+
+              {/* Actions */}
+              <div className="space-y-3 pt-2">
+                <button
+                  onClick={() => setSetupActive(false)}
+                  className="relative overflow-hidden bg-gradient-to-r from-[#E52B34] via-[#FF4D55] to-[#B81B22] hover:from-[#c82028] hover:to-[#9f131a] text-white rounded-none text-sm tracking-[0.15em] py-4 shadow-[0_6px_20px_rgba(229,43,52,0.3),_inset_0_1px_1px_rgba(255,255,255,0.45),_inset_0_-2px_3px_rgba(0,0,0,0.15)] border-b-2 border-b-[#8c1a1f] transition-all duration-300 flex items-center justify-center font-impact-condensed uppercase hover:scale-[1.02] active:scale-[0.98] cursor-pointer shine-sweep w-full"
+                >
+                  COMENZAR EVALUACIÓN
+                </button>
+                
+                <button
+                  onClick={() => setSelectedExercise(null)}
+                  className="w-full py-3.5 border border-neutral-300 hover:border-neutral-800 text-neutral-600 hover:text-neutral-900 transition-all text-xs font-bold font-sans-condensed tracking-widest flex items-center justify-center gap-2 cursor-pointer bg-white rounded-none active:scale-[0.98]"
+                >
+                  <ArrowLeft className="w-4 h-4" /> ELEGIR OTRO EJERCICIO
+                </button>
+              </div>
             </div>
-          </div>
+          ) : (
+            /* ===== CAMERA INTERFACE (NATIVE ACTIVE RUNNER) ===== */
+            <div className="w-full animate-in fade-in zoom-in-95 duration-300">
+              {/* Native Component Mount */}
+              <div className="w-full rounded-none border border-neutral-800 bg-zinc-950 shadow-2xl relative overflow-hidden">
+                {selectedExercise.slug === "bicepcurl-revisor" && (
+                  <BicepCurlRevisorClient user={guestUser} routine={routineObj} initialTargetReps={selectedReps} onClose={() => setSelectedExercise(null)} />
+                )}
+                {selectedExercise.slug === "tricepkickback-revisor" && (
+                  <TricepKickbackRevisorClient user={guestUser} routine={routineObj} initialTargetReps={selectedReps} onClose={() => setSelectedExercise(null)} />
+                )}
+                {selectedExercise.slug === "pushup-revisor" && (
+                  <PushupRevisorClient user={guestUser} routine={routineObj} initialTargetReps={selectedReps} onClose={() => setSelectedExercise(null)} />
+                )}
+                {selectedExercise.slug === "squat-revisor" && (
+                  <SquatRevisorClient user={guestUser} routine={routineObj} initialTargetReps={selectedReps} onClose={() => setSelectedExercise(null)} />
+                )}
+                {selectedExercise.slug === "shoulderpress-revisor" && (
+                  <ShoulderPressRevisorClient user={guestUser} routine={routineObj} initialTargetReps={selectedReps} onClose={() => setSelectedExercise(null)} />
+                )}
+                {selectedExercise.slug === "burpee-revisor" && (
+                  <BurpeeRevisorClient user={guestUser} routine={routineObj} initialTargetReps={selectedReps} onClose={() => setSelectedExercise(null)} />
+                )}
+              </div>
+            </div>
+          )
         ) : (
           /* ===== SELECTION GRID ===== */
           <div className="w-full space-y-8 animate-in fade-in duration-500">
@@ -267,7 +364,11 @@ export default function RevisorAISection() {
                       </div>
                       
                       <button
-                        onClick={() => setSelectedExercise(exercise)}
+                        onClick={() => {
+                          setSelectedExercise(exercise);
+                          setSetupActive(true);
+                          setSelectedReps(10);
+                        }}
                         className="relative overflow-hidden bg-gradient-to-r from-[#E52B34] via-[#FF4D55] to-[#B81B22] hover:from-[#c82028] hover:to-[#9f131a] text-white rounded-none text-sm tracking-[0.15em] py-3.5 shadow-[0_6px_20px_rgba(229,43,52,0.3),_inset_0_1px_1px_rgba(255,255,255,0.45),_inset_0_-2px_3px_rgba(0,0,0,0.15)] border-b-2 border-b-[#8c1a1f] transition-all duration-300 flex items-center justify-center font-impact-condensed uppercase hover:scale-[1.03] active:scale-[0.98] cursor-pointer shine-sweep w-full whitespace-nowrap"
                       >
                         <span className="mr-[-0.15em]">EVALUAR</span>

@@ -22,9 +22,10 @@ interface SquatRevisorClientProps {
     difficulty: string;
   };
   onClose?: () => void;
+  initialTargetReps?: number;
 }
 
-export function SquatRevisorClient({ user, routine, onClose }: SquatRevisorClientProps) {
+export function SquatRevisorClient({ user, routine, onClose, initialTargetReps }: SquatRevisorClientProps) {
   const router = useRouter();
 
   // Auto-load scripts on mount to skip duplicate intro screen
@@ -42,7 +43,7 @@ export function SquatRevisorClient({ user, routine, onClose }: SquatRevisorClien
 
   // Stats
   const [repsCount, setRepsCount] = useState(0);
-  const [targetReps, setTargetReps] = useState(10);
+  const [targetReps, setTargetReps] = useState(initialTargetReps || 10);
   const targetRepsRef = useRef(10);
 
   useEffect(() => {
