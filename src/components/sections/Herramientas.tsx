@@ -342,7 +342,7 @@ export default function Herramientas() {
                   {currentTool.active ? (
                     <Link
                       href={currentTool.actionLink}
-                      className="relative overflow-hidden bg-gradient-to-r from-[#E52B34] via-[#FF4D55] to-[#B81B22] hover:from-[#c82028] hover:to-[#9f131a] text-white rounded-none text-xs tracking-widest px-10 py-4.5 shadow-[0_4px_20px_rgba(229,43,52,0.3)] hover:shadow-[0_8px_30px_rgba(229,43,52,0.5)] transition-all duration-300 flex items-center justify-center gap-2 self-end font-sans-condensed font-bold hover:scale-[1.04] active:scale-95 group/btn cursor-pointer shine-sweep"
+                      className="relative overflow-hidden bg-gradient-to-r from-[#E52B34] via-[#FF4D55] to-[#B81B22] hover:from-[#c82028] hover:to-[#9f131a] text-white rounded-full text-xs sm:text-sm tracking-[0.2em] px-12 py-4 shadow-[0_8px_25px_rgba(229,43,52,0.35)] hover:shadow-[0_12px_35px_rgba(229,43,52,0.5)] transition-all duration-300 flex items-center justify-center gap-3 self-end font-sans-condensed font-extrabold hover:scale-[1.05] active:scale-[0.97] group/btn cursor-pointer shine-sweep"
                     >
                       <span>{currentTool.actionText}</span>
                       <ChevronRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
@@ -350,7 +350,7 @@ export default function Herramientas() {
                   ) : (
                     <button
                       disabled
-                      className="btn-kpl-secondary rounded-none text-xs tracking-widest px-10 py-4.5 opacity-40 cursor-not-allowed flex items-center justify-center gap-2 self-end border-neutral-300 text-neutral-500 bg-neutral-100 font-bold"
+                      className="rounded-full text-xs tracking-[0.2em] px-12 py-4 opacity-40 cursor-not-allowed flex items-center justify-center gap-3 self-end border border-neutral-300 text-neutral-500 bg-neutral-100 font-extrabold"
                     >
                       <Lock className="w-3.5 h-3.5" /> {currentTool.actionText}
                     </button>
