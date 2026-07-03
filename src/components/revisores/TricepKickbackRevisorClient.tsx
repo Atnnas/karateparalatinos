@@ -708,7 +708,7 @@ export function TricepKickbackRevisorClient({ user, routine, onClose, initialTar
               <div className="flex items-center gap-6">
                 <button
                   onClick={() => setTargetReps(prev => Math.max(1, prev - 1))}
-                  className="w-16 h-16 flex items-center justify-center text-zinc-300 hover:text-white bg-zinc-950 hover:bg-zinc-800 border-2 border-white/10 active:border-cyan-500/50 hover:border-cyan-500/30 active:scale-95 transition-all rounded-2xl shadow-lg shadow-black/40 text-2xl font-bold cursor-pointer select-none"
+                  className="w-16 h-16 flex items-center justify-center text-zinc-300 hover:text-white bg-zinc-950 hover:bg-zinc-800 border-2 border-white/10 active:border-cyan-500/50 hover:border-cyan-500/30 active:scale-95 transition-all rounded-none shadow-lg shadow-black/40 text-2xl font-bold cursor-pointer select-none"
                 >
                   <Minus className="w-6 h-6 text-cyan-400" />
                 </button>
@@ -733,7 +733,7 @@ export function TricepKickbackRevisorClient({ user, routine, onClose, initialTar
                 <button
                   type="button"
                   onClick={() => setTargetReps(prev => Math.min(999, prev + 1))}
-                  className="w-16 h-16 flex items-center justify-center text-zinc-300 hover:text-white bg-zinc-950 hover:bg-zinc-800 border-2 border-white/10 active:border-cyan-500/50 hover:border-cyan-500/30 active:scale-95 transition-all rounded-2xl shadow-lg shadow-black/40 text-2xl font-bold cursor-pointer select-none"
+                  className="w-16 h-16 flex items-center justify-center text-zinc-300 hover:text-white bg-zinc-950 hover:bg-zinc-800 border-2 border-white/10 active:border-cyan-500/50 hover:border-cyan-500/30 active:scale-95 transition-all rounded-none shadow-lg shadow-black/40 text-2xl font-bold cursor-pointer select-none"
                 >
                   <Plus className="w-6 h-6 text-cyan-400" />
                 </button>
@@ -744,7 +744,7 @@ export function TricepKickbackRevisorClient({ user, routine, onClose, initialTar
           <div className="pt-4 flex flex-col gap-3">
             <button
               onClick={loadScripts}
-              className="group w-full lg:w-64 h-14 bg-white hover:bg-kuma-gold text-black rounded-2xl font-black text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-white/5"
+              className="group w-full lg:w-64 h-14 bg-white hover:bg-kuma-gold text-black rounded-none font-black text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-white/5"
             >
               <Play className="w-4 h-4 fill-black" /> Activar Cámara
             </button>
@@ -758,7 +758,7 @@ export function TricepKickbackRevisorClient({ user, routine, onClose, initialTar
               </button>
             ) : (
               <Link href="/routines" className="block w-full">
-                <button className="w-full h-14 bg-zinc-800 hover:bg-zinc-700 text-white rounded-2xl font-black text-sm uppercase tracking-widest transition-colors">
+                <button className="w-full h-14 bg-zinc-800 hover:bg-zinc-700 text-white rounded-none font-black text-sm uppercase tracking-widest transition-colors">
                   Volver al Dojo
                 </button>
               </Link>
@@ -766,7 +766,7 @@ export function TricepKickbackRevisorClient({ user, routine, onClose, initialTar
           </div>
         </div>
 
-        <div className="hidden lg:block lg:flex-1 relative aspect-[4/3] rounded-[2rem] border border-white/10 overflow-hidden bg-zinc-950 shadow-2xl">
+        <div className="hidden lg:block lg:flex-1 relative aspect-[4/3] rounded-none border border-white/10 overflow-hidden bg-zinc-950 shadow-2xl">
           <div className="absolute inset-0 bg-gradient-to-tr from-zinc-950 via-zinc-900 to-black flex flex-col items-center justify-center p-8 text-center space-y-4">
             <Camera className="w-12 h-12 text-zinc-600 animate-pulse" />
             <p className="text-zinc-400 text-sm font-bold">Espejo Inteligente de Devolución</p>
@@ -793,54 +793,49 @@ export function TricepKickbackRevisorClient({ user, routine, onClose, initialTar
   }
 
   // 3. COMPLETED VIEW
-  if (status === "completed" && workoutSummary) {
+  if (status === "completed") {
     return (
-      <div className="max-w-md mx-auto px-6 py-12 text-center space-y-8 z-10 relative">
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden z-10">
+        <div className="absolute inset-0 bg-black/95 pointer-events-none" />
+        
         <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
+          initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="w-24 h-24 bg-gradient-to-tr from-yellow-400 to-amber-600 rounded-[2rem] flex items-center justify-center mx-auto shadow-2xl shadow-amber-500/25"
+          className="relative text-center w-full max-w-md bg-zinc-950 border border-neutral-800 p-8 rounded-none shadow-2xl z-10"
         >
-          <Trophy className="w-12 h-12 text-black" />
-        </motion.div>
-
-        <div className="space-y-2">
-          <h2 className="text-3xl font-black text-white uppercase italic tracking-tight">¡Patadas Completadas!</h2>
-          <p className="text-sm text-zinc-400">Tu registro ha sido guardado exitosamente en tu perfil.</p>
-        </div>
-
-        <div className="bg-zinc-900/60 border border-white/10 rounded-[2rem] p-6 grid grid-cols-2 gap-4 backdrop-blur-md">
-          <div className="text-center p-3 bg-zinc-950/40 rounded-2xl border border-white/5">
-            <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider block">Repeticiones</span>
-            <span className="text-3xl text-white font-black font-mono mt-1 block">
-              {workoutSummary.reps}
-            </span>
-          </div>
-          <div className="text-center p-3 bg-zinc-950/40 rounded-2xl border border-white/5">
-            <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider block">EXP Ganados</span>
-            <span className="text-3xl text-kuma-gold font-black font-mono mt-1 block">
-              +{workoutSummary.expGained}
-            </span>
-          </div>
-          {workoutSummary.streakDays && (
-            <div className="col-span-2 text-center p-3 bg-zinc-950/40 rounded-2xl border border-white/5 flex items-center justify-center gap-2">
-              <Flame className="w-5 h-5 text-orange-500 fill-orange-500 animate-pulse" />
-              <span className="text-xs font-bold text-zinc-300">
-                ¡Racha actual: <strong className="text-white font-black">{workoutSummary.streakDays} días</strong>!
-              </span>
+          <div className="w-24 h-24 mx-auto relative mb-6">
+            <div className="w-full h-full bg-[#E52B34] flex items-center justify-center shadow-lg">
+              <Trophy className="w-10 h-10 text-white" />
             </div>
-          )}
-        </div>
+          </div>
 
-        <div className="space-y-3">
-          <button
-            onClick={startTraining}
-            className="w-full h-14 bg-white hover:bg-kuma-gold hover:text-black text-black rounded-2xl font-black text-sm uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
-          >
-            <RefreshCw className="w-4 h-4" /> Repetir Entrenamiento
-          </button>
+          <h2 className="text-4xl font-black text-white tracking-wider mb-2 uppercase font-impact-condensed">¡OSU!</h2>
+          <h3 className="text-md font-bold text-emerald-400 uppercase tracking-widest mb-6">Revisión Completada</h3>
+          
+          <p className="text-zinc-400 text-xs leading-relaxed mb-8 font-body">
+            Tu técnica ha sido evaluada y validada exitosamente en el espejo interactivo.
+          </p>
 
-          {onClose ? (
+          <div className="grid grid-cols-2 gap-4 mb-8 bg-zinc-900 border border-neutral-800 p-4 rounded-none">
+            <div className="text-center border-r border-neutral-800">
+              <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-wider block">Repeticiones</span>
+              <span className="text-xl text-white font-black font-mono">{repsCount} / {targetReps}</span>
+            </div>
+            <div className="text-center">
+              <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-wider block">Tiempo</span>
+              <span className="text-xl text-white font-black font-mono">{formatTime(elapsedTime)}</span>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <button
+              onClick={startTraining}
+              className="w-full h-14 bg-gradient-to-r from-[#E52B34] to-[#B81B22] text-white hover:opacity-90 rounded-none font-impact-condensed uppercase tracking-widest text-sm transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95 shadow-md"
+            >
+              <RefreshCw className="w-4 h-4" /> Repetir ({targetReps} reps)
+            </button>
+
+            {onClose ? (
               <button
                 onClick={onClose}
                 className="w-full h-14 bg-zinc-800 hover:bg-zinc-700 text-white rounded-none font-impact-condensed uppercase tracking-widest text-sm transition-colors cursor-pointer"
@@ -849,12 +844,13 @@ export function TricepKickbackRevisorClient({ user, routine, onClose, initialTar
               </button>
             ) : (
               <Link href="/routines" className="block w-full">
-                <button className="w-full h-14 bg-zinc-800 hover:bg-zinc-700 text-white rounded-2xl font-black text-sm uppercase tracking-widest transition-colors">
+                <button className="w-full h-14 bg-zinc-800 hover:bg-zinc-700 text-white rounded-none font-black text-sm uppercase tracking-widest transition-colors">
                   Volver al Dojo
                 </button>
               </Link>
             )}
-        </div>
+          </div>
+        </motion.div>
       </div>
     );
   }
@@ -902,12 +898,12 @@ export function TricepKickbackRevisorClient({ user, routine, onClose, initialTar
           />
 
           {/* Main Overlay & Canvas */}
-          <div className="relative w-full flex-1 bg-zinc-950 rounded-2xl overflow-hidden shadow-inner border border-white/10 flex items-center justify-center">
+          <div className="relative w-full flex-1 bg-zinc-950 rounded-none overflow-hidden shadow-inner border border-white/10 flex items-center justify-center">
             <canvas
               ref={canvasRef}
               width="640"
               height="480"
-              className="w-full h-full object-cover rounded-2xl"
+              className="w-full h-full object-cover rounded-none"
             />
 
             {/* Guide Silhouette Overlay */}
@@ -942,19 +938,19 @@ export function TricepKickbackRevisorClient({ user, routine, onClose, initialTar
             </div>
 
             {/* Transparent Reps Overlay */}
-            <div className="absolute top-4 left-4 bg-zinc-950/80 backdrop-blur px-4 py-2 rounded-2xl border border-white/10 flex items-center gap-2 shadow-md">
+            <div className="absolute top-4 left-4 bg-zinc-950/80 backdrop-blur px-4 py-2 rounded-none border border-white/10 flex items-center gap-2 shadow-md">
               <span className="text-xs font-bold text-zinc-400">Reps:</span>
               <span className="text-lg font-black text-kuma-gold font-mono">{repsCount} / {targetReps}</span>
             </div>
 
             {/* Side Indicator Overlay */}
-            <div className="absolute top-4 right-4 bg-zinc-950/80 backdrop-blur px-3 py-1.5 rounded-xl border border-white/10 flex items-center gap-1.5 shadow-md">
+            <div className="absolute top-4 right-4 bg-zinc-950/80 backdrop-blur px-3 py-1.5 rounded-none border border-white/10 flex items-center gap-1.5 shadow-md">
               <span className="text-[9px] font-black uppercase text-zinc-500">Lado:</span>
               <span className="text-[10px] font-black text-cyan-400 uppercase">{activeSide}</span>
             </div>
 
             {/* Live Angle HUD */}
-            <div className="absolute bottom-4 left-4 bg-zinc-950/80 border border-white/10 p-3 rounded-xl backdrop-blur-sm shadow-md flex gap-4">
+            <div className="absolute bottom-4 left-4 bg-zinc-950/80 border border-white/10 p-3 rounded-none backdrop-blur-sm shadow-md flex gap-4">
               <div>
                 <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-wider block">Ángulo Codo</span>
                 <span className="text-xl font-black font-mono text-white tabular-nums">{elbowAngle}°</span>
@@ -973,7 +969,7 @@ export function TricepKickbackRevisorClient({ user, routine, onClose, initialTar
           <div className="bg-zinc-950 border border-neutral-800 rounded-none p-6 backdrop-blur-md shadow-2xl flex-1 flex flex-col justify-between space-y-6">
             
             {/* Live Feedback box */}
-            <div className="bg-zinc-950/80 border border-white/5 p-4 rounded-2xl text-center space-y-2 relative overflow-hidden">
+            <div className="bg-zinc-950/80 border border-white/5 p-4 rounded-none text-center space-y-2 relative overflow-hidden">
               <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-50" />
               <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-wider block">RETROALIMENTACIÓN</span>
               <p className="text-lg font-black text-white uppercase tracking-tight min-h-[28px] flex items-center justify-center italic">

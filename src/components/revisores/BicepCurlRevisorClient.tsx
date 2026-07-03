@@ -729,7 +729,7 @@ export function BicepCurlRevisorClient({ user, routine, onClose, initialTargetRe
                 <button
                   type="button"
                   onClick={() => setTargetReps(prev => Math.max(1, prev - 1))}
-                  className="w-16 h-16 flex items-center justify-center text-zinc-300 hover:text-white bg-zinc-950 hover:bg-zinc-800 border-2 border-white/10 active:border-cyan-500/50 hover:border-cyan-500/30 active:scale-95 transition-all rounded-2xl shadow-lg shadow-black/40 text-2xl font-bold cursor-pointer select-none"
+                  className="w-16 h-16 flex items-center justify-center text-zinc-300 hover:text-white bg-zinc-950 hover:bg-zinc-800 border-2 border-white/10 active:border-cyan-500/50 hover:border-cyan-500/30 active:scale-95 transition-all rounded-none shadow-lg shadow-black/40 text-2xl font-bold cursor-pointer select-none"
                 >
                   <Minus className="w-6 h-6 text-cyan-400" />
                 </button>
@@ -757,7 +757,7 @@ export function BicepCurlRevisorClient({ user, routine, onClose, initialTargetRe
                 <button
                   type="button"
                   onClick={() => setTargetReps(prev => Math.min(999, prev + 1))}
-                  className="w-16 h-16 flex items-center justify-center text-zinc-300 hover:text-white bg-zinc-950 hover:bg-zinc-800 border-2 border-white/10 active:border-amber-500/50 hover:border-amber-500/30 active:scale-95 transition-all rounded-2xl shadow-lg shadow-black/40 text-2xl font-bold cursor-pointer select-none"
+                  className="w-16 h-16 flex items-center justify-center text-zinc-300 hover:text-white bg-zinc-950 hover:bg-zinc-800 border-2 border-white/10 active:border-amber-500/50 hover:border-amber-500/30 active:scale-95 transition-all rounded-none shadow-lg shadow-black/40 text-2xl font-bold cursor-pointer select-none"
                 >
                   <Plus className="w-6 h-6 text-amber-400" />
                 </button>
@@ -768,7 +768,7 @@ export function BicepCurlRevisorClient({ user, routine, onClose, initialTargetRe
           <div className="pt-4 flex flex-col gap-3">
             <button
               onClick={loadScripts}
-              className="group w-full lg:w-64 h-14 bg-white hover:bg-kuma-gold text-black rounded-2xl font-black text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-white/5"
+              className="group w-full lg:w-64 h-14 bg-white hover:bg-kuma-gold text-black rounded-none font-black text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-white/5"
             >
               <Play className="w-4 h-4 fill-black" /> Activar Cámara
             </button>
@@ -782,7 +782,7 @@ export function BicepCurlRevisorClient({ user, routine, onClose, initialTargetRe
               </button>
             ) : (
               <Link href="/routines" className="block w-full">
-                <button className="w-full h-14 bg-zinc-800 hover:bg-zinc-700 text-white rounded-2xl font-black text-sm uppercase tracking-widest transition-colors">
+                <button className="w-full h-14 bg-zinc-800 hover:bg-zinc-700 text-white rounded-none font-black text-sm uppercase tracking-widest transition-colors">
                   Volver al Dojo
                 </button>
               </Link>
@@ -790,7 +790,7 @@ export function BicepCurlRevisorClient({ user, routine, onClose, initialTargetRe
           </div>
         </div>
 
-        <div className="hidden lg:block lg:flex-1 relative aspect-[4/3] rounded-[2rem] border border-white/10 overflow-hidden bg-zinc-950 shadow-2xl">
+        <div className="hidden lg:block lg:flex-1 relative aspect-[4/3] rounded-none border border-white/10 overflow-hidden bg-zinc-950 shadow-2xl">
           <div className="absolute inset-0 bg-gradient-to-tr from-zinc-950 via-zinc-900 to-black flex flex-col items-center justify-center p-8 text-center space-y-4">
             <Camera className="w-12 h-12 text-zinc-600 animate-pulse" />
             <p className="text-zinc-400 text-sm font-bold">Evaluador de Curl de Bíceps</p>
@@ -822,53 +822,43 @@ export function BicepCurlRevisorClient({ user, routine, onClose, initialTargetRe
   if (status === "completed") {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden z-10">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-green-950/20 via-black to-black pointer-events-none" />
+        <div className="absolute inset-0 bg-black/95 pointer-events-none" />
         
-        
-
         <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
+          initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="relative text-center w-full max-w-md bg-zinc-900/90 border border-white/10 p-8 rounded-[2.5rem] shadow-2xl backdrop-blur-md"
+          className="relative text-center w-full max-w-md bg-zinc-950 border border-neutral-800 p-8 rounded-none shadow-2xl z-10"
         >
-          <div className="w-32 h-32 mx-auto relative mb-6">
-            <div className="w-full h-full bg-gradient-to-tr from-emerald-500 to-teal-700 rounded-full flex items-center justify-center shadow-lg border-4 border-zinc-950">
-              <Trophy className="w-14 h-14 text-white" />
-            </div>
-            <div className="absolute -bottom-2 -right-2 w-12 h-12 bg-kuma-gold rounded-full flex items-center justify-center shadow border-4 border-zinc-900">
-              <CheckCircle className="w-6 h-6 text-black" />
+          <div className="w-24 h-24 mx-auto relative mb-6">
+            <div className="w-full h-full bg-[#E52B34] flex items-center justify-center shadow-lg">
+              <Trophy className="w-10 h-10 text-white" />
             </div>
           </div>
 
-          <h2 className="text-4xl font-black text-white italic tracking-tighter mb-2 uppercase">¡OSU!</h2>
-          <h3 className="text-xl font-bold text-emerald-400 uppercase tracking-widest mb-6">Revisión Favorable</h3>
+          <h2 className="text-4xl font-black text-white tracking-wider mb-2 uppercase font-impact-condensed">¡OSU!</h2>
+          <h3 className="text-md font-bold text-emerald-400 uppercase tracking-widest mb-6">Revisión Completada</h3>
           
-          <p className="text-zinc-400 text-sm leading-relaxed mb-8">
-            Has completado los curls de bíceps con la técnica correcta. Tu técnica ha sido validada y registrada correctamente.
+          <p className="text-zinc-400 text-xs leading-relaxed mb-8 font-body">
+            Tu técnica ha sido evaluada y validada exitosamente en el espejo interactivo.
           </p>
 
-          {workoutSummary && (
-            <div className="grid grid-cols-2 gap-4 mb-8 bg-zinc-950/60 rounded-2xl p-4 border border-white/5">
-              <div className="text-center border-r border-white/5">
-                <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider block">Racha</span>
-                <span className="text-2xl text-white font-black flex items-center justify-center gap-1">
-                  <Flame className="w-5 h-5 text-orange-500 fill-orange-500 animate-pulse" />
-                  {workoutSummary.streakDays} Días
-                </span>
-              </div>
-              <div className="text-center">
-                <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider block">Tiempo</span>
-                <span className="text-2xl text-white font-black">{formatTime(elapsedTime)}</span>
-              </div>
+          <div className="grid grid-cols-2 gap-4 mb-8 bg-zinc-900 border border-neutral-800 p-4 rounded-none">
+            <div className="text-center border-r border-neutral-800">
+              <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-wider block">Repeticiones</span>
+              <span className="text-xl text-white font-black font-mono">{repsCount} / {targetReps}</span>
             </div>
-          )}
+            <div className="text-center">
+              <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-wider block">Tiempo</span>
+              <span className="text-xl text-white font-black font-mono">{formatTime(elapsedTime)}</span>
+            </div>
+          </div>
 
           <div className="space-y-3">
             <button
               onClick={startTraining}
-              className="w-full h-14 bg-white hover:bg-kuma-gold hover:text-black text-black rounded-2xl font-black text-sm uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
+              className="w-full h-14 bg-gradient-to-r from-[#E52B34] to-[#B81B22] text-white hover:opacity-90 rounded-none font-impact-condensed uppercase tracking-widest text-sm transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95 shadow-md"
             >
-              <RefreshCw className="w-4 h-4" /> Repetir Entrenamiento ({targetReps} reps)
+              <RefreshCw className="w-4 h-4" /> Repetir ({targetReps} reps)
             </button>
 
             {onClose ? (
@@ -880,7 +870,7 @@ export function BicepCurlRevisorClient({ user, routine, onClose, initialTargetRe
               </button>
             ) : (
               <Link href="/routines" className="block w-full">
-                <button className="w-full h-14 bg-zinc-800 hover:bg-zinc-700 text-white rounded-2xl font-black text-sm uppercase tracking-widest transition-colors">
+                <button className="w-full h-14 bg-zinc-800 hover:bg-zinc-700 text-white rounded-none font-black text-sm uppercase tracking-widest transition-colors">
                   Volver al Dojo
                 </button>
               </Link>
@@ -934,12 +924,12 @@ export function BicepCurlRevisorClient({ user, routine, onClose, initialTargetRe
           />
 
           {/* Main Overlay & Canvas */}
-          <div className="relative w-full flex-1 bg-zinc-950 rounded-2xl overflow-hidden shadow-inner border border-white/10 flex items-center justify-center">
+          <div className="relative w-full flex-1 bg-zinc-950 rounded-none overflow-hidden shadow-inner border border-white/10 flex items-center justify-center">
             <canvas
               ref={canvasRef}
               width="640"
               height="480"
-              className="w-full h-full object-cover rounded-2xl"
+              className="w-full h-full object-cover rounded-none"
             />
 
             {/* Guide Silhouette Overlay */}
@@ -977,13 +967,13 @@ export function BicepCurlRevisorClient({ user, routine, onClose, initialTargetRe
             </div>
 
             {/* Transparent Reps Overlay */}
-            <div className="absolute top-4 left-4 bg-zinc-950/80 backdrop-blur px-4 py-2 rounded-2xl border border-white/10 flex items-center gap-2 shadow-md">
+            <div className="absolute top-4 left-4 bg-zinc-950/80 backdrop-blur px-4 py-2 rounded-none border border-white/10 flex items-center gap-2 shadow-md">
               <span className="text-xs font-bold text-zinc-400">Reps:</span>
               <span className="text-lg font-black text-kuma-gold font-mono">{repsCount} / {targetReps}</span>
             </div>
 
             {/* Live Angle HUD */}
-            <div className="absolute bottom-4 left-4 bg-zinc-950/80 border border-white/10 p-3 rounded-xl backdrop-blur-sm shadow-md">
+            <div className="absolute bottom-4 left-4 bg-zinc-950/80 border border-white/10 p-3 rounded-none backdrop-blur-sm shadow-md">
               <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-wider block">Ángulo Codo</span>
               <span className="text-2xl font-black font-mono text-white tabular-nums flex items-baseline gap-0.5">
                 {elbowAngle}°
@@ -999,7 +989,7 @@ export function BicepCurlRevisorClient({ user, routine, onClose, initialTargetRe
           <div className="bg-zinc-950 border border-neutral-800 rounded-none p-6 backdrop-blur-md shadow-2xl flex-1 flex flex-col justify-between space-y-6">
             
             {/* Live Feedback box */}
-            <div className="bg-zinc-950/80 border border-white/5 p-4 rounded-2xl text-center space-y-2 relative overflow-hidden">
+            <div className="bg-zinc-950/80 border border-white/5 p-4 rounded-none text-center space-y-2 relative overflow-hidden">
               <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-50" />
               <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-wider block">RETROALIMENTACIÓN</span>
               <p className="text-lg font-black text-white uppercase tracking-tight min-h-[28px] flex items-center justify-center italic">
@@ -1011,7 +1001,7 @@ export function BicepCurlRevisorClient({ user, routine, onClose, initialTargetRe
             </div>
 
             {/* Real-time posture status panel */}
-            <div className="bg-zinc-950/40 border border-white/5 rounded-2xl p-4 space-y-3">
+            <div className="bg-zinc-950/40 border border-white/5 rounded-none p-4 space-y-3">
               <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider block">MÉTRICAS DE POSTURA</span>
               
               <div className="flex justify-between items-center text-xs">
