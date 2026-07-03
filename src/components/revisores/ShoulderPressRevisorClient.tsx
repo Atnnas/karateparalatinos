@@ -957,10 +957,16 @@ export function ShoulderPressRevisorClient({ user, routine, onClose, initialTarg
               <div className="absolute bottom-[80%] left-0 right-0 h-px bg-white/40 border-t border-dashed" title="Meta extensión" />
             </div>
 
-            {/* Transparent Reps Overlay */}
-            <div className="absolute top-4 left-4 bg-zinc-950/95 border-l-4 border-l-[#E52B34] border border-neutral-800 px-5 py-3 shadow-2xl flex items-center gap-3">
-              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Reps</span>
-              <span className="text-2xl font-black text-white font-mono tabular-nums">{repsCount} <span className="text-sm text-zinc-500">/ {targetReps}</span></span>
+            {/* Huge Reps Overlay (Top-Right of Webcam Feed) */}
+            <div className="absolute top-4 right-4 bg-zinc-950/90 border-2 border-neutral-800 px-6 py-4 shadow-2xl text-center min-w-[140px] z-20">
+              <span className="text-[10px] font-extrabold text-zinc-400 uppercase tracking-[0.2em] block mb-1">Reps</span>
+              <span className="text-6xl font-black text-[#E52B34] font-mono tracking-tight tabular-nums block leading-none">
+                {repsCount}
+              </span>
+              <div className="h-[1px] w-full bg-neutral-800 my-2" />
+              <span className="text-[10px] font-bold text-zinc-400 font-mono">
+                meta: {targetReps}
+              </span>
             </div>
 
             {/* Live Angle HUD */}
@@ -983,12 +989,20 @@ export function ShoulderPressRevisorClient({ user, routine, onClose, initialTarg
           <div className="bg-zinc-950 border border-neutral-800 rounded-none p-6 backdrop-blur-md shadow-2xl flex-1 flex flex-col justify-between space-y-6">
             
             {/* Repetitions Counter */}
-            <div className="text-center bg-zinc-950/85 border border-neutral-800 p-6 rounded-none relative overflow-hidden flex flex-col items-center justify-center space-y-1">
-              <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider block">REPETICIONES</span>
-              <div className="text-5xl font-black text-white font-mono tracking-tight tabular-nums flex items-baseline justify-center gap-1.5">
-                <span className="text-6xl text-[#E52B34]">{repsCount}</span>
-                <span className="text-2xl text-zinc-500">/</span>
-                <span className="text-2xl text-zinc-400">{targetReps}</span>
+            <div className="text-center bg-zinc-950/90 border-2 border-neutral-800 p-6 rounded-none relative overflow-hidden flex flex-col items-center justify-center">
+              <span className="text-[10px] text-zinc-400 font-extrabold uppercase tracking-[0.2em] block mb-2">REPETICIONES</span>
+              <div className="text-7xl font-black text-[#E52B34] font-mono tracking-tighter tabular-nums leading-none">
+                {repsCount}
+              </div>
+              <div className="text-xs font-bold text-zinc-500 uppercase tracking-widest mt-2">
+                Objetivo: {targetReps}
+              </div>
+              {/* Progress Bar */}
+              <div className="w-full bg-neutral-900 h-1.5 mt-4 rounded-none overflow-hidden border border-neutral-800/40">
+                <div 
+                  className="bg-gradient-to-r from-[#E52B34] to-[#FF4D55] h-full transition-all duration-300"
+                  style={{ width: `${Math.min(100, (repsCount / targetReps) * 100)}%` }}
+                />
               </div>
             </div>
 

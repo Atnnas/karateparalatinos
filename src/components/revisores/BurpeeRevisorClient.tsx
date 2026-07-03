@@ -926,10 +926,16 @@ export function BurpeeRevisorClient({ user, routine, onClose, initialTargetReps 
                 }}
               />
             </div>
-            {/* Transparent Reps Overlay */}
-            <div className="absolute top-4 left-4 bg-zinc-950/95 border-l-4 border-l-[#E52B34] border border-neutral-800 px-5 py-3 shadow-2xl flex items-center gap-3">
-              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Reps</span>
-              <span className="text-2xl font-black text-white font-mono tabular-nums">{repsCount} <span className="text-sm text-zinc-500">/ {targetReps}</span></span>
+            {/* Huge Reps Overlay (Top-Right of Webcam Feed) */}
+            <div className="absolute top-4 right-4 bg-zinc-950/90 border-2 border-neutral-800 px-6 py-4 shadow-2xl text-center min-w-[140px] z-20">
+              <span className="text-[10px] font-extrabold text-zinc-400 uppercase tracking-[0.2em] block mb-1">Reps</span>
+              <span className="text-6xl font-black text-[#E52B34] font-mono tracking-tight tabular-nums block leading-none">
+                {repsCount}
+              </span>
+              <div className="h-[1px] w-full bg-neutral-800 my-2" />
+              <span className="text-[10px] font-bold text-zinc-400 font-mono">
+                meta: {targetReps}
+              </span>
             </div>
 
             {/* Active profile hud */}
