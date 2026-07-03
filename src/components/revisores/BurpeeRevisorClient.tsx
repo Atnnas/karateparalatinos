@@ -927,9 +927,9 @@ export function BurpeeRevisorClient({ user, routine, onClose, initialTargetReps 
               />
             </div>
             {/* Transparent Reps Overlay */}
-            <div className="absolute top-4 left-4 bg-zinc-950/80 backdrop-blur px-4 py-2 rounded-none border border-white/10 flex items-center gap-2 shadow-md">
-              <span className="text-xs font-bold text-zinc-400">Reps:</span>
-              <span className="text-lg font-black text-kuma-gold font-mono">{repsCount} / {targetReps}</span>
+            <div className="absolute top-4 left-4 bg-zinc-950/95 border-l-4 border-l-[#E52B34] border border-neutral-800 px-5 py-3 shadow-2xl flex items-center gap-3">
+              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Reps</span>
+              <span className="text-2xl font-black text-white font-mono tabular-nums">{repsCount} <span className="text-sm text-zinc-500">/ {targetReps}</span></span>
             </div>
 
             {/* Active profile hud */}

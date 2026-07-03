@@ -919,9 +919,9 @@ export function PushupRevisorClient({ user, routine, onClose, initialTargetReps 
               />
             </div>
             {/* Transparent Reps Overlay */}
-            <div className="absolute top-4 left-4 bg-zinc-950/80 backdrop-blur px-4 py-2 rounded-none border border-white/10 flex items-center gap-2 shadow-md">
-              <span className="text-xs font-bold text-zinc-400">Reps:</span>
-              <span className="text-lg font-black text-kuma-gold font-mono">{repsCount} / {targetReps}</span>
+            <div className="absolute top-4 left-4 bg-zinc-950/95 border-l-4 border-l-[#E52B34] border border-neutral-800 px-5 py-3 shadow-2xl flex items-center gap-3">
+              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Reps</span>
+              <span className="text-2xl font-black text-white font-mono tabular-nums">{repsCount} <span className="text-sm text-zinc-500">/ {targetReps}</span></span>
             </div>
 
             {/* Live Angle HUD */}
@@ -940,6 +940,16 @@ export function PushupRevisorClient({ user, routine, onClose, initialTargetReps 
           
           <div className="bg-zinc-950 border border-neutral-800 rounded-none p-6 backdrop-blur-md shadow-2xl flex-1 flex flex-col justify-between space-y-6">
             
+
+            {/* Repetitions Counter */}
+            <div className="text-center bg-zinc-950/85 border border-neutral-800 p-6 rounded-none relative overflow-hidden flex flex-col items-center justify-center space-y-1">
+              <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider block">REPETICIONES</span>
+              <div className="text-5xl font-black text-white font-mono tracking-tight tabular-nums flex items-baseline justify-center gap-1.5">
+                <span className="text-6xl text-[#E52B34]">{repsCount}</span>
+                <span className="text-2xl text-zinc-500">/</span>
+                <span className="text-2xl text-zinc-400">{targetReps}</span>
+              </div>
+            </div>
 
             {/* Live Feedback box */}
             <div className="bg-zinc-950/80 border border-white/5 p-4 rounded-none text-center space-y-2 relative overflow-hidden">
