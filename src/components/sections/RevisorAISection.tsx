@@ -148,12 +148,6 @@ export default function RevisorAISection() {
 
   return (
     <section className={`relative w-full transition-colors duration-300 flex flex-col justify-start items-center overflow-x-hidden preguntas-section ${isCameraActive ? 'bg-zinc-950 min-h-screen pb-4 md:pb-6' : 'min-h-[calc(100vh-80px)] bg-[var(--background)] pb-20'}`}>
-      {/* ===== Background Watermark Kanji (Traditional Vibe) ===== */}
-      {(!selectedExercise || setupActive) && (
-        <div className="absolute right-10 md:right-20 lg:right-32 top-[12%] text-[24vw] md:text-[14vw] font-black text-neutral-900/[0.012] select-none pointer-events-none leading-none z-0 font-serif">
-          評価
-        </div>
-      )}
 
       {/* ===== Stylized Rising Sun (Hinomaru) ===== */}
       {(!selectedExercise || setupActive) && (
@@ -199,10 +193,6 @@ export default function RevisorAISection() {
           setupActive ? (
             /* ===== PRE-WORKOUT SETUP CARD (KUMA DOJO STYLE) ===== */
             <div className="w-full max-w-xl mx-auto bg-white border-2 border-neutral-200 shadow-2xl p-8 md:p-10 space-y-8 animate-in fade-in zoom-in-95 duration-300 rounded-none relative">
-              {/* Kanji Watermark */}
-              <div className="absolute right-6 top-4 text-7xl font-black text-neutral-900/[0.03] select-none pointer-events-none font-serif">
-                準備
-              </div>
 
               {/* Title & Badge */}
               <div className="space-y-3">
@@ -325,14 +315,11 @@ export default function RevisorAISection() {
                     <div className="absolute top-0 left-0 w-0 h-1 bg-[#E52B34] transition-all duration-300 group-hover:w-full" />
                     
                     <div className="space-y-4">
-                      {/* Icon + JP Name */}
+                      {/* Icon */}
                       <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
                         <div className="w-10 h-10 bg-neutral-900 text-white flex items-center justify-center shadow-md">
                           <ExerciseIcon className="w-5 h-5 text-[#E52B34]" />
                         </div>
-                        <span className="font-mono text-[9px] text-[#556358] text-right leading-tight max-w-[120px]">
-                          {exercise.jpName}
-                        </span>
                       </div>
                       
                       {/* Title & Stats */}
